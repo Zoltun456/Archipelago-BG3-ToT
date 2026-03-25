@@ -4,22 +4,6 @@ This repo builds a Trials of Tav focused Archipelago integration for Baldur's Ga
 
 Instead of using the normal BG3 quest pool, this world treats Trials activity as the main progression path. Clears, kills, perfect runs, RogueScore milestones, and randomized tav shop purchases become Archipelago checks.
 
-## What The Build Produces
-
-Running the build creates a ready-to-test bundle in `dist/`:
-
-- `dist/apworlds/bg3.apworld`
-- `dist/bg3_mods/CombatMod.pak`
-- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
-- `dist/bg3_mods/ArchipelagoTrials.pak`
-- `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
-- `dist/player_yaml/bg3_trials_test.yaml`
-- `dist/INSTALL.txt`
-- `dist/build_manifest.json`
-
-`CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
-The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
-
 ## Core Gameplay Model
 
 Supported victory goals:
@@ -212,6 +196,22 @@ If you want to force fresh upstream clones:
 ```powershell
 .\build.ps1 -Clean -RefreshCache
 ```
+
+## What The Build Produces
+
+Running the build creates a ready-to-test bundle in `dist/`:
+
+- `dist/apworlds/bg3.apworld`
+- `dist/bg3_mods/CombatMod.pak`
+- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `dist/bg3_mods/ArchipelagoTrials.pak`
+- `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
+- `dist/player_yaml/bg3_trials_test.yaml`
+- `dist/INSTALL.txt`
+- `dist/build_manifest.json`
+
+`CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
+The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
 
 ## Acknowledgements / Credits
 
