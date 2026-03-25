@@ -44,32 +44,6 @@ Shop behavior:
 - That reward instead becomes an Archipelago item and is granted when received from the multiworld.
 - `NG+ / Quick Start` stays local so it can still act as a win condition.
 
-## Build
-
-Build the full bundle:
-
-```powershell
-.\build.ps1 -Clean
-```
-
-Or use Python directly:
-
-```powershell
-python tools\build_release.py build --clean
-```
-
-If you only changed configuration or source files and want to refresh outputs without clearing everything first:
-
-```powershell
-.\build.ps1
-```
-
-If you want to force fresh upstream clones:
-
-```powershell
-.\build.ps1 -Clean -RefreshCache
-```
-
 ## Tester Setup
 
 Most testers do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
@@ -212,6 +186,32 @@ If things are working, `ap_out.json` should show progress tokens like:
 - `TOT-PERFECT-001`
 - `TOT-SHOP-001`
 - `TOT-GOAL-001`
+
+## Build
+
+Build the full bundle:
+
+```powershell
+.\build.ps1 -Clean
+```
+
+Or use Python directly:
+
+```powershell
+python tools\build_release.py build --clean
+```
+
+If you only changed configuration or source files and want to refresh outputs without clearing everything first:
+
+```powershell
+.\build.ps1
+```
+
+If you want to force fresh upstream clones:
+
+```powershell
+.\build.ps1 -Clean -RefreshCache
+```
 
 ## Acknowledgements / Credits
 
