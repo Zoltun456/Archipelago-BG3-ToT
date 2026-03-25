@@ -44,7 +44,7 @@ class BG3ClientCommandProcessor(ClientCommandProcessor):
 
 class BG3Context(CommonContext):
     command_processor = BG3ClientCommandProcessor
-    game = "Baldur's Gate 3"
+    game = "Baldur's Gate 3 - ToT"
     items_handling = 0b111
     se_bg3 = ""
     comm_file_sent_items = "ap_in.json"
@@ -205,7 +205,7 @@ class BG3Context(CommonContext):
 
         class BG3Manager(GameManager):
             logging_pairs = [("Client", "Archipelago")]
-            base_title = "Archipelago Baldur's Gate 3 Client"
+            base_title = "Archipelago Baldur's Gate 3 - ToT Client"
 
         self.ui = BG3Manager(self)
         self.ui_task = asyncio.create_task(self.ui.async_run(), name="UI")

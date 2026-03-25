@@ -42,7 +42,7 @@
   "sample_player": {
     "name": "BG3TrialsTester",
     "description": "Trials-first BG3 Archipelago preset",
-    "game": "Baldur's Gate 3",
+    "game": "Baldur's Gate 3 - ToT",
     "goal": "clear_stages",
     "goal_clear_target": 20,
     "goal_rogue_score_target": 300,

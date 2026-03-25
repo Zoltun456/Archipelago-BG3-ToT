@@ -19,6 +19,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "build_config.json"
 UNLOCK_CATALOG_PATH = ROOT / "trials_unlock_catalog.json"
 APWORLD_TEMPLATE_DIR = ROOT / "apworld_templates" / "bg3"
+APWORLD_PACKAGE_NAME = "bg3tot"
+APWORLD_FILENAME = "bg3tot.apworld"
 
 COMPAT_MOD_ROOT = ROOT / "compat_mod"
 COMPAT_MOD_META_PATH = COMPAT_MOD_ROOT / "Mods" / "ArchipelagoTrials" / "meta.lsx"
@@ -201,7 +203,7 @@ def render_sample_yaml(config: dict[str, Any], unlock_catalog: list[dict[str, An
 description: {sample['description']}
 game: {sample['game']}
 
-Baldur's Gate 3:
+{sample['game']}:
   goal: {sample['goal']}
   goal_clear_target: {sample['goal_clear_target']}
   goal_rogue_score_target: {sample['goal_rogue_score_target']}
@@ -1146,10 +1148,10 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
 
     unlock_catalog = load_json(UNLOCK_CATALOG_PATH)
 
-    staged_world_dir = output_dir / "staging" / "bg3"
+    staged_world_dir = output_dir / "staging" / APWORLD_PACKAGE_NAME
     stage_trials_apworld(archipelago_bg3_cache / "worlds" / "bg3", staged_world_dir)
-    apworld_path = output_dir / "apworlds" / "bg3.apworld"
-    zip_directory(staged_world_dir, apworld_path, "bg3")
+    apworld_path = output_dir / "apworlds" / APWORLD_FILENAME
+    zip_directory(staged_world_dir, apworld_path, APWORLD_PACKAGE_NAME)
 
     staged_bridge_dir = output_dir / "bg3_mods" / "ArchipelagoTrials_unpacked"
     shutil.copytree(COMPAT_MOD_ROOT, staged_bridge_dir, dirs_exist_ok=True)
@@ -1219,14 +1221,14 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         Archipelago BG3 Trials test bundle
 
         This archive contains the files needed for public testing:
-        - bg3.apworld
+        - {APWORLD_FILENAME}
         - CombatMod.pak
         - Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak
         - ArchipelagoTrials.pak
         - bg3_trials_test.yaml
 
         Brief setup:
-        1. Put bg3.apworld into your Archipelago custom_worlds folder.
+        1. Put {APWORLD_FILENAME} into your Archipelago custom_worlds folder.
         2. Put the three .pak files into your BG3 Mods folder.
         3. In BG3 Mod Manager, use this load order:
            Trials of Tav - Reloaded
@@ -1243,7 +1245,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     release_bundle_archive = None
     release_bundle_missing = []
     release_bundle_candidates = [
-        (apworld_path, "bg3.apworld"),
+        (apworld_path, APWORLD_FILENAME),
         (output_dir / "bg3_mods" / "CombatMod.pak", "CombatMod.pak"),
         (archipelago_pak_path, archipelago_pak_path.name),
         (compat_pak_path, compat_pak_path.name),
@@ -1252,7 +1254,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     ]
     for source_path, relative_name in release_bundle_candidates:
         if not source_path.exists() and relative_name in {
-            "bg3.apworld",
+            APWORLD_FILENAME,
             "CombatMod.pak",
             archipelago_pak_path.name,
             compat_pak_path.name,

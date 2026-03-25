@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class BG3Location(Location):
-    game = "Baldur's Gate 3"
+    game = "Baldur's Gate 3 - ToT"
 
 
 def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | None]:

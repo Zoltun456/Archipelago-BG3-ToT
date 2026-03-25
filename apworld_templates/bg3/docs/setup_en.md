@@ -8,7 +8,7 @@ Checks come from Trials activity such as clears, kills, perfect clears, RogueSco
 
 Install the generated AP world:
 
-- `bg3.apworld`
+- `bg3tot.apworld`
 
 Install these BG3 mods:
 
@@ -61,6 +61,14 @@ Instead:
 3. The reward is granted only when that AP item is received.
 
 `NG+ / Quick Start` remains a normal local shop unlock.
+
+### World Name
+
+In Archipelago, this world appears as:
+
+- `Baldur's Gate 3 - ToT`
+
+This keeps it separate from the original BG3 Archipelago world.
 
 ### Validation
 

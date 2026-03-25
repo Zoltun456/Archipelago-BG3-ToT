@@ -1,0 +1,11 @@
+{
+  "game": "Baldur's Gate 3 - ToT",
+  "authors": [
+    "Broney",
+    "Zoltun"
+  ],
+  "world_version": "0.4.2",
+  "minimum_ap_version": "0.6.2",
+  "version": 1,
+  "compatible_version": 1
+}

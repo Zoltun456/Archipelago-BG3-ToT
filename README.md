@@ -4,22 +4,6 @@ This repo builds a Trials of Tav focused Archipelago integration for Baldur's Ga
 
 Instead of using the normal BG3 quest pool, this world treats Trials activity as the main progression path. Clears, kills, perfect runs, RogueScore milestones, and randomized tav shop purchases become Archipelago checks.
 
-## What The Build Produces
-
-Running the build creates a ready-to-test bundle in `dist/`:
-
-- `dist/apworlds/bg3.apworld`
-- `dist/bg3_mods/CombatMod.pak`
-- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
-- `dist/bg3_mods/ArchipelagoTrials.pak`
-- `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
-- `dist/player_yaml/bg3_trials_test.yaml`
-- `dist/INSTALL.txt`
-- `dist/build_manifest.json`
-
-`CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
-The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
-
 ## Core Gameplay Model
 
 Supported victory goals:
@@ -44,35 +28,9 @@ Shop behavior:
 - That reward instead becomes an Archipelago item and is granted when received from the multiworld.
 - `NG+ / Quick Start` stays local so it can still act as a win condition.
 
-## Build
-
-Build the full bundle:
-
-```powershell
-.\build.ps1 -Clean
-```
-
-Or use Python directly:
-
-```powershell
-python tools\build_release.py build --clean
-```
-
-If you only changed configuration or source files and want to refresh outputs without clearing everything first:
-
-```powershell
-.\build.ps1
-```
-
-If you want to force fresh upstream clones:
-
-```powershell
-.\build.ps1 -Clean -RefreshCache
-```
-
 ## Tester Setup
 
-Most testers do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
+Most testers do not need the source repo. Just download the [latest release](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases) zip from GitHub and install the files it contains.
 
 ### 1. Download and extract the latest release
 
@@ -84,7 +42,7 @@ from the latest GitHub Release and extract it somewhere convenient.
 
 The archive contains:
 
-- `bg3.apworld`
+- `bg3tot.apworld`
 - `CombatMod.pak`
 - `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
 - `ArchipelagoTrials.pak`
@@ -95,7 +53,7 @@ The archive contains:
 
 Copy:
 
-- `bg3.apworld`
+- `bg3tot.apworld`
 
 into your Archipelago `custom_worlds` folder.
 
@@ -130,6 +88,12 @@ Use the included sample YAML:
 - `bg3_trials_test.yaml`
 
 or edit your own YAML with the BG3 Trials options.
+
+In Archipelago, this world appears in the game list as:
+
+- `Baldur's Gate 3 - ToT`
+
+This keeps it separate from the original BG3 Archipelago world.
 
 ### 6. Play and connect
 
@@ -213,6 +177,48 @@ If things are working, `ap_out.json` should show progress tokens like:
 - `TOT-SHOP-001`
 - `TOT-GOAL-001`
 
+## Build
+
+Build the full bundle:
+
+```powershell
+.\build.ps1 -Clean
+```
+
+Or use Python directly:
+
+```powershell
+python tools\build_release.py build --clean
+```
+
+If you only changed configuration or source files and want to refresh outputs without clearing everything first:
+
+```powershell
+.\build.ps1
+```
+
+If you want to force fresh upstream clones:
+
+```powershell
+.\build.ps1 -Clean -RefreshCache
+```
+
+## What The Build Produces
+
+Running the build creates a ready-to-test bundle in `dist/`:
+
+- `dist/apworlds/bg3tot.apworld`
+- `dist/bg3_mods/CombatMod.pak`
+- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `dist/bg3_mods/ArchipelagoTrials.pak`
+- `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
+- `dist/player_yaml/bg3_trials_test.yaml`
+- `dist/INSTALL.txt`
+- `dist/build_manifest.json`
+
+`CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
+The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
+
 ## Acknowledgements / Credits
 
 This repo builds on a lot of work from other people in the BG3 and Archipelago communities.
@@ -245,4 +251,4 @@ Reference sources used while putting this project together:
 
 - `tools/` bundles Norbyte ExportTool and the supporting files needed to package BG3 mods.
 - `.cache/`, `dist/`, and `tmp/` are local build output and are safe to ignore in git.
-- The release layout is intentionally three BG3 paks plus one `bg3.apworld`; collapsing everything into one BG3 mod would currently be a much riskier structural merge.
+- The release layout is intentionally three BG3 paks plus one `bg3tot.apworld`; collapsing everything into one BG3 mod would currently be a much riskier structural merge.

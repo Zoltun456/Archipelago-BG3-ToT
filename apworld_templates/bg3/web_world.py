@@ -6,13 +6,13 @@ from .options import bg3_option_groups
 
 
 class BG3WebWorld(WebWorld):
-    game = "Baldur's Gate 3"
+    game = "Baldur's Gate 3 - ToT"
     theme = "grassFlowers"
     rich_text_options_doc = False
     option_groups = bg3_option_groups
 
     setup_en = Tutorial(
-        "Baldur's Gate 3 Trials Setup Guide",
+        "Baldur's Gate 3 - ToT Setup Guide",
         "Install the Trials-first BG3 Archipelago build, configure the three BG3 mods, and start a seed.",
         "English",
         "setup_en.md",

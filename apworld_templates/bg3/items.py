@@ -98,7 +98,7 @@ UNLOCK_ITEM_NAME_BY_ID = {unlock_id: f"Trials Reward: {name}" for unlock_id, nam
 
 
 class BG3Item(Item):
-    game = "Baldur's Gate 3"
+    game = "Baldur's Gate 3 - ToT"
 
 
 def get_random_filler_item_name(world: BG3World) -> str:

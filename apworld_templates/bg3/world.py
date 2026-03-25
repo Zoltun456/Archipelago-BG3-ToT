@@ -45,7 +45,7 @@ def _randomized_shop_costs(
 
 
 class BG3World(World):
-    game = "Baldur's Gate 3"
+    game = "Baldur's Gate 3 - ToT"
     web = web_world.BG3WebWorld()
 
     options_dataclass = options.BG3Options
