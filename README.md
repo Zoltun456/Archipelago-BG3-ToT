@@ -44,7 +44,7 @@ The archive contains:
 
 - `bg3tot.apworld`
 - `CombatMod.pak`
-- `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `Archipelago_###.pak`
 - `ArchipelagoTrials.pak`
 - `bg3_trials_test.yaml`
 - `INSTALL.txt`
@@ -62,7 +62,7 @@ into your Archipelago `custom_worlds` folder.
 Use this order in BG3MM:
 
 1. `Trials of Tav - Reloaded` (`CombatMod.pak`)
-2. `Archipelago` (`Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`)
+2. `Archipelago` (`Archipelago_###.pak`)
 3. `Archipelago Trials Bridge` (`ArchipelagoTrials.pak`)
 
 Then:
@@ -199,7 +199,7 @@ Running the build creates a ready-to-test bundle in `dist/`:
 
 - `dist/apworlds/bg3tot.apworld`
 - `dist/bg3_mods/CombatMod.pak`
-- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `dist/bg3_mods/Archipelago_###.pak`
 - `dist/bg3_mods/ArchipelagoTrials.pak`
 - `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
 - `dist/player_yaml/bg3_trials_test.yaml`
