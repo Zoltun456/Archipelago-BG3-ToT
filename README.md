@@ -245,7 +245,7 @@ Reference sources used while putting this project together:
 
 ## Third-Party Assets & Licensing
 
-This project includes assets from the Archipelago asset pack.
+This project includes assets from the Archipelago asset pack. `archipelago-asset-pack/LICENSE.txt`
 
 These assets are © 2022 by Krista Corkos and Christopher Wilson and are licensed under the Creative Commons Attribution-NonCommercial 4.0 International License:
 http://creativecommons.org/licenses/by-nc/4.0/
