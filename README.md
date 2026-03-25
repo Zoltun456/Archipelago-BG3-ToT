@@ -28,6 +28,8 @@ Shop behavior:
 - That reward instead becomes an Archipelago item and is granted when received from the multiworld.
 - `NG+ / Quick Start` stays local so it can still act as a win condition.
 
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ec51addc-24db-4502-a507-fe96e0be9947" />
+
 ## Testing Setup
 
 Most users do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
