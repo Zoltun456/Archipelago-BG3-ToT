@@ -92,6 +92,60 @@ def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def release_version_to_version64(version_text: str) -> str:
+    parts = str(version_text or "").strip().split(".")
+    if len(parts) not in {3, 4}:
+        raise ValueError(
+            f"Release version '{version_text}' must use 'major.minor.patch' or 'major.minor.patch.build'."
+        )
+
+    try:
+        major, minor, revision, build = [int(part) for part in (*parts[:3], *(parts[3:] or ["0"]))]
+    except ValueError as exc:
+        raise ValueError(f"Release version '{version_text}' must contain only numeric components.") from exc
+
+    component_limits = {
+        "major": (major, 0xFF),
+        "minor": (minor, 0xFF),
+        "revision": (revision, 0xFFFF),
+        "build": (build, 0x7FFFFFFF),
+    }
+    for label, (value, maximum) in component_limits.items():
+        if value < 0 or value > maximum:
+            raise ValueError(
+                f"Release version component '{label}'={value} is out of range (0-{maximum})."
+            )
+
+    version64 = (
+        (major << 55)
+        | (minor << 47)
+        | (revision << 31)
+        | build
+    )
+    return str(version64)
+
+
+def normalize_release_versions(config: dict[str, Any]) -> bool:
+    compat = config.get("compat_mod", {})
+    release_version = compat.get("release_version")
+    if not release_version:
+        return False
+
+    publish_release_version = compat.get("publish_release_version") or release_version
+    version64 = release_version_to_version64(str(release_version))
+    publish_version64 = release_version_to_version64(str(publish_release_version))
+
+    changed = False
+    if compat.get("version64") != version64:
+        compat["version64"] = version64
+        changed = True
+    if compat.get("publish_version64") != publish_version64:
+        compat["publish_version64"] = publish_version64
+        changed = True
+
+    return changed
+
+
 def unlock_catalog_total_slots(unlock_catalog: list[dict[str, Any]]) -> int:
     total = 0
     for entry in unlock_catalog:
@@ -1304,6 +1358,8 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     config = load_json(CONFIG_PATH)
+    if normalize_release_versions(config):
+        dump_json(CONFIG_PATH, config)
 
     sync_repo_files(config)
 

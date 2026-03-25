@@ -8,8 +8,9 @@
     "author": "Zoltun",
     "description": "Compatibility bridge that converts Trials of Tav progress into Archipelago check tokens.",
     "uuid": "1d7b6da7-58ff-4bf4-b53a-c9f8f3f44a01",
-    "version64": "36028797018963969",
-    "publish_version64": "36028797018963969",
+    "release_version": "1.0.3",
+    "version64": "36028803461414912",
+    "publish_version64": "36028803461414912",
     "target_mode": "Story",
     "script_extender_config": {
       "RequiredVersion": 15,
