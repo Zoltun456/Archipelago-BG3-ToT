@@ -106,6 +106,8 @@ class BG3World(World):
             ),
             "shop_check_unlock_ids": selected_shop_unlock_ids,
             "shop_check_costs": selected_shop_costs,
-            "goal_unlock_id": "QUICKSTART",
+            "goal_unlock_id": "APGOAL::QUICKSTART",
+            "goal_unlock_template_id": "QUICKSTART",
+            "goal_unlock_cost": 2000,
             "sync_method": int(self.options.sync_method),
         }

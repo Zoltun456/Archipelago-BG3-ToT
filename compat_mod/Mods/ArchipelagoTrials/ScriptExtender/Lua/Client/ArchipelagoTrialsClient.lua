@@ -1,4 +1,5 @@
 local patched = false
+local GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 
 
 local function show_unlock(unlock)
@@ -6,7 +7,7 @@ local function show_unlock(unlock)
         return false
     end
 
-    if unlock.Id == "QUICKSTART" then
+    if unlock.Id == GOAL_UNLOCK_ID or unlock.Id == "QUICKSTART" then
         return true
     end
 

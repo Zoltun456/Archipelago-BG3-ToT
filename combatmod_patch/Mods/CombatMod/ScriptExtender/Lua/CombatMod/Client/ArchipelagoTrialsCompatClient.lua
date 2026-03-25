@@ -1,6 +1,6 @@
 local patched = false
 local original_get_stock = nil
-local GOAL_UNLOCK_ID = "QUICKSTART"
+local GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local AP_ICON_DEBUG_FILE = "ap_icon_debug.json"
 local AP_ATLAS_TEXTURE_UUID = "aa417c69-e69a-f1ef-5a8d-65b7b5d4e195"
 local PROXY_BLUE_ICON = "statIcons_WretchedGrowth_Aura"

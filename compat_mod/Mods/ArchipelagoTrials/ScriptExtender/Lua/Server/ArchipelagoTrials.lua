@@ -7,6 +7,9 @@ local AP_OPTIONS_FILE = "ap_options.json"
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
 local GOAL_REACH_ROGUESCORE = 2
+local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
+local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
+local DEFAULT_GOAL_UNLOCK_COST = 2000
 
 local shop_state = {
     initialized = false,
@@ -223,9 +226,37 @@ local function get_options()
     options.goal = options.goal or GOAL_BUY_NG_PLUS
     options.goal_clear_target = options.goal_clear_target or 0
     options.goal_rogue_score_target = options.goal_rogue_score_target or 0
-    options.goal_unlock_id = options.goal_unlock_id or "QUICKSTART"
+    options.goal_unlock_template_id = tostring(
+        options.goal_unlock_template_id or DEFAULT_GOAL_UNLOCK_TEMPLATE_ID
+    )
+    options.goal_unlock_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
+        or DEFAULT_GOAL_UNLOCK_COST
+    local configured_goal_unlock_id = tostring(options.goal_unlock_id or "")
+    if configured_goal_unlock_id == ""
+        or configured_goal_unlock_id == options.goal_unlock_template_id
+    then
+        options.goal_unlock_id = AP_GOAL_UNLOCK_ID
+    else
+        options.goal_unlock_id = configured_goal_unlock_id
+    end
     options.sync_method = options.sync_method or 1
     return options
+end
+
+
+local function is_ap_runtime_unlock_id(unlock_id)
+    return unlock_id == AP_GOAL_UNLOCK_ID or string.match(tostring(unlock_id or ""), "^APCHECK::") ~= nil
+end
+
+
+local function reset_ap_runtime_unlock_state()
+    for _, unlock in ipairs(PersistentVars.Unlocks or {}) do
+        if is_ap_runtime_unlock_id(unlock.Id) then
+            unlock.Bought = 0
+            unlock.BoughtBy = {}
+            unlock.Unlocked = false
+        end
+    end
 end
 
 
@@ -241,6 +272,7 @@ local function ensure_seed_initialized()
     end
 
     state.seed_name = seed_name
+    reset_ap_runtime_unlock_state()
     reset_comm_files_for_new_seed()
 end
 
@@ -501,6 +533,8 @@ local function build_shop_options_signature(options)
 
     return Ext.Json.Stringify({
         goal_unlock_id = options.goal_unlock_id or "",
+        goal_unlock_template_id = options.goal_unlock_template_id or "",
+        goal_unlock_cost = options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST,
         shop_check_unlock_ids = options.shop_check_unlock_ids or {},
         shop_display = options.shop_display or {},
     })

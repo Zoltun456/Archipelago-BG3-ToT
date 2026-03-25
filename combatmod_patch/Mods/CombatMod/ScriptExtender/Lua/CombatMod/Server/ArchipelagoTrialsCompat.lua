@@ -6,6 +6,9 @@ local AP_SHOP_DEBUG_FILE = "ap_shop_debug.json"
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
 local GOAL_REACH_ROGUESCORE = 2
+local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
+local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
+local DEFAULT_GOAL_UNLOCK_COST = 2000
 
 Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat or {
     scenario_clears = 0,
@@ -124,8 +127,36 @@ local function get_options()
     options.goal = tonumber(options.goal or GOAL_BUY_NG_PLUS)
     options.goal_clear_target = tonumber(options.goal_clear_target or 0)
     options.goal_rogue_score_target = tonumber(options.goal_rogue_score_target or 0)
-    options.goal_unlock_id = options.goal_unlock_id or "QUICKSTART"
+    options.goal_unlock_template_id = tostring(
+        options.goal_unlock_template_id or DEFAULT_GOAL_UNLOCK_TEMPLATE_ID
+    )
+    options.goal_unlock_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
+        or DEFAULT_GOAL_UNLOCK_COST
+    local configured_goal_unlock_id = tostring(options.goal_unlock_id or "")
+    if configured_goal_unlock_id == ""
+        or configured_goal_unlock_id == options.goal_unlock_template_id
+    then
+        options.goal_unlock_id = AP_GOAL_UNLOCK_ID
+    else
+        options.goal_unlock_id = configured_goal_unlock_id
+    end
     return options
+end
+
+
+local function is_ap_runtime_unlock_id(unlock_id)
+    return unlock_id == AP_GOAL_UNLOCK_ID or string.match(tostring(unlock_id or ""), "^APCHECK::") ~= nil
+end
+
+
+local function reset_ap_runtime_unlock_state()
+    for _, unlock in ipairs(PersistentVars.Unlocks or {}) do
+        if is_ap_runtime_unlock_id(unlock.Id) then
+            unlock.Bought = 0
+            unlock.BoughtBy = {}
+            unlock.Unlocked = false
+        end
+    end
 end
 
 
@@ -152,6 +183,7 @@ local function refresh_seed_state()
     state.granted_unlocks = {}
     state.goal_completed = false
     compat.granted_unlock_session_init = {}
+    reset_ap_runtime_unlock_state()
     save_json_array(AP_OUT_FILE, {})
     return true
 end
@@ -492,6 +524,8 @@ local function build_refresh_signature(options)
     return Ext.Json.Stringify({
         active_connection = options.active_connection == true,
         goal_unlock_id = options.goal_unlock_id or "",
+        goal_unlock_template_id = options.goal_unlock_template_id or "",
+        goal_unlock_cost = options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST,
         shop_check_unlock_ids = options.shop_check_unlock_ids or {},
         shop_check_costs = options.shop_check_costs or {},
         shop_display = options.shop_display or {},
@@ -553,6 +587,28 @@ local function make_shop_check_unlock(template, index, options)
 end
 
 
+local function make_goal_unlock(template, options)
+    local unlock = shallow_copy(template)
+    unlock.Id = tostring(options.goal_unlock_id or AP_GOAL_UNLOCK_ID)
+    local configured_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
+        or DEFAULT_GOAL_UNLOCK_COST
+    unlock.Cost = math.max(0, configured_cost)
+    unlock.Persistent = false
+    unlock.Bought = 0
+    unlock.BoughtBy = {}
+    unlock.Requirement = nil
+    unlock.HideStock = true
+    local original_on_buy = unlock.OnBuy
+    unlock.OnBuy = function(self, character)
+        if original_on_buy then
+            original_on_buy(self, character)
+        end
+        maybe_emit_goal_token()
+    end
+    return unlock
+end
+
+
 local function register_shop_patch()
     if compat.patch_registered then
         return
@@ -570,17 +626,9 @@ local function register_shop_patch()
             end
         end
 
-        local goal_template = compat.original_templates_by_id[options.goal_unlock_id]
+        local goal_template = compat.original_templates_by_id[options.goal_unlock_template_id]
         if goal_template then
-            local unlock = shallow_copy(goal_template)
-            local original_on_buy = unlock.OnBuy
-            unlock.OnBuy = function(self, character)
-                if original_on_buy then
-                    original_on_buy(self, character)
-                end
-                maybe_emit_goal_token()
-            end
-            table.insert(transformed, unlock)
+            table.insert(transformed, make_goal_unlock(goal_template, options))
         end
 
         return transformed
@@ -606,6 +654,9 @@ local function write_shop_debug_snapshot()
         active_connection = options.active_connection == true,
         seed_name = tostring(options.seed_name or ""),
         goal_unlock_id = tostring(options.goal_unlock_id or ""),
+        goal_unlock_template_id = tostring(options.goal_unlock_template_id or ""),
+        goal_unlock_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
+            or DEFAULT_GOAL_UNLOCK_COST,
         selected_shop_count = #(options.shop_check_unlock_ids or {}),
         selected_shop_ids = options.shop_check_unlock_ids or {},
         selected_shop_costs = options.shop_check_costs or {},
