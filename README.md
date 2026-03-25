@@ -30,7 +30,7 @@ Shop behavior:
 
 ## Tester Setup
 
-Most testers do not need the source repo. Just download the [[latest release]([url](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases))](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases) zip from GitHub and install the files it contains.
+Most testers do not need the source repo. Just download the [latest release]([url](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)) zip from GitHub and install the files it contains.
 
 ### 1. Download and extract the latest release
 
