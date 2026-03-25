@@ -57,23 +57,13 @@ Copy:
 
 into your Archipelago `custom_worlds` folder.
 
-### 3. Install the BG3 mods
-
-Copy these three paks into:
-
-`%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Mods`
-
-- `CombatMod.pak`
-- `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
-- `ArchipelagoTrials.pak`
-
-### 4. Set BG3 Mod Manager load order
+### 3. Set BG3 Mod Manager load order
 
 Use this order in BG3MM:
 
-1. `Trials of Tav - Reloaded`
-2. `Archipelago`
-3. `Archipelago Trials Bridge`
+1. `Trials of Tav - Reloaded` (`CombatMod.pak`)
+2. `Archipelago` (`Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`)
+3. `Archipelago Trials Bridge` (`ArchipelagoTrials.pak`)
 
 Then:
 
@@ -81,7 +71,7 @@ Then:
 2. Export Order to Game
 3. Launch BG3 from BG3MM
 
-### 5. Generate a seed
+### 4. Generate a seed
 
 Use the included sample YAML:
 
@@ -95,7 +85,7 @@ In Archipelago, this world appears in the game list as:
 
 This keeps it separate from the original BG3 Archipelago world.
 
-### 6. Play and connect
+### 5. Play and connect
 
 Recommended test flow:
 
