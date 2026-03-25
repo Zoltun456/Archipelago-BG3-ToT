@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<save>
+  <version major="4" minor="0" revision="9" build="328" />
+  <region id="Config">
+    <node id="root">
+      <children>
+        <node id="Dependencies">
+          <children>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSWString" value="Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="FixedString" value="Archipelago" />
+              <attribute id="UUID" type="FixedString" value="9d8340ef-8f94-1397-4634-3297a02800d5" />
+              <attribute id="Version64" type="int64" value="36028797018964017" />
+            </node>
+            <node id="ModuleShortDesc">
+              <attribute id="Folder" type="LSWString" value="CombatMod" />
+              <attribute id="MD5" type="LSString" value="" />
+              <attribute id="Name" type="FixedString" value="Trials of Tav - Reloaded" />
+              <attribute id="UUID" type="FixedString" value="e6f0c417-36f9-42d6-9617-fd7fe2efd626" />
+              <attribute id="Version64" type="int64" value="72479812945444864" />
+            </node>
+          </children>
+        </node>
+        <node id="ModuleInfo">
+          <attribute id="Author" type="LSString" value="Zoltun" />
+          <attribute id="CharacterCreationLevelName" type="FixedString" value="" />
+          <attribute id="Description" type="LSString" value="Compatibility bridge that converts Trials of Tav progress into Archipelago check tokens." />
+          <attribute id="Folder" type="LSString" value="ArchipelagoTrials" />
+          <attribute id="LobbyLevelName" type="FixedString" value="" />
+          <attribute id="MD5" type="LSString" value="" />
+          <attribute id="MainMenuBackgroundVideo" type="FixedString" value="" />
+          <attribute id="MenuLevelName" type="FixedString" value="" />
+          <attribute id="Name" type="LSString" value="Archipelago Trials Bridge" />
+          <attribute id="NumPlayers" type="uint8" value="4" />
+          <attribute id="PhotoBooth" type="FixedString" value="" />
+          <attribute id="StartupLevelName" type="FixedString" value="" />
+          <attribute id="Tags" type="LSString" value="" />
+          <attribute id="Type" type="FixedString" value="Add-on" />
+          <attribute id="UUID" type="FixedString" value="1d7b6da7-58ff-4bf4-b53a-c9f8f3f44a01" />
+          <attribute id="Version64" type="int64" value="36028797018963969" />
+          <children>
+            <node id="PublishVersion">
+              <attribute id="Version64" type="int64" value="36028797018963969" />
+            </node>
+            <node id="Scripts" />
+            <node id="TargetModes">
+              <children>
+                <node id="Target">
+                  <attribute id="Object" type="FixedString" value="Story" />
+                </node>
+              </children>
+            </node>
+          </children>
+        </node>
+      </children>
+    </node>
+  </region>
+</save>

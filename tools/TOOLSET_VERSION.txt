@@ -1,0 +1,13 @@
+Bundled BG3 packaging toolset
+
+Source: Norbyte LSLib / ExportTool
+Release: v1.20.4
+Published: 2026-01-24
+Downloaded from:
+https://github.com/Norbyte/lslib/releases/download/v1.20.4/ExportTool-v1.20.4.zip
+
+Repo-local files in this folder are used by the build pipeline to create:
+- ArchipelagoTrials.pak
+
+Key executable:
+- Divine.exe

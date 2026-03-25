@@ -1,0 +1,77 @@
+## BG3 Trials Setup
+
+This world replaces the normal BG3 progression flow with a Trials of Tav focused Archipelago mode.
+
+Checks come from Trials activity such as clears, kills, perfect clears, RogueScore milestones, and randomized tav shop purchases.
+
+### Required Files
+
+Install the generated AP world:
+
+- `bg3.apworld`
+
+Install these BG3 mods:
+
+- `CombatMod.pak`
+- `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `ArchipelagoTrials.pak`
+
+### BG3 Mod Manager Order
+
+Use this load order:
+
+1. `Trials of Tav - Reloaded`
+2. `Archipelago`
+3. `Archipelago Trials Bridge`
+
+After setting the order, save and export it to the game before launching.
+
+### Goals
+
+- `buy_ng_plus`
+  - Buy the local `NG+ / Quick Start` shop unlock.
+- `clear_stages`
+  - Complete the configured number of Trials clears.
+- `reach_rogue_score`
+  - Reach the configured RogueScore total.
+
+### Key Options
+
+- `clear_check_count`, `kill_check_count`, `perfect_check_count`, `roguescore_check_count`
+  - Total number of checks available from each activity group.
+- `*_check_interval`
+  - How often each activity awards a check.
+- `shop_check_count`
+  - How many catalog entries are turned into AP shop checks.
+- `shop_price_minimum`, `shop_price_maximum`
+  - Seeded random price range for AP shop entries, rounded to multiples of `10`.
+- `traps_percentage`
+  - Percent of filler items that become traps.
+- `enabled_traps`
+  - Trap types allowed in the filler pool.
+
+### Shop Behavior
+
+AP shop entries do not grant their original reward when purchased.
+
+Instead:
+
+1. Buying the entry sends a shop location check.
+2. The original reward exists in the Archipelago item pool.
+3. The reward is granted only when that AP item is received.
+
+`NG+ / Quick Start` remains a normal local shop unlock.
+
+### Validation
+
+While playing, the bridge writes progress to:
+
+`%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_out.json`
+
+Working runs should produce entries like:
+
+- `TOT-CLEAR-001`
+- `TOT-KILLS-001`
+- `TOT-PERFECT-001`
+- `TOT-SHOP-001`
+- `TOT-GOAL-001`
