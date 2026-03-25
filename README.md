@@ -242,3 +242,18 @@ Reference sources used while putting this project together:
 - `tools/` bundles Norbyte ExportTool and the supporting files needed to package BG3 mods.
 - `.cache/`, `dist/`, and `tmp/` are local build output and are safe to ignore in git.
 - The release layout is intentionally three BG3 paks plus one `bg3tot.apworld`; collapsing everything into one BG3 mod would currently be a much riskier structural merge.
+
+## Third-Party Assets & Licensing
+
+This project includes assets from the Archipelago asset pack.
+
+These assets are © 2022 by Krista Corkos and Christopher Wilson and are licensed under the Creative Commons Attribution-NonCommercial 4.0 International License:
+http://creativecommons.org/licenses/by-nc/4.0/
+
+## License Notice
+
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
+
+Some included assets are licensed separately by their original authors and retain their original licensing terms.
+
+Commercial use of this project is not permitted.
