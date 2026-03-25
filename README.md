@@ -72,25 +72,44 @@ If you want to force fresh upstream clones:
 
 ## Tester Setup
 
-### 1. Install the AP world
+Most testers do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
+
+### 1. Download and extract the latest release
+
+Download:
+
+- `Archipelago-BG3-Trials-test-bundle.zip`
+
+from the latest GitHub Release and extract it somewhere convenient.
+
+The archive contains:
+
+- `bg3.apworld`
+- `CombatMod.pak`
+- `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `ArchipelagoTrials.pak`
+- `bg3_trials_test.yaml`
+- `INSTALL.txt`
+
+### 2. Install the AP world
 
 Copy:
 
-- `dist/apworlds/bg3.apworld`
+- `bg3.apworld`
 
 into your Archipelago `custom_worlds` folder.
 
-### 2. Install the BG3 mods
+### 3. Install the BG3 mods
 
 Copy these three paks into:
 
 `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Mods`
 
-- `dist/bg3_mods/CombatMod.pak`
-- `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
-- `dist/bg3_mods/ArchipelagoTrials.pak`
+- `CombatMod.pak`
+- `Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
+- `ArchipelagoTrials.pak`
 
-### 3. Set BG3 Mod Manager load order
+### 4. Set BG3 Mod Manager load order
 
 Use this order in BG3MM:
 
@@ -104,21 +123,22 @@ Then:
 2. Export Order to Game
 3. Launch BG3 from BG3MM
 
-### 4. Generate a seed
+### 5. Generate a seed
 
-Use the sample YAML at:
+Use the included sample YAML:
 
-- `dist/player_yaml/bg3_trials_test.yaml`
+- `bg3_trials_test.yaml`
 
 or edit your own YAML with the BG3 Trials options.
 
-### 5. Play and connect
+### 6. Play and connect
 
 Recommended test flow:
 
 1. Launch BG3 with the three mods active.
-2. Connect the BG3 Archipelago client.
-3. Start Trials and play normally to earn checks.
+2. Load into camp or tav mode.
+3. Connect the BG3 Archipelago client.
+4. Start Trials and play normally to earn checks.
 
 ## Important Files To Edit
 
