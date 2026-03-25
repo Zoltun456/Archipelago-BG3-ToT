@@ -28,9 +28,9 @@ Shop behavior:
 - That reward instead becomes an Archipelago item and is granted when received from the multiworld.
 - `NG+ / Quick Start` stays local so it can still act as a win condition.
 
-## Tester Setup
+## Testing Setup
 
-Most testers do not need the source repo. Just download the [latest release]([url](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)) zip from GitHub and install the files it contains.
+Most users do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
 
 ### 1. Download and extract the latest release
 
@@ -61,9 +61,12 @@ into your Archipelago `custom_worlds` folder.
 
 Use this order in BG3MM:
 
+0. `[Dependencies]` (`ImpUI, MCM, Expansion, AdvancedTTSpells`)
 1. `Trials of Tav - Reloaded` (`CombatMod.pak`)
 2. `Archipelago` (`Archipelago_###.pak`)
 3. `Archipelago Trials Bridge` (`ArchipelagoTrials.pak`)
+
+<img width="804" height="275" alt="image" src="https://github.com/user-attachments/assets/1adcb5e2-4c97-4543-a7bc-315595f1e3d0" />
 
 Then:
 
@@ -87,14 +90,11 @@ This keeps it separate from the original BG3 Archipelago world.
 
 ### 5. Play and connect
 
-Recommended test flow:
+1. Launch BG3 with the mods active.
+2. Connect the BG3 Archipelago client.
+3. Start Trials and play normally to earn checks.
 
-1. Launch BG3 with the three mods active.
-2. Load into camp or tav mode.
-3. Connect the BG3 Archipelago client.
-4. Start Trials and play normally to earn checks.
-
-## Important Files To Edit
+## Important Files
 
 ### `trials_unlock_catalog.json`
 
@@ -149,7 +149,7 @@ Key options that affect balance the most:
 - `traps_percentage`
 - `enabled_traps`
 
-Shop prices are currently seeded pure-random values, rounded to multiples of `10`, within the configured min/max range.
+Shop prices are currently seeded with pure-random values, rounded to multiples of `10`, within the configured min/max range.
 
 ## Validation / Troubleshooting
 
