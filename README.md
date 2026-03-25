@@ -12,11 +12,13 @@ Running the build creates a ready-to-test bundle in `dist/`:
 - `dist/bg3_mods/CombatMod.pak`
 - `dist/bg3_mods/Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak`
 - `dist/bg3_mods/ArchipelagoTrials.pak`
+- `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
 - `dist/player_yaml/bg3_trials_test.yaml`
 - `dist/INSTALL.txt`
 - `dist/build_manifest.json`
 
 `CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
+The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
 
 ## Core Gameplay Model
 

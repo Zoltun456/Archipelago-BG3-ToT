@@ -4,6 +4,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import subprocess
 import textwrap
@@ -107,6 +108,12 @@ def dump_json(path: Path, payload: Any) -> None:
 def write_text(path: Path, contents: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(contents.rstrip() + "\n", encoding="utf-8")
+
+
+def slugify_filename(value: str) -> str:
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", value.strip())
+    slug = slug.strip(".-")
+    return slug or "release"
 
 
 def ensure_git_clone(target: Path, repo_url: str, ref: str, refresh: bool) -> None:
@@ -985,6 +992,22 @@ def zip_directory(source_dir: Path, archive_path: Path, root_name: str) -> None:
                 zip_handle.write(file_path, arcname.as_posix())
 
 
+def build_release_archive(
+    config: dict[str, Any],
+    archive_path: Path,
+    release_files: list[tuple[Path, str]],
+) -> str:
+    root_name = slugify_filename(config["project_name"])
+    archive_path.parent.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(archive_path, "w", compression=zipfile.ZIP_DEFLATED) as zip_handle:
+        for source_path, relative_name in release_files:
+            if not source_path.exists():
+                raise FileNotFoundError(f"Release archive source file missing: {source_path}")
+            arcname = Path(root_name) / relative_name
+            zip_handle.write(source_path, arcname.as_posix())
+    return str(archive_path.resolve())
+
+
 def copy_if_exists(source: Path, destination: Path) -> bool:
     if not source.exists():
         return False
@@ -1189,34 +1212,56 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     sample_yaml_path = output_dir / "player_yaml" / "bg3_trials_test.yaml"
     write_text(sample_yaml_path, render_sample_yaml(config, unlock_catalog))
     artifacts.append({"kind": "sample_yaml", "path": str(sample_yaml_path.resolve())})
+    release_bundle_path = output_dir / "release" / f"{slugify_filename(config['project_name'])}-test-bundle.zip"
 
     instructions = textwrap.dedent(
-        f"""
+        """
         Archipelago BG3 Trials test bundle
 
-        Files generated:
-        - Patched AP world: {apworld_path}
-        - Patched Archipelago mod (unpacked): {staged_archipelago_mod_dir}
-        - Patched Archipelago mod (.pak): {archipelago_pak_path}
-        - Patched Trials of Tav / CombatMod (.pak): {output_dir / "bg3_mods" / "CombatMod.pak"}
-        - Trials bridge (unpacked): {staged_bridge_dir}
-        - Trials bridge (.pak): {compat_pak_path}
-        - Sample player yaml: {sample_yaml_path}
+        This archive contains the files needed for public testing:
+        - bg3.apworld
+        - CombatMod.pak
+        - Archipelago_9d8340ef-8f94-1397-4634-3297a02800d5.pak
+        - ArchipelagoTrials.pak
+        - bg3_trials_test.yaml
 
-        Expected install targets:
-        - Put bg3.apworld into your Archipelago worlds/custom_worlds folder.
-        - Put the BG3 .pak files into %LOCALAPPDATA%\\Larian Studios\\Baldur's Gate 3\\Mods
+        Brief setup:
+        1. Put bg3.apworld into your Archipelago custom_worlds folder.
+        2. Put the three .pak files into your BG3 Mods folder.
+        3. In BG3 Mod Manager, use this load order:
+           Trials of Tav - Reloaded
+           Archipelago
+           Archipelago Trials Bridge
+        4. Save load order, export to game, then launch BG3.
 
-        Divine detection:
-        - Divine found: {"yes" if divine_info["found"] else "no"}
-        - Divine source: {divine_info["source"] or "not found"}
-        - Divine path: {divine_info["path"] or "not found"}
-        - CombatMod source found: {"yes" if combatmod_info["found"] else "no"}
-        - CombatMod source: {combatmod_info["source"] or "not found"}
-        - CombatMod path: {combatmod_info["path"] or "not found"}
+        For full instructions, troubleshooting, and current notes, read the repository README on GitHub.
         """
     ).strip()
-    write_text(output_dir / "INSTALL.txt", instructions)
+    install_path = output_dir / "INSTALL.txt"
+    write_text(install_path, instructions)
+
+    release_bundle_archive = None
+    release_bundle_missing = []
+    release_bundle_candidates = [
+        (apworld_path, "bg3.apworld"),
+        (output_dir / "bg3_mods" / "CombatMod.pak", "CombatMod.pak"),
+        (archipelago_pak_path, archipelago_pak_path.name),
+        (compat_pak_path, compat_pak_path.name),
+        (install_path, "INSTALL.txt"),
+        (sample_yaml_path, sample_yaml_path.name),
+    ]
+    for source_path, relative_name in release_bundle_candidates:
+        if not source_path.exists() and relative_name in {
+            "bg3.apworld",
+            "CombatMod.pak",
+            archipelago_pak_path.name,
+            compat_pak_path.name,
+        }:
+            release_bundle_missing.append(relative_name)
+
+    if not release_bundle_missing:
+        release_bundle_archive = build_release_archive(config, release_bundle_path, release_bundle_candidates)
+        artifacts.append({"kind": "release_zip", "path": release_bundle_archive})
 
     manifest = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -1224,6 +1269,11 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         "divine": divine_info,
         "combatmod": combatmod_info,
         "artifacts": artifacts,
+        "release_bundle": {
+            "created": release_bundle_archive is not None,
+            "path": release_bundle_archive or str(release_bundle_path.resolve()),
+            "missing_required_files": release_bundle_missing,
+        },
         "copied_required_mods": copied_required_mods,
         "missing_required_mods": missing_required_mods,
     }
