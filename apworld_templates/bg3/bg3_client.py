@@ -11,8 +11,7 @@ import typing
 from typing import Any, Dict
 
 from .items import AP_ITEM_TO_BG3_ID, IS_DUPEABLE
-from .locations import BG3_LOCATION_TO_AP_LOCATIONS, LOCATION_NAME_TO_ID
-from .trials_data import shop_location_name
+from .trials_data import location_id_for_token, shop_location_id
 from .world import BG3World
 
 import ModuleUpdate
@@ -49,6 +48,8 @@ class BG3Context(CommonContext):
     se_bg3 = ""
     comm_file_sent_items = "ap_in.json"
     comm_file_locations_checked = "ap_out.json"
+    comm_file_deathlink_in = "ap_deathlink_in.json"
+    comm_file_deathlink_out = "ap_deathlink_out.json"
     sync_option = "ap_options.json"
     shop_icon_blue = "ap_trials_icon_blue_001"
     shop_icon_color = "ap_trials_icon_color_001"
@@ -57,6 +58,7 @@ class BG3Context(CommonContext):
         super().__init__(server_address, password)
         self.syncing = False
         self.slot_data_cache: dict[str, Any] = {}
+        self.incoming_deathlink_counter = 0
 
         game_options = BG3World.settings
         if "localappdata" in os.environ:
@@ -80,6 +82,8 @@ class BG3Context(CommonContext):
 
         self._ensure_json_file(self.comm_file_sent_items)
         self._ensure_json_file(self.comm_file_locations_checked)
+        self._ensure_json_file(self.comm_file_deathlink_in)
+        self._ensure_json_file(self.comm_file_deathlink_out)
         self._deactivate_bridge_state(clear_files=True)
 
     def _file_path(self, file_name: str) -> str:
@@ -93,6 +97,9 @@ class BG3Context(CommonContext):
 
     def _shop_icon_key(self, is_local_item: bool) -> str:
         return self.shop_icon_blue if is_local_item else self.shop_icon_color
+
+    def _death_link_enabled(self) -> bool:
+        return bool(self.slot_data_cache.get("death_link", False))
 
     def _load_json(self, file_name: str, default_value: Any) -> Any:
         path = self._file_path(file_name)
@@ -113,6 +120,8 @@ class BG3Context(CommonContext):
         if clear_files:
             self._write_json(self.comm_file_sent_items, [])
             self._write_json(self.comm_file_locations_checked, [])
+            self._write_json(self.comm_file_deathlink_in, [])
+            self._write_json(self.comm_file_deathlink_out, [])
 
         self._write_json(
             self.sync_option,
@@ -134,49 +143,79 @@ class BG3Context(CommonContext):
 
         self._write_json(self.comm_file_sent_items, [])
         self._write_json(self.comm_file_locations_checked, [])
+        self._write_json(self.comm_file_deathlink_in, [])
+        self._write_json(self.comm_file_deathlink_out, [])
 
     def _shop_location_ids(self) -> list[int]:
-        location_ids: list[int] = []
-        for index, _unlock_id in enumerate(self.slot_data_cache.get("shop_check_unlock_ids", []), start=1):
-            location_name = shop_location_name(index)
-            location_id = LOCATION_NAME_TO_ID.get(location_name)
-            if location_id is not None:
-                location_ids.append(location_id)
-        return location_ids
+        return [
+            shop_location_id(index)
+            for index, _unlock_id in enumerate(self.slot_data_cache.get("shop_check_unlock_ids", []), start=1)
+        ]
 
-    def _build_shop_display(self) -> list[dict[str, Any]]:
-        display_entries: list[dict[str, Any]] = []
-        for index, location_id in enumerate(self._shop_location_ids(), start=1):
+    def _build_sorted_shop_entries(self) -> list[dict[str, Any]]:
+        sorted_entries: list[dict[str, Any]] = []
+        unlock_ids = list(self.slot_data_cache.get("shop_check_unlock_ids", []))
+        costs = list(self.slot_data_cache.get("shop_check_costs", []))
+
+        for token_index, location_id in enumerate(self._shop_location_ids(), start=1):
             info = self.locations_info.get(location_id)
+            unlock_id = unlock_ids[token_index - 1] if token_index - 1 < len(unlock_ids) else ""
+            cost = costs[token_index - 1] if token_index - 1 < len(costs) else 0
             if not info:
-                display_entries.append({})
+                sorted_entries.append(
+                    {
+                        "token_index": token_index,
+                        "unlock_id": unlock_id,
+                        "cost": cost,
+                        "display": {},
+                        "has_info": False,
+                    }
+                )
                 continue
 
             item_name = self.item_names.lookup_in_slot(info.item, info.player)
             player_name = self.player_names.get(info.player, f"Player {info.player}")
             is_local_item = info.player == self.slot
-            display_entries.append(
+            sorted_entries.append(
                 {
-                    "index": index,
-                    "item_name": item_name,
-                    "player_name": player_name,
-                    "is_local_item": is_local_item,
-                    "icon_key": self._shop_icon_key(is_local_item),
-                    "bg3_item_id": AP_ITEM_TO_BG3_ID.get(item_name, ""),
-                    "location_name": self.location_names.lookup_in_slot(location_id, self.slot),
-                    "display_name": f"{item_name} -> {player_name}",
+                    "token_index": token_index,
+                    "unlock_id": unlock_id,
+                    "cost": cost,
+                    "has_info": True,
+                    "display": {
+                        "token_index": token_index,
+                        "item_name": item_name,
+                        "player_name": player_name,
+                        "is_local_item": is_local_item,
+                        "icon_key": self._shop_icon_key(is_local_item),
+                        "bg3_item_id": AP_ITEM_TO_BG3_ID.get(item_name, ""),
+                        "location_name": self.location_names.lookup_in_slot(location_id, self.slot),
+                        "display_name": f"{item_name} -> {player_name}",
+                    },
                 }
             )
-        return display_entries
+        sorted_entries.sort(
+            key=lambda entry: (
+                1 if not entry["has_info"] else 0,
+                str(entry["display"].get("player_name", "")).casefold(),
+                int(entry["cost"] or 0),
+                str(entry["display"].get("item_name", "")).casefold(),
+                int(entry["token_index"]),
+            )
+        )
+        return sorted_entries
 
     def _write_options_file(self, active_connection: bool = True) -> None:
         if not self.slot_data_cache and active_connection:
             return
 
         payload = dict(self.slot_data_cache)
+        sorted_shop_entries = self._build_sorted_shop_entries()
+        payload["shop_check_unlock_ids"] = [entry["unlock_id"] for entry in sorted_shop_entries]
+        payload["shop_check_costs"] = [entry["cost"] for entry in sorted_shop_entries]
         payload["seed_name"] = self.seed_name or ""
         payload["active_connection"] = active_connection
-        payload["shop_display"] = self._build_shop_display()
+        payload["shop_display"] = [entry["display"] for entry in sorted_shop_entries]
         self._write_json(self.sync_option, payload)
 
     def _request_shop_scouts(self) -> None:
@@ -217,6 +256,10 @@ class BG3Context(CommonContext):
             self._write_options_file(active_connection=True)
             self._request_shop_scouts()
             self._write_json(self.comm_file_sent_items, _encode_received_items(self))
+            asyncio.create_task(
+                self.update_death_link(self._death_link_enabled()),
+                name="BG3DeathLinkConnected",
+            )
 
         if cmd == "RoomInfo":
             self.seed_name = args["seed_name"]
@@ -229,7 +272,29 @@ class BG3Context(CommonContext):
         if cmd == "LocationInfo":
             self._write_options_file(active_connection=True)
 
+    def on_deathlink(self, data: dict, text: str = "") -> None:
+        try:
+            super().on_deathlink(data, text=text)
+        except TypeError:
+            super().on_deathlink(data)
+        self.incoming_deathlink_counter += 1
+
+        pending = self._load_json(self.comm_file_deathlink_in, [])
+        if not isinstance(pending, list):
+            pending = []
+
+        pending.append(
+            {
+                "id": self.incoming_deathlink_counter,
+                "time": data.get("time"),
+                "source": data.get("source", ""),
+                "cause": data.get("cause", "") or text,
+            }
+        )
+        self._write_json(self.comm_file_deathlink_in, pending)
+
     async def shutdown(self):
+        await self.update_death_link(False)
         self._deactivate_bridge_state(clear_files=True)
         await super().shutdown()
 
@@ -289,23 +354,45 @@ async def game_watcher(ctx: BG3Context):
                     file_handle.write("[]")
 
             for token in checked_tokens:
-                if token not in BG3_LOCATION_TO_AP_LOCATIONS:
+                resolved_location = location_id_for_token(
+                    token,
+                    clear_count=len(ctx.slot_data_cache.get("clear_thresholds", [])),
+                    kill_count=len(ctx.slot_data_cache.get("kill_thresholds", [])),
+                    perfect_count=len(ctx.slot_data_cache.get("perfect_thresholds", [])),
+                    roguescore_count=len(ctx.slot_data_cache.get("roguescore_thresholds", [])),
+                    shop_count=len(ctx.slot_data_cache.get("shop_check_unlock_ids", [])),
+                )
+                if resolved_location == "Victory":
+                    victory = True
                     continue
-
-                for ap_location in BG3_LOCATION_TO_AP_LOCATIONS[token]:
-                    if ap_location == "Victory":
-                        victory = True
-                        continue
-
-                    location_id = LOCATION_NAME_TO_ID.get(ap_location)
-                    if location_id is None:
-                        continue
-                    if location_id not in ctx.checked_locations:
-                        sending.append(location_id)
-                        ctx.checked_locations.add(location_id)
+                if resolved_location is None:
+                    continue
+                if resolved_location not in ctx.checked_locations:
+                    sending.append(resolved_location)
+                    ctx.checked_locations.add(resolved_location)
 
             if sending:
                 await ctx.send_msgs([{"cmd": "LocationChecks", "locations": sending}])
+
+            deathlink_events = ctx._load_json(ctx.comm_file_deathlink_out, [])
+            if not isinstance(deathlink_events, list):
+                deathlink_events = []
+
+            remaining_deathlink_events: list[dict[str, Any]] = []
+            if deathlink_events and ctx._death_link_enabled():
+                for deathlink_event in deathlink_events:
+                    if not isinstance(deathlink_event, dict):
+                        continue
+
+                    death_text = str(deathlink_event.get("text", "") or "suffered a Trials defeat.")
+                    try:
+                        await ctx.send_death(death_text)
+                    except Exception as err:
+                        logger.error("Exception while sending DeathLink: %s", err)
+                        remaining_deathlink_events.append(deathlink_event)
+
+            if deathlink_events:
+                ctx._write_json(ctx.comm_file_deathlink_out, remaining_deathlink_events)
 
             if victory and not ctx.finished_game:
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])

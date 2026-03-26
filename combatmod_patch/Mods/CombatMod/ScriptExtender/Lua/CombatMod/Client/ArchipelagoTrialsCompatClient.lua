@@ -295,34 +295,59 @@ end
 
 local function shop_unlock_sort_key(unlock)
     if unlock and unlock.Id == GOAL_UNLOCK_ID then
-        return 0, 0, tostring(unlock.Name or "")
+        return 0, "", 0, tostring(unlock.Name or ""), 0
     end
 
-    local ap_index = nil
-    if unlock and unlock.Id then
-        ap_index = tonumber(string.match(tostring(unlock.Id), "^APCHECK::(%d+)::"))
-    end
-    if ap_index then
-        return 1, ap_index, tostring(unlock.Name or "")
+    if unlock and unlock.Id and string.match(tostring(unlock.Id), "^APCHECK::") then
+        return 1,
+            tostring(unlock.SortPlayerName or ""):lower(),
+            tonumber(unlock.SortPrice or unlock.Cost or 0) or 0,
+            tostring(unlock.SortItemName or unlock.Name or ""),
+            tonumber(unlock.SortTokenIndex or 0) or 0
     end
 
-    return 2, 0, tostring(unlock.Name or "")
+    return 2, "", 0, tostring(unlock.Name or ""), 0
 end
 
 
 local function sort_unlocks(unlocks)
     table.sort(unlocks, function(a, b)
-        local ag, ai, an = shop_unlock_sort_key(a)
-        local bg, bi, bn = shop_unlock_sort_key(b)
+        local ag, ap, apr, an, at = shop_unlock_sort_key(a)
+        local bg, bp, bpr, bn, bt = shop_unlock_sort_key(b)
         if ag ~= bg then
             return ag < bg
         end
-        if ai ~= bi then
-            return ai < bi
+        if ap ~= bp then
+            return ap < bp
         end
-        return an < bn
+        if apr ~= bpr then
+            return apr < bpr
+        end
+        if an ~= bn then
+            return an < bn
+        end
+        return at < bt
     end)
     return unlocks
+end
+
+
+local function is_visible_ap_unlock(unlock)
+    if not unlock or not unlock.Id then
+        return false
+    end
+
+    local unlock_id = tostring(unlock.Id)
+    local is_ap_entry = unlock_id == GOAL_UNLOCK_ID or string.match(unlock_id, "^APCHECK::") ~= nil
+    if not is_ap_entry then
+        return false
+    end
+
+    if unlock.Amount ~= nil and tonumber(unlock.Bought or 0) >= tonumber(unlock.Amount or 0) then
+        return false
+    end
+
+    return true
 end
 
 
@@ -497,7 +522,7 @@ local function patch_unlock_ui()
         end, "StateChange")
 
         local function rebuild(state)
-            local unlocks = sort_unlocks(table.values(state.Unlocks or {}))
+            local unlocks = sort_unlocks(table.filter(table.values(state.Unlocks or {}), is_visible_ap_unlock))
             if table.size(unlocks) == 0 then
                 return
             end

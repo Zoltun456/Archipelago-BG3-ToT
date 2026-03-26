@@ -37,6 +37,10 @@ After setting the order, save and export it to the game before launching.
 
 ### Key Options
 
+- `death_link`
+  - Enables Archipelago DeathLink for this slot.
+- `death_link_trigger`
+  - Choose whether local DeathLinks send on a full party wipe, any party member death, or any party member down.
 - `clear_check_count`, `kill_check_count`, `perfect_check_count`, `roguescore_check_count`
   - Total number of checks available from each activity group.
 - `*_check_interval`
@@ -61,6 +65,14 @@ Instead:
 3. The reward is granted only when that AP item is received.
 
 `NG+ / Quick Start` remains a normal local shop unlock.
+
+### DeathLink Behavior
+
+If DeathLink is enabled:
+
+1. Local Trials deaths send a DeathLink based on the selected trigger mode.
+2. Received DeathLinks wipe the active party.
+3. The player then reloads their most recent save as normal.
 
 ### World Name
 

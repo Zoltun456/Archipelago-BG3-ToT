@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from Options import Choice, OptionGroup, OptionSet, PerGameCommonOptions, Range
+from Options import Choice, DeathLink, OptionGroup, OptionSet, PerGameCommonOptions, Range
 
 from .trials_data import (
     MAX_CLEAR_CHECKS,
@@ -61,7 +61,7 @@ class ClearCheckCount(Range):
     display_name = "Clear Check Count"
     range_start = 0
     range_end = MAX_CLEAR_CHECKS
-    default = 10
+    default = 20
 
 
 class ClearCheckInterval(Range):
@@ -83,7 +83,7 @@ class KillCheckCount(Range):
     display_name = "Kill Check Count"
     range_start = 0
     range_end = MAX_KILL_CHECKS
-    default = 10
+    default = 20
 
 
 class KillCheckInterval(Range):
@@ -94,7 +94,7 @@ class KillCheckInterval(Range):
     display_name = "Kill Check Interval"
     range_start = 1
     range_end = 50
-    default = 10
+    default = 5
 
 
 class PerfectCheckCount(Range):
@@ -152,7 +152,7 @@ class ShopCheckCount(Range):
     display_name = "Shop Check Count"
     range_start = 0
     range_end = len(UNLOCK_ID_ORDER)
-    default = len(UNLOCK_ID_ORDER)
+    default = min(50, len(UNLOCK_ID_ORDER))
 
 
 class ShopPriceMinimum(Range):
@@ -165,7 +165,7 @@ class ShopPriceMinimum(Range):
     display_name = "Shop Price Minimum"
     range_start = 10
     range_end = 1000
-    default = 50
+    default = 30
 
 
 class ShopPriceMaximum(Range):
@@ -178,7 +178,25 @@ class ShopPriceMaximum(Range):
     display_name = "Shop Price Maximum"
     range_start = 10
     range_end = 1000
-    default = 300
+    default = 250
+
+
+class DeathLinkTrigger(Choice):
+    """
+    Chooses what local Trials death condition sends a DeathLink.
+
+    Full Party Wipe: Sends when every active party member is dead or downed.
+    Any Party Kill: Sends when any active party member fully dies.
+    Any Party Downed: Sends when any active party member is downed.
+    """
+
+    display_name = "DeathLink Trigger"
+
+    option_full_party_wipe = 0
+    option_any_party_kill = 1
+    option_any_party_downed = 2
+
+    default = option_full_party_wipe
 
 
 class SyncMethod(Choice):
@@ -191,7 +209,7 @@ class SyncMethod(Choice):
 
     display_name = "Sync Method"
 
-    option_scroll_tav = 0
+    # option_scroll_tav = 0
     option_any_action_tav = 1
 
     default = option_any_action_tav
@@ -205,7 +223,7 @@ class TrapsPercentage(Range):
     display_name = "Trap Chance"
     range_start = 0
     range_end = 100
-    default = 15
+    default = 20
 
 
 class EnabledTraps(OptionSet):
@@ -217,10 +235,14 @@ class EnabledTraps(OptionSet):
 
     valid_keys = ["Bleeding", "Stun", "Confusion", "Sussur", "Clown", "Overburdened", "Monster"]
     display_name = "Enabled Trap List"
-    default = {"Bleeding", "Stun", "Confusion"}
+    default = {"Bleeding", "Stun", "Confusion", "Sussur", "Clown", "Overburdened"}
 
 
 bg3_option_groups = [
+    OptionGroup("Game Options", [
+        DeathLink,
+        DeathLinkTrigger,
+    ]),
     OptionGroup("Goals", [
         Goal,
         GoalClearTarget,
@@ -251,6 +273,8 @@ bg3_option_groups = [
 
 @dataclass
 class BG3Options(PerGameCommonOptions):
+    death_link: DeathLink
+    death_link_trigger: DeathLinkTrigger
     goal: Goal
     goal_clear_target: GoalClearTarget
     goal_rogue_score_target: GoalRogueScoreTarget

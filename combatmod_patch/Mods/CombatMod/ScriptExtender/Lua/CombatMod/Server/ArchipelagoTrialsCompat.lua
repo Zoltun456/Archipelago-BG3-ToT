@@ -1,11 +1,16 @@
 local AP_OUT_FILE = "ap_out.json"
 local AP_IN_FILE = "ap_in.json"
 local AP_OPTIONS_FILE = "ap_options.json"
+local AP_DEATHLINK_IN_FILE = "ap_deathlink_in.json"
+local AP_DEATHLINK_OUT_FILE = "ap_deathlink_out.json"
 local AP_SHOP_DEBUG_FILE = "ap_shop_debug.json"
 
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
 local GOAL_REACH_ROGUESCORE = 2
+local DEATHLINK_TRIGGER_FULL_PARTY_WIPE = 0
+local DEATHLINK_TRIGGER_ANY_PARTY_KILL = 1
+local DEATHLINK_TRIGGER_ANY_PARTY_DOWNED = 2
 local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_COST = 2000
@@ -16,7 +21,10 @@ Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.
     kills = 0,
     received_items = {},
     granted_unlocks = {},
+    shop_unlocks = {},
     goal_completed = false,
+    deathlink_out_counter = 0,
+    deathlink_suppress_local = false,
     seed_name = "",
 }
 
@@ -31,6 +39,8 @@ local compat = {
     original_templates_by_id = {},
     original_template_order = {},
     granted_unlock_session_init = {},
+    deathlink_events_ready = false,
+    deathlink_party_wipe_active = false,
 }
 
 local emit_threshold_tokens
@@ -103,12 +113,18 @@ local function get_state()
     PersistentVars.ArchipelagoTrialsCompat = state
     state.received_items = state.received_items or {}
     state.granted_unlocks = state.granted_unlocks or {}
+    state.shop_unlocks = state.shop_unlocks or {}
     if state.goal_completed == nil then
         state.goal_completed = false
+    end
+    if state.deathlink_suppress_local == nil then
+        state.deathlink_suppress_local = false
     end
     state.scenario_clears = tonumber(state.scenario_clears or 0)
     state.perfect_clears = tonumber(state.perfect_clears or 0)
     state.kills = tonumber(state.kills or 0)
+    state.deathlink_out_counter = tonumber(state.deathlink_out_counter or 0)
+    state.deathlink_suppress_local = state.deathlink_suppress_local == true
     state.seed_name = tostring(state.seed_name or "")
     return state
 end
@@ -124,6 +140,8 @@ local function get_options()
     options.shop_check_costs = options.shop_check_costs or {}
     options.shop_display = options.shop_display or {}
     options.active_connection = options.active_connection == true
+    options.death_link = options.death_link == true or tonumber(options.death_link or 0) == 1
+    options.death_link_trigger = tonumber(options.death_link_trigger or DEATHLINK_TRIGGER_FULL_PARTY_WIPE)
     options.goal = tonumber(options.goal or GOAL_BUY_NG_PLUS)
     options.goal_clear_target = tonumber(options.goal_clear_target or 0)
     options.goal_rogue_score_target = tonumber(options.goal_rogue_score_target or 0)
@@ -181,10 +199,16 @@ local function refresh_seed_state()
     state.kills = 0
     state.received_items = {}
     state.granted_unlocks = {}
+    state.shop_unlocks = {}
     state.goal_completed = false
+    state.deathlink_out_counter = 0
+    state.deathlink_suppress_local = false
     compat.granted_unlock_session_init = {}
+    compat.deathlink_party_wipe_active = false
     reset_ap_runtime_unlock_state()
     save_json_array(AP_OUT_FILE, {})
+    save_json_array(AP_DEATHLINK_IN_FILE, {})
+    save_json_array(AP_DEATHLINK_OUT_FILE, {})
     return true
 end
 
@@ -248,6 +272,218 @@ end
 
 local function current_roguescore()
     return tonumber(PersistentVars.RogueScore or 0)
+end
+
+
+local function is_deathlink_active()
+    local options = get_options()
+    return options.active_connection and options.death_link and tostring(options.seed_name or "") ~= ""
+end
+
+
+local function get_active_party_members()
+    local members = {}
+    local seen = {}
+
+    local function append_member(character)
+        character = tostring(character or "")
+        if character == "" or seen[character] then
+            return
+        end
+        if Osi.IsCharacter(character) ~= 1 then
+            return
+        end
+        if not GC.IsPlayable(character) then
+            return
+        end
+        if Osi.CanJoinCombat(character) ~= 1 then
+            return
+        end
+
+        seen[character] = true
+        table.insert(members, character)
+    end
+
+    for _, character in ipairs(GU.DB.GetPlayers() or {}) do
+        append_member(character)
+    end
+
+    if #members == 0 then
+        for _, character in ipairs(GU.DB.GetAvatars() or {}) do
+            append_member(character)
+        end
+    end
+
+    return members
+end
+
+
+local function is_character_downed(character)
+    if character == nil or character == "" or Osi.IsCharacter(character) ~= 1 then
+        return false
+    end
+
+    local entity = Ext.Entity.Get(character)
+    if entity and entity.Downed ~= nil then
+        return true
+    end
+
+    return Osi.HasActiveStatus(character, "DOWNED") == 1 or Osi.HasActiveStatus(character, "DYING") == 1
+end
+
+
+local function is_character_incapacitated(character)
+    return Osi.IsDead(character) == 1 or is_character_downed(character)
+end
+
+
+local function is_party_wiped()
+    local party_members = get_active_party_members()
+    if #party_members == 0 then
+        return false
+    end
+
+    for _, character in ipairs(party_members) do
+        if not is_character_incapacitated(character) then
+            return false
+        end
+    end
+
+    return true
+end
+
+
+local function update_party_wipe_state()
+    compat.deathlink_party_wipe_active = is_party_wiped()
+    return compat.deathlink_party_wipe_active
+end
+
+
+local function should_track_deathlink_character(character)
+    character = tostring(character or "")
+    if character == "" or Osi.IsCharacter(character) ~= 1 then
+        return false
+    end
+    if not GC.IsPlayable(character) then
+        return false
+    end
+    return Osi.CanJoinCombat(character) == 1
+end
+
+
+local function queue_outgoing_deathlink(text)
+    if not is_deathlink_active() then
+        return false
+    end
+
+    refresh_seed_state()
+    local state = get_state()
+    if state.deathlink_suppress_local then
+        return false
+    end
+
+    local queue = load_json_array(AP_DEATHLINK_OUT_FILE)
+    state.deathlink_out_counter = state.deathlink_out_counter + 1
+    table.insert(queue, {
+        id = state.deathlink_out_counter,
+        text = tostring(text or "suffered a Trials defeat."),
+        seed_name = tostring(get_options().seed_name or ""),
+    })
+    save_json_array(AP_DEATHLINK_OUT_FILE, queue)
+    return true
+end
+
+
+local function maybe_queue_party_wipe_deathlink()
+    if not is_deathlink_active() then
+        return false
+    end
+
+    if compat.deathlink_party_wipe_active then
+        return false
+    end
+
+    if not is_party_wiped() then
+        compat.deathlink_party_wipe_active = false
+        return false
+    end
+
+    compat.deathlink_party_wipe_active = true
+    return queue_outgoing_deathlink("suffered a full party wipe in Trials of Tav.")
+end
+
+
+local function kill_party_for_deathlink(event)
+    local state = get_state()
+    state.deathlink_suppress_local = true
+
+    local source = tostring(event and event.source or "")
+    local party_members = get_active_party_members()
+    for _, character in ipairs(party_members) do
+        if Osi.IsDead(character) ~= 1 then
+            Osi.Die(character, 0, C.NullGuid, 0, 0)
+        end
+    end
+
+    compat.deathlink_party_wipe_active = true
+
+    if source ~= "" then
+        Player.Notify(__("DeathLink received from %s. Reload your latest save.", source), true)
+    else
+        Player.Notify(__("DeathLink received. Reload your latest save."), true)
+    end
+end
+
+
+local function process_incoming_deathlinks()
+    if not is_deathlink_active() then
+        return
+    end
+
+    refresh_seed_state()
+    local queue = load_json_array(AP_DEATHLINK_IN_FILE)
+    if #queue == 0 then
+        return
+    end
+
+    kill_party_for_deathlink(queue[#queue])
+    save_json_array(AP_DEATHLINK_IN_FILE, {})
+end
+
+
+local function on_deathlink_character_died(character)
+    if not should_track_deathlink_character(character) then
+        return
+    end
+
+    local options = get_options()
+    if options.death_link_trigger == DEATHLINK_TRIGGER_ANY_PARTY_KILL then
+        queue_outgoing_deathlink("lost a party member in Trials of Tav.")
+    elseif options.death_link_trigger == DEATHLINK_TRIGGER_FULL_PARTY_WIPE then
+        maybe_queue_party_wipe_deathlink()
+    end
+end
+
+
+local function on_deathlink_character_downed(character, is_downed)
+    if not should_track_deathlink_character(character) then
+        return
+    end
+
+    local is_now_downed = is_downed == true
+        or tonumber(is_downed or 0) == 1
+        or tostring(is_downed or "") == "1"
+    if not is_now_downed then
+        update_party_wipe_state()
+        return
+    end
+
+    local options = get_options()
+    if options.death_link_trigger == DEATHLINK_TRIGGER_ANY_PARTY_DOWNED then
+        queue_outgoing_deathlink("had a party member downed in Trials of Tav.")
+    elseif options.death_link_trigger == DEATHLINK_TRIGGER_FULL_PARTY_WIPE then
+        maybe_queue_party_wipe_deathlink()
+    end
 end
 
 
@@ -373,6 +609,22 @@ local function get_granted_unlock_record(unlock_id)
             BoughtBy = {},
         }
         state.granted_unlocks[unlock_id] = record
+    end
+    record.Bought = tonumber(record.Bought or 0)
+    record.BoughtBy = record.BoughtBy or {}
+    return record
+end
+
+
+local function get_shop_unlock_record(unlock_id)
+    local state = get_state()
+    local record = state.shop_unlocks[unlock_id]
+    if not record then
+        record = {
+            Bought = 0,
+            BoughtBy = {},
+        }
+        state.shop_unlocks[unlock_id] = record
     end
     record.Bought = tonumber(record.Bought or 0)
     record.BoughtBy = record.BoughtBy or {}
@@ -547,8 +799,9 @@ end
 
 local function make_shop_check_unlock(template, index, options)
     local shop_preview = table_get(options.shop_display, index, {})
+    local token_index = tonumber(table_get(shop_preview, "token_index", index)) or index
     local unlock = shallow_copy(template)
-    unlock.Id = shop_check_id(template.Id, index)
+    unlock.Id = shop_check_id(template.Id, token_index)
     unlock.Name = table_get(shop_preview, "display_name", "AP Check: " .. tostring(template.Name or template.Id))
     unlock.FallbackIcon = template.Icon
     local randomized_cost = tonumber(table_get(options.shop_check_costs, index, unlock.Cost))
@@ -574,14 +827,22 @@ local function make_shop_check_unlock(template, index, options)
     unlock.Character = false
     unlock.Persistent = false
     unlock.Amount = 1
-    unlock.Bought = 0
-    unlock.BoughtBy = {}
+    local saved_record = get_shop_unlock_record(unlock.Id)
+    unlock.Bought = tonumber(saved_record.Bought or 0)
+    unlock.BoughtBy = shallow_copy(saved_record.BoughtBy or {})
     unlock.HideStock = true
     unlock.Requirement = nil
+    unlock.SortPlayerName = tostring(table_get(shop_preview, "player_name", ""))
+    unlock.SortPrice = tonumber(unlock.Cost or 0) or 0
+    unlock.SortItemName = tostring(table_get(shop_preview, "item_name", unlock.Name or ""))
+    unlock.SortTokenIndex = token_index
     unlock.OnInit = function() end
     unlock.OnReapply = function() end
-    unlock.OnBuy = function(_self, _character)
-        append_unique_token(string.format("TOT-SHOP-%03d", index))
+    unlock.OnBuy = function(self, _character)
+        append_unique_token(string.format("TOT-SHOP-%03d", token_index))
+        local saved_purchase = get_shop_unlock_record(self.Id)
+        saved_purchase.Bought = tonumber(self.Bought or 0)
+        saved_purchase.BoughtBy = shallow_copy(self.BoughtBy or {})
     end
     return unlock
 end
@@ -735,6 +996,21 @@ local function subscribe_score_events()
 end
 
 
+local function subscribe_deathlink_events()
+    if compat.deathlink_events_ready then
+        return
+    end
+
+    Ext.Osiris.RegisterListener("Died", 1, "after", function(character)
+        on_deathlink_character_died(character)
+    end)
+    Ext.Osiris.RegisterListener("DownedChanged", 2, "after", function(character, is_downed)
+        on_deathlink_character_downed(character, is_downed)
+    end)
+    compat.deathlink_events_ready = true
+end
+
+
 local function ensure_poll_loop()
     if compat.poll_started then
         return
@@ -744,6 +1020,8 @@ local function ensure_poll_loop()
     Interval(1500, function()
         sync_connection_state(false)
         refresh_shop_configuration(false)
+        update_party_wipe_state()
+        process_incoming_deathlinks()
         process_trials_inbox(resolve_reward_character(nil))
     end)
 end
@@ -753,21 +1031,27 @@ local function initialize_archipelago_trials_compat()
     register_shop_patch()
     subscribe_progress_events()
     subscribe_score_events()
+    subscribe_deathlink_events()
     ensure_poll_loop()
     sync_connection_state(true)
     refresh_shop_configuration(true)
     reapply_granted_unlocks()
     record_roguescore(current_roguescore())
+    update_party_wipe_state()
+    process_incoming_deathlinks()
     process_trials_inbox(resolve_reward_character(nil))
 end
 
 
 Event.On("ModInit", initialize_archipelago_trials_compat, true)
 Ext.Events.SessionLoaded:Subscribe(function()
+    get_state().deathlink_suppress_local = false
     sync_connection_state(true)
+    update_party_wipe_state()
     if compat.patch_registered then
         refresh_shop_configuration(true)
         reapply_granted_unlocks()
+        process_incoming_deathlinks()
         process_trials_inbox(resolve_reward_character(nil))
     end
 end)

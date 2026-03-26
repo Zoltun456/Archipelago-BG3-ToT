@@ -258,6 +258,8 @@ description: {sample['description']}
 game: {sample['game']}
 
 {sample['game']}:
+  death_link: {str(bool(sample.get('death_link', False))).lower()}
+  death_link_trigger: {sample.get('death_link_trigger', 'full_party_wipe')}
   goal: {sample['goal']}
   goal_clear_target: {sample['goal_clear_target']}
   goal_rogue_score_target: {sample['goal_rogue_score_target']}

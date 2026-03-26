@@ -138,6 +138,8 @@ Contains the lightweight Archipelago bridge mod source.
 
 Key options that affect balance the most:
 
+- `death_link`
+- `death_link_trigger`
 - `goal`
 - `goal_clear_target`
 - `goal_rogue_score_target`
@@ -152,6 +154,12 @@ Key options that affect balance the most:
 - `enabled_traps`
 
 Shop prices are currently seeded with pure-random values, rounded to multiples of `10`, within the configured min/max range.
+
+DeathLink is optional and off by default. When enabled, received DeathLinks wipe the active party so the player has to reload, and the trigger mode can be set to:
+
+- full party wipe
+- any party member fully killed
+- any party member downed
 
 ## Validation / Troubleshooting
 

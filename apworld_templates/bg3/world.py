@@ -74,7 +74,7 @@ class BG3World(World):
         return items.get_random_filler_item_name(self)
 
     def fill_slot_data(self) -> Mapping[str, Any]:
-        selected_shop_unlock_ids = UNLOCK_ID_ORDER[: self.options.shop_check_count]
+        selected_shop_unlock_ids = UNLOCK_ID_ORDER[: int(self.options.shop_check_count)]
         seed_basis = getattr(self.multiworld, "seed_name", None) or getattr(self.multiworld, "seed", None) or "BG3Trials"
         selected_shop_costs = _randomized_shop_costs(
             seed_basis,
@@ -85,6 +85,8 @@ class BG3World(World):
         )
 
         return {
+            "death_link": bool(self.options.death_link),
+            "death_link_trigger": int(self.options.death_link_trigger),
             "goal": int(self.options.goal),
             "goal_clear_target": int(self.options.goal_clear_target),
             "goal_rogue_score_target": int(self.options.goal_rogue_score_target),

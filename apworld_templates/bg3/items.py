@@ -18,14 +18,14 @@ DUPLICATE_ITEM_FILLERS = [
 ]
 
 CUSTOM_FILLERS = [
-    ["Trials Currency +25", "ToTFiller:Currency:25"],
-    ["Trials Currency +50", "ToTFiller:Currency:50"],
-    ["Trials Currency +100", "ToTFiller:Currency:100"],
-    ["Trials RogueScore +5", "ToTFiller:RogueScore:5"],
-    ["Trials RogueScore +10", "ToTFiller:RogueScore:10"],
-    ["Trials RogueScore +25", "ToTFiller:RogueScore:25"],
-    ["Trials XP +1000", "ToTFiller:Experience:1000"],
-    ["Trials XP +3000", "ToTFiller:Experience:3000"],
+    ["Currency +25", "ToTFiller:Currency:25"],
+    ["Currency +50", "ToTFiller:Currency:50"],
+    ["Currency +100", "ToTFiller:Currency:100"],
+    ["RogueScore +5", "ToTFiller:RogueScore:5"],
+    ["RogueScore +10", "ToTFiller:RogueScore:10"],
+    ["RogueScore +25", "ToTFiller:RogueScore:25"],
+    ["XP +1000", "ToTFiller:Experience:1000"],
+    ["XP +3000", "ToTFiller:Experience:3000"],
 ]
 
 TRAP_OPTIONS = [
@@ -45,7 +45,7 @@ def _build_equipment_fillers() -> list[list[str]]:
     for name, item_uuid, _tier in EQUIPMENT:
         count = name_counts.get(name, 0) + 1
         name_counts[name] = count
-        display_name = f"Trials Drop: {name}"
+        display_name = name
         if count > 1:
             display_name = f"{display_name} #{count}"
         fillers.append([display_name, item_uuid])
@@ -69,7 +69,7 @@ ITEM_TUPLES = []
 for index, unlock in enumerate(UNLOCK_CATALOG, start=1):
     ITEM_TUPLES.append(
         [
-            f"Trials Reward: {unlock['name']}",
+            unlock["name"],
             f"ToTUnlock:{unlock['id']}",
             1000 + index,
             _classification_for_unlock(unlock["id"]),
@@ -94,7 +94,7 @@ ID_TO_ITEM_NAME = {item[2]: item[0] for item in ITEM_TUPLES}
 AP_ITEM_TO_BG3_ID = {item[0]: item[1] for item in ITEM_TUPLES}
 DEFAULT_ITEM_CLASSIFICATIONS = {item[0]: item[3] for item in ITEM_TUPLES}
 IS_DUPEABLE = {item[1]: True for item in DUPLICATE_ITEM_FILLERS + EQUIPMENT_FILLERS}
-UNLOCK_ITEM_NAME_BY_ID = {unlock_id: f"Trials Reward: {name}" for unlock_id, name in UNLOCK_NAME_BY_ID.items()}
+UNLOCK_ITEM_NAME_BY_ID = {unlock_id: name for unlock_id, name in UNLOCK_NAME_BY_ID.items()}
 
 
 class BG3Item(Item):
