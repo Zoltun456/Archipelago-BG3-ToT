@@ -2,7 +2,9 @@ PersistentVars = PersistentVars or {}
 
 local AP_OUT_FILE = "ap_out.json"
 local AP_IN_FILE = "ap_in.json"
+local AP_NOTIFICATION_FILE = "ap_notifications.json"
 local AP_OPTIONS_FILE = "ap_options.json"
+local AP_PENDING_RECEIVED_FILE = "ap_pending_received.json"
 
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
@@ -10,6 +12,8 @@ local GOAL_REACH_ROGUESCORE = 2
 local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_COST = 2000
+local AP_NOTIFICATION_DURATION = 6
+local AP_NOTIFICATION_BUFFER_MS = AP_NOTIFICATION_DURATION * 1000
 
 local shop_state = {
     initialized = false,
@@ -23,6 +27,8 @@ local subscriptions_ready = false
 local roguescore_subscription_ready = false
 local loot_patch_ready = false
 local granted_unlock_session_init = {}
+local ap_notification_buffer = {}
+local pending_received_replay = {}
 
 
 local function shallow_copy(source)
@@ -97,6 +103,124 @@ end
 
 local function save_json_array(path, data)
     Ext.IO.SaveFile(path, Ext.Json.Stringify(data))
+end
+
+
+local function build_lookup(values)
+    local lookup = {}
+    for _, value in ipairs(values or {}) do
+        value = tostring(value or "")
+        if value ~= "" then
+            lookup[value] = true
+        end
+    end
+    return lookup
+end
+
+
+local function clear_pending_received()
+    pending_received_replay = {}
+    save_json_array(AP_PENDING_RECEIVED_FILE, {})
+end
+
+
+local function load_pending_received_replay()
+    pending_received_replay = build_lookup(load_json_array(AP_PENDING_RECEIVED_FILE))
+end
+
+
+local function remember_pending_received(entry)
+    entry = tostring(entry or "")
+    if entry == "" then
+        return
+    end
+
+    local pending = load_json_array(AP_PENDING_RECEIVED_FILE)
+    for _, existing in ipairs(pending) do
+        if existing == entry then
+            return
+        end
+    end
+
+    table.insert(pending, entry)
+    save_json_array(AP_PENDING_RECEIVED_FILE, pending)
+end
+
+
+local function unlock_requires_regrant_on_replay(unlock_id)
+    return unlock_id == "BuyLoot"
+        or unlock_id == "BuyLootRare"
+        or unlock_id == "BuyLootEpic"
+        or unlock_id == "BuyLootLegendary"
+end
+
+
+local function combatmod_notifications_owner_active()
+    return _G and _G.ArchipelagoTrialsCompatNotificationsOwner == true
+end
+
+
+local function notify_player(message, instant)
+    message = tostring(message or "")
+    if message == "" then
+        return
+    end
+
+    if Net and Net.Send and RetryUntil and Defer and U and U.RandomId then
+        local id = U.RandomId("APNotify_")
+        if instant then
+            table.insert(ap_notification_buffer, 1, id)
+        else
+            table.insert(ap_notification_buffer, id)
+        end
+
+        local function remove()
+            for index, value in ipairs(ap_notification_buffer) do
+                if value == id then
+                    table.remove(ap_notification_buffer, index)
+                    break
+                end
+            end
+        end
+
+        RetryUntil(function()
+            return ap_notification_buffer[1] == id
+        end, { retries = 120, interval = 100 }):After(function()
+            Net.Send("PlayerNotify", { message })
+            Net.Send("Notification", { Duration = AP_NOTIFICATION_DURATION, Text = message })
+            Defer(AP_NOTIFICATION_BUFFER_MS, remove)
+        end):Catch(remove)
+        return
+    end
+
+    if Player and Player.Notify then
+        Player.Notify(message, instant == true)
+        return
+    end
+
+    print("[ArchipelagoTrials] " .. message)
+end
+
+
+local function process_ap_notifications()
+    if combatmod_notifications_owner_active() then
+        return
+    end
+
+    local queue = load_json_array(AP_NOTIFICATION_FILE)
+    if #queue == 0 then
+        return
+    end
+
+    for _, entry in ipairs(queue) do
+        if type(entry) == "string" then
+            notify_player(entry)
+        elseif type(entry) == "table" then
+            notify_player(entry.text or entry.message or "")
+        end
+    end
+
+    save_json_array(AP_NOTIFICATION_FILE, {})
 end
 
 
@@ -189,6 +313,7 @@ end
 
 local function reset_comm_files_for_new_seed()
     save_json_array(AP_OUT_FILE, {})
+    clear_pending_received()
 end
 
 
@@ -240,6 +365,8 @@ local function get_options()
         options.goal_unlock_id = configured_goal_unlock_id
     end
     options.sync_method = options.sync_method or 1
+    options.active_connection = options.active_connection == true
+    options.seed_name = tostring(options.seed_name or "")
     return options
 end
 
@@ -682,26 +809,48 @@ end
 
 
 local function process_trials_inbox(character)
+    local options = get_options()
+    if not options.active_connection or tostring(options.seed_name or "") == "" then
+        return
+    end
+
     ensure_seed_initialized()
     apply_shop_configuration()
     local state = get_state()
     local inbox = load_json_array(AP_IN_FILE)
 
     for _, entry in ipairs(inbox) do
-        if not state.received_items[entry] then
+        local should_replay = pending_received_replay[entry] == true
+        if should_replay or not state.received_items[entry] then
+            local granted = false
             if string.sub(entry, 1, 10) == "ToTUnlock:" then
                 local unlock_id = string.match(entry, "^ToTUnlock:([^:]+)")
-                if unlock_id and grant_unlock_reward(unlock_id, character) then
-                    state.received_items[entry] = true
+                if unlock_id then
+                    if should_replay
+                        and state.granted_unlocks[unlock_id]
+                        and not unlock_requires_regrant_on_replay(unlock_id)
+                    then
+                        granted = true
+                    elseif grant_unlock_reward(unlock_id, character) then
+                        granted = true
+                    end
                 end
             elseif string.sub(entry, 1, 10) == "ToTFiller:" then
                 local kind, amount = string.match(entry, "^ToTFiller:([^:]+):([^:]+)")
                 if kind and amount and grant_trials_filler(kind, amount) then
-                    state.received_items[entry] = true
+                    granted = true
                 end
+            end
+
+            if granted then
+                state.received_items[entry] = true
+                remember_pending_received(entry)
+                pending_received_replay[entry] = nil
             end
         end
     end
+
+    process_ap_notifications()
 end
 
 
@@ -778,15 +927,23 @@ end
 local function on_session_loaded()
     get_state()
     ensure_seed_initialized()
+    load_pending_received_replay()
     subscribe_tot_events()
     subscribe_roguescore_events()
     patch_trials_loot()
     apply_shop_configuration()
     reapply_granted_unlocks()
+    process_trials_inbox(resolve_reward_character(nil))
 end
 
 
 Ext.Events.SessionLoaded:Subscribe(on_session_loaded)
+
+Ext.Events.GameStateChanged:Subscribe(function(event)
+    if event.FromState == "Save" and event.ToState == "Running" then
+        clear_pending_received()
+    end
+end)
 
 Ext.Osiris.RegisterListener("CastedSpell", 5, "after", function(_caster, spell, _spellType, _spellElement, _storyActionID)
     if not should_sync_on_spell(spell) then

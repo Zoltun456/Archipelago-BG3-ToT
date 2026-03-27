@@ -23,6 +23,7 @@ Thumbs.db
 .cache/
 dist/
 tmp/
+%TEMP%/
 
 # Logs and local dumps
 *.log

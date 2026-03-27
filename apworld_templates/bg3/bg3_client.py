@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 from itertools import count
 import asyncio
 import json
@@ -48,6 +49,7 @@ class BG3Context(CommonContext):
     se_bg3 = ""
     comm_file_sent_items = "ap_in.json"
     comm_file_locations_checked = "ap_out.json"
+    comm_file_notifications = "ap_notifications.json"
     comm_file_deathlink_in = "ap_deathlink_in.json"
     comm_file_deathlink_out = "ap_deathlink_out.json"
     sync_option = "ap_options.json"
@@ -82,6 +84,7 @@ class BG3Context(CommonContext):
 
         self._ensure_json_file(self.comm_file_sent_items)
         self._ensure_json_file(self.comm_file_locations_checked)
+        self._ensure_json_file(self.comm_file_notifications)
         self._ensure_json_file(self.comm_file_deathlink_in)
         self._ensure_json_file(self.comm_file_deathlink_out)
         self._deactivate_bridge_state(clear_files=True)
@@ -120,6 +123,7 @@ class BG3Context(CommonContext):
         if clear_files:
             self._write_json(self.comm_file_sent_items, [])
             self._write_json(self.comm_file_locations_checked, [])
+            self._write_json(self.comm_file_notifications, [])
             self._write_json(self.comm_file_deathlink_in, [])
             self._write_json(self.comm_file_deathlink_out, [])
 
@@ -143,6 +147,7 @@ class BG3Context(CommonContext):
 
         self._write_json(self.comm_file_sent_items, [])
         self._write_json(self.comm_file_locations_checked, [])
+        self._write_json(self.comm_file_notifications, [])
         self._write_json(self.comm_file_deathlink_in, [])
         self._write_json(self.comm_file_deathlink_out, [])
 
@@ -229,6 +234,13 @@ class BG3Context(CommonContext):
             name="BG3ShopScouts",
         )
 
+    def _append_notification(self, payload: dict[str, Any]) -> None:
+        pending = self._load_json(self.comm_file_notifications, [])
+        if not isinstance(pending, list):
+            pending = []
+        pending.append(payload)
+        self._write_json(self.comm_file_notifications, pending)
+
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
             await super().server_auth(password_requested)
@@ -272,6 +284,25 @@ class BG3Context(CommonContext):
         if cmd == "LocationInfo":
             self._write_options_file(active_connection=True)
 
+    def on_print_json(self, args: dict):
+        super().on_print_json(args)
+
+        if args.get("type") != "ItemSend" or self.slot is None:
+            return
+        if self.is_uninteresting_item_send(args):
+            return
+
+        message_parts = copy.deepcopy(args.get("data", []))
+        message = self.rawjsontotextparser(copy.deepcopy(message_parts)).strip()
+        if message:
+            self._append_notification(
+                {
+                    "text": message,
+                    "segments": _encode_notification_segments(self, message_parts),
+                    "type": args.get("type", ""),
+                }
+            )
+
     def on_deathlink(self, data: dict, text: str = "") -> None:
         try:
             super().on_deathlink(data, text=text)
@@ -297,6 +328,79 @@ class BG3Context(CommonContext):
         await self.update_death_link(False)
         self._deactivate_bridge_state(clear_files=True)
         await super().shutdown()
+
+
+def _color_for_item_flags(flags: int) -> str:
+    if flags == 0:
+        return "cyan"
+    if flags & 0b001:
+        return "plum"
+    if flags & 0b010:
+        return "slateblue"
+    if flags & 0b100:
+        return "salmon"
+    return "cyan"
+
+
+def _color_for_notification_part(ctx: BG3Context, part: dict[str, Any]) -> str:
+    part_type = str(part.get("type", "") or "")
+    if part_type == "color":
+        return str(part.get("color", "") or "")
+    if part_type == "player_id":
+        try:
+            player = int(part.get("text", 0))
+        except (TypeError, ValueError):
+            return "yellow"
+        return "magenta" if ctx.slot_concerns_self(player) else "yellow"
+    if part_type == "player_name":
+        return "yellow"
+    if part_type in {"item_name", "item_id"}:
+        try:
+            flags = int(part.get("flags", 0) or 0)
+        except (TypeError, ValueError):
+            flags = 0
+        return _color_for_item_flags(flags)
+    if part_type in {"location_name", "location_id"}:
+        return "green"
+    if part_type == "entrance_name":
+        return "blue"
+    return str(part.get("color", "") or "")
+
+
+def _text_for_notification_part(ctx: BG3Context, part: dict[str, Any]) -> str:
+    part_type = str(part.get("type", "") or "")
+    raw_text = str(part.get("text", "") or "")
+
+    try:
+        if part_type == "player_id":
+            return ctx.player_names.get(int(raw_text), raw_text)
+        if part_type == "item_id":
+            return ctx.item_names.lookup_in_slot(int(raw_text), int(part.get("player", 0) or 0))
+        if part_type == "location_id":
+            return ctx.location_names.lookup_in_slot(int(raw_text), int(part.get("player", 0) or 0))
+    except (TypeError, ValueError, KeyError):
+        return raw_text
+
+    return raw_text
+
+
+def _encode_notification_segments(ctx: BG3Context, parts: list[Any]) -> list[dict[str, str]]:
+    encoded_segments: list[dict[str, str]] = []
+    for raw_part in parts:
+        if not isinstance(raw_part, dict):
+            continue
+
+        text = _text_for_notification_part(ctx, raw_part)
+        if not text:
+            continue
+
+        segment = {"text": text}
+        color = _color_for_notification_part(ctx, raw_part)
+        if color:
+            segment["color"] = color
+        encoded_segments.append(segment)
+
+    return encoded_segments
 
 
 def _encode_received_items(ctx: BG3Context) -> list[str]:

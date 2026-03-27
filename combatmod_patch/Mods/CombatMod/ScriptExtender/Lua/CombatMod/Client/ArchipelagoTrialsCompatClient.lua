@@ -21,10 +21,200 @@ local AP_ICON_UVS = {
 }
 local binding_cache = {}
 local current_icon_debug_entries = {}
+local AP_NOTIFICATION_DEFAULT_DURATION = 6
+local AP_NOTIFICATION_FADE_DURATION = 2
+local AP_NOTIFICATION_MAX_VISIBLE = 5
+local AP_NOTIFICATION_WINDOW_SIZE = { 1100, 240 }
+local AP_NOTIFICATION_COLORS = {
+    black = { 0.0, 0.0, 0.0, 1.0 },
+    red = { 0.933, 0.0, 0.0, 1.0 },
+    green = { 0.0, 1.0, 0.498, 1.0 },
+    yellow = { 0.98, 0.98, 0.824, 1.0 },
+    blue = { 0.392, 0.584, 0.929, 1.0 },
+    magenta = { 0.933, 0.0, 0.933, 1.0 },
+    cyan = { 0.0, 0.933, 0.933, 1.0 },
+    slateblue = { 0.427, 0.545, 0.909, 1.0 },
+    plum = { 0.686, 0.6, 0.937, 1.0 },
+    salmon = { 0.98, 0.502, 0.447, 1.0 },
+    white = { 1.0, 1.0, 1.0, 1.0 },
+    orange = { 1.0, 0.467, 0.0, 1.0 },
+}
+local ap_notification_window = nil
+local ap_notification_content = nil
+local ap_notification_queue = {}
+local ap_active_notifications = {}
+local ap_notification_tick_hooked = false
 
 
 local function save_json_object(path, data)
     Ext.IO.SaveFile(path, Ext.Json.Stringify(data))
+end
+
+
+local function notification_color(color_name, alpha)
+    local base = AP_NOTIFICATION_COLORS[tostring(color_name or "")] or AP_NOTIFICATION_COLORS.white
+    return {
+        base[1],
+        base[2],
+        base[3],
+        (tonumber(alpha) or 1.0) * (base[4] or 1.0),
+    }
+end
+
+
+local function ensure_ap_notification_window()
+    if ap_notification_window then
+        return ap_notification_window
+    end
+    if not Ext or not Ext.IMGUI or not Ext.IMGUI.NewWindow then
+        return nil
+    end
+
+    ap_notification_window = Ext.IMGUI.NewWindow("Archipelago Notifications")
+    ap_notification_window:SetSize(AP_NOTIFICATION_WINDOW_SIZE)
+    ap_notification_window.Open = true
+    ap_notification_window.Visible = false
+    ap_notification_window.Closeable = false
+    ap_notification_window.NoFocusOnAppearing = true
+
+    pcall(function()
+        ap_notification_window:SetStyle("Alpha", 0.85)
+    end)
+    pcall(function()
+        ap_notification_window:SetStyle("WindowPadding", 24, 14)
+    end)
+    pcall(function()
+        ap_notification_window.NoDecoration = true
+        ap_notification_window.NoSavedSettings = true
+        ap_notification_window.NoMove = true
+        ap_notification_window.NoInputs = true
+        ap_notification_window.AlwaysAutoResize = true
+    end)
+    pcall(function()
+        ap_notification_window:SetPos({ 410, 600 })
+    end)
+
+    return ap_notification_window
+end
+
+
+local function clear_ap_notification_content()
+    if ap_notification_content then
+        ap_notification_content:Destroy()
+        ap_notification_content = nil
+    end
+end
+
+
+local function hide_ap_notification()
+    clear_ap_notification_content()
+    if ap_notification_window then
+        ap_notification_window.Visible = false
+    end
+end
+
+
+local function render_ap_notifications(active_notifications, now)
+    local window = ensure_ap_notification_window()
+    if not window then
+        return
+    end
+
+    clear_ap_notification_content()
+    ap_notification_content = window:AddGroup(U.RandomId())
+
+    for row_index, notification in ipairs(active_notifications or {}) do
+        local row = ap_notification_content:AddGroup(U.RandomId())
+        local fade_alpha = 1.0
+        if now >= (notification.display_until or 0) then
+            local remaining = math.max(0, (notification.remove_at or 0) - now)
+            fade_alpha = math.max(0, math.min(1, remaining / (AP_NOTIFICATION_FADE_DURATION * 1000)))
+        end
+
+        local segments = notification.segments or {}
+        if type(segments) ~= "table" or #segments == 0 then
+            segments = {
+                { text = tostring(notification.text or "") },
+            }
+        end
+
+        for index, segment in ipairs(segments) do
+            local node = row:AddText(tostring(segment.text or ""))
+            node.SameLine = index > 1
+            node:SetColor("Text", notification_color(segment.color, fade_alpha))
+        end
+
+        if row_index < #active_notifications then
+            ap_notification_content:AddDummy(1, 2)
+        end
+    end
+
+    window.Visible = true
+    window.Open = true
+end
+
+
+local function advance_ap_notification_queue()
+    local now = Ext.Utils.MonotonicTime()
+
+    for index = #ap_active_notifications, 1, -1 do
+        if now >= (ap_active_notifications[index].remove_at or 0) then
+            table.remove(ap_active_notifications, index)
+        end
+    end
+
+    while #ap_active_notifications < AP_NOTIFICATION_MAX_VISIBLE and #ap_notification_queue > 0 do
+        local next_notification = table.remove(ap_notification_queue, 1)
+        local duration = tonumber(next_notification.duration or AP_NOTIFICATION_DEFAULT_DURATION)
+            or AP_NOTIFICATION_DEFAULT_DURATION
+        duration = math.max(0.5, duration)
+        next_notification.display_until = now + duration * 1000
+        next_notification.remove_at = next_notification.display_until + AP_NOTIFICATION_FADE_DURATION * 1000
+        table.insert(ap_active_notifications, next_notification)
+    end
+
+    if #ap_active_notifications == 0 then
+        hide_ap_notification()
+        return
+    end
+
+    render_ap_notifications(ap_active_notifications, now)
+end
+
+
+local function queue_ap_notification(payload)
+    if type(payload) ~= "table" then
+        payload = { text = tostring(payload or "") }
+    end
+
+    local text = tostring(payload.text or "")
+    local segments = payload.segments
+    local has_segments = type(segments) == "table" and #segments > 0
+    if text == "" and not has_segments then
+        return
+    end
+
+    table.insert(ap_notification_queue, payload)
+    advance_ap_notification_queue()
+end
+
+
+local function reset_ap_notifications()
+    ap_notification_queue = {}
+    ap_active_notifications = {}
+    hide_ap_notification()
+end
+
+
+local function ensure_ap_notification_tick()
+    if ap_notification_tick_hooked then
+        return
+    end
+
+    Ext.Events.Tick:Subscribe(function()
+        advance_ap_notification_queue()
+    end)
+    ap_notification_tick_hooked = true
 end
 
 
@@ -563,3 +753,13 @@ end
 
 
 patch_unlock_ui()
+ensure_ap_notification_tick()
+
+Net.On("ArchipelagoTrialsNotification", function(event)
+    queue_ap_notification(event.Payload or {})
+end)
+
+Ext.Events.SessionLoaded:Subscribe(function()
+    reset_ap_notifications()
+    patch_unlock_ui()
+end)

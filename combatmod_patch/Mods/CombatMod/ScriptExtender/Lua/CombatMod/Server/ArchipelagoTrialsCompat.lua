@@ -1,8 +1,10 @@
 local AP_OUT_FILE = "ap_out.json"
 local AP_IN_FILE = "ap_in.json"
+local AP_NOTIFICATION_FILE = "ap_notifications.json"
 local AP_OPTIONS_FILE = "ap_options.json"
 local AP_DEATHLINK_IN_FILE = "ap_deathlink_in.json"
 local AP_DEATHLINK_OUT_FILE = "ap_deathlink_out.json"
+local AP_PENDING_RECEIVED_FILE = "ap_pending_received.json"
 local AP_SHOP_DEBUG_FILE = "ap_shop_debug.json"
 
 local GOAL_BUY_NG_PLUS = 0
@@ -14,6 +16,7 @@ local DEATHLINK_TRIGGER_ANY_PARTY_DOWNED = 2
 local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_COST = 2000
+local AP_NOTIFICATION_DURATION = 6
 
 Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat or {
     scenario_clears = 0,
@@ -41,10 +44,13 @@ local compat = {
     granted_unlock_session_init = {},
     deathlink_events_ready = false,
     deathlink_party_wipe_active = false,
+    pending_received_replay = {},
 }
 
 local emit_threshold_tokens
 local maybe_emit_goal_token
+
+_G.ArchipelagoTrialsCompatNotificationsOwner = true
 
 
 local function shallow_copy(source)
@@ -105,6 +111,101 @@ end
 
 local function save_json_object(path, data)
     Ext.IO.SaveFile(path, Ext.Json.Stringify(data))
+end
+
+
+local function build_lookup(values)
+    local lookup = {}
+    for _, value in ipairs(values or {}) do
+        value = tostring(value or "")
+        if value ~= "" then
+            lookup[value] = true
+        end
+    end
+    return lookup
+end
+
+
+local function clear_pending_received()
+    compat.pending_received_replay = {}
+    save_json_array(AP_PENDING_RECEIVED_FILE, {})
+end
+
+
+local function load_pending_received_replay()
+    compat.pending_received_replay = build_lookup(load_json_array(AP_PENDING_RECEIVED_FILE))
+end
+
+
+local function remember_pending_received(entry)
+    entry = tostring(entry or "")
+    if entry == "" then
+        return
+    end
+
+    local pending = load_json_array(AP_PENDING_RECEIVED_FILE)
+    for _, existing in ipairs(pending) do
+        if existing == entry then
+            return
+        end
+    end
+
+    table.insert(pending, entry)
+    save_json_array(AP_PENDING_RECEIVED_FILE, pending)
+end
+
+
+local function unlock_requires_regrant_on_replay(unlock_id)
+    return unlock_id == "BuyLoot"
+        or unlock_id == "BuyLootRare"
+        or unlock_id == "BuyLootEpic"
+        or unlock_id == "BuyLootLegendary"
+end
+
+
+local function notify_player(notification)
+    local message = notification
+    local segments = {}
+    if type(notification) == "table" then
+        message = notification.text or notification.message or ""
+        segments = notification.segments or {}
+    end
+
+    message = tostring(message or "")
+    if message == "" then
+        return
+    end
+
+    if Net and Net.Send then
+        Net.Send("PlayerNotify", { message })
+        Net.Send("ArchipelagoTrialsNotification", {
+            text = message,
+            segments = segments,
+            duration = AP_NOTIFICATION_DURATION,
+        })
+        return
+    end
+
+    if Player and Player.Notify then
+        Player.Notify(message)
+        return
+    end
+
+    print("[ArchipelagoTrialsCompat] " .. message)
+end
+
+
+local function process_ap_notifications()
+    local queue = load_json_array(AP_NOTIFICATION_FILE)
+    if #queue == 0 then
+        return
+    end
+
+    for _, entry in ipairs(queue) do
+        notify_player(entry)
+    end
+
+    save_json_array(AP_NOTIFICATION_FILE, {})
 end
 
 
@@ -209,6 +310,7 @@ local function refresh_seed_state()
     save_json_array(AP_OUT_FILE, {})
     save_json_array(AP_DEATHLINK_IN_FILE, {})
     save_json_array(AP_DEATHLINK_OUT_FILE, {})
+    clear_pending_received()
     return true
 end
 
@@ -745,25 +847,41 @@ local function process_trials_inbox(preferred_character)
     refresh_seed_state()
     local state = get_state()
     local inbox = load_json_array(AP_IN_FILE)
-    if #inbox == 0 then
-        return
-    end
 
-    for _, entry in ipairs(inbox) do
-        if not state.received_items[entry] then
-            if string.sub(entry, 1, 10) == "ToTUnlock:" then
-                local unlock_id = string.match(entry, "^ToTUnlock:([^:]+)")
-                if unlock_id and grant_unlock_reward(unlock_id, preferred_character) then
-                    state.received_items[entry] = true
+    if #inbox > 0 then
+        for _, entry in ipairs(inbox) do
+            local should_replay = compat.pending_received_replay[entry] == true
+            if should_replay or not state.received_items[entry] then
+                local granted = false
+                if string.sub(entry, 1, 10) == "ToTUnlock:" then
+                    local unlock_id = string.match(entry, "^ToTUnlock:([^:]+)")
+                    if unlock_id then
+                        if should_replay
+                            and state.granted_unlocks[unlock_id]
+                            and not unlock_requires_regrant_on_replay(unlock_id)
+                        then
+                            granted = true
+                        elseif grant_unlock_reward(unlock_id, preferred_character) then
+                            granted = true
+                        end
+                    end
+                elseif string.sub(entry, 1, 10) == "ToTFiller:" then
+                    local kind, amount = string.match(entry, "^ToTFiller:([^:]+):([^:]+)")
+                    if kind and amount and grant_trials_filler(kind, amount) then
+                        granted = true
+                    end
                 end
-            elseif string.sub(entry, 1, 10) == "ToTFiller:" then
-                local kind, amount = string.match(entry, "^ToTFiller:([^:]+):([^:]+)")
-                if kind and amount and grant_trials_filler(kind, amount) then
+
+                if granted then
                     state.received_items[entry] = true
+                    remember_pending_received(entry)
+                    compat.pending_received_replay[entry] = nil
                 end
             end
         end
     end
+
+    process_ap_notifications()
 end
 
 
@@ -1028,6 +1146,7 @@ end
 
 
 local function initialize_archipelago_trials_compat()
+    load_pending_received_replay()
     register_shop_patch()
     subscribe_progress_events()
     subscribe_score_events()
@@ -1046,6 +1165,7 @@ end
 Event.On("ModInit", initialize_archipelago_trials_compat, true)
 Ext.Events.SessionLoaded:Subscribe(function()
     get_state().deathlink_suppress_local = false
+    load_pending_received_replay()
     sync_connection_state(true)
     update_party_wipe_state()
     if compat.patch_registered then
@@ -1053,5 +1173,11 @@ Ext.Events.SessionLoaded:Subscribe(function()
         reapply_granted_unlocks()
         process_incoming_deathlinks()
         process_trials_inbox(resolve_reward_character(nil))
+    end
+end)
+
+Ext.Events.GameStateChanged:Subscribe(function(event)
+    if event.FromState == "Save" and event.ToState == "Running" then
+        clear_pending_received()
     end
 end)
