@@ -150,20 +150,9 @@ def normalize_config(config: dict[str, Any]) -> bool:
     return changed
 
 
-def unlock_catalog_total_slots(unlock_catalog: list[dict[str, Any]]) -> int:
-    total = 0
-    for entry in unlock_catalog:
-        try:
-            total += max(1, int(entry.get("copies", 1)))
-        except (TypeError, ValueError):
-            total += 1
-    return total
-
-
-def render_sample_yaml(config: dict[str, Any], unlock_catalog: list[dict[str, Any]]) -> str:
+def render_sample_yaml(config: dict[str, Any]) -> str:
     sample = config["sample_player"]
     trap_lines = "\n".join(f"    - {trap}" for trap in sample["enabled_traps"])
-    total_shop_slots = unlock_catalog_total_slots(unlock_catalog)
     return f"""name: {sample['name']}
 description: {sample['description']}
 game: {sample['game']}
@@ -182,7 +171,7 @@ game: {sample['game']}
   perfect_check_interval: {sample['perfect_check_interval']}
   roguescore_check_count: {sample['roguescore_check_count']}
   roguescore_check_interval: {sample['roguescore_check_interval']}
-  shop_check_count: {min(sample['shop_check_count'], total_shop_slots)}
+  shop_check_count: {sample['shop_check_count']}
   shop_price_minimum: {sample['shop_price_minimum']}
   shop_price_maximum: {sample['shop_price_maximum']}
   traps_percentage: {sample['traps_percentage']}
@@ -786,8 +775,6 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         refresh=args.refresh_cache,
     )
 
-    unlock_catalog = load_json(UNLOCK_CATALOG_PATH)
-
     staged_world_dir = output_dir / "staging" / APWORLD_PACKAGE_NAME
     stage_trials_apworld(archipelago_bg3_cache / "worlds" / "bg3", staged_world_dir)
     apworld_path = output_dir / "apworlds" / APWORLD_FILENAME
@@ -808,7 +795,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
             artifacts.append({"kind": "final_mod_pak", "path": built_final_pak})
 
     sample_yaml_path = output_dir / "player_yaml" / "bg3_trials_test.yaml"
-    write_text(sample_yaml_path, render_sample_yaml(config, unlock_catalog))
+    write_text(sample_yaml_path, render_sample_yaml(config))
     artifacts.append({"kind": "sample_yaml", "path": str(sample_yaml_path.resolve())})
 
     install_path = output_dir / "INSTALL.txt"

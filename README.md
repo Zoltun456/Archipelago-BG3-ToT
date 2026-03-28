@@ -168,7 +168,6 @@ Use it to control:
 - which Trials rewards can appear in the AP pool
 - their AP classification
 - how many copies of each reward exist
-- optional reference metadata like vanilla `base_cost`
 
 ### `config/build_config.json`
 

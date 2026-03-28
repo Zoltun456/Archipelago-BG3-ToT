@@ -15,6 +15,7 @@ from .items import AP_ITEM_TO_BG3_ID, IS_DUPEABLE
 from .trials_data import (
     CLEAR_LOCATION_BASE_ID,
     KILL_LOCATION_BASE_ID,
+    LOCATION_NAME_TO_ID,
     PERFECT_LOCATION_BASE_ID,
     ROGUESCORE_LOCATION_BASE_ID,
     SHOP_LOCATION_BASE_ID,
@@ -176,6 +177,7 @@ class BG3Context(CommonContext):
 
         # AP's static lookup table knows the full theory ranges. For player-facing text,
         # rebuild the active "X/current_total" names from this slot's actual settings.
+        shop_display_indices = self._shop_display_index_by_location_id()
         groups = (
             (CLEAR_LOCATION_BASE_ID, len(self.slot_data_cache.get("clear_thresholds", [])), clear_location_name),
             (KILL_LOCATION_BASE_ID, len(self.slot_data_cache.get("kill_thresholds", [])), kill_location_name),
@@ -186,10 +188,30 @@ class BG3Context(CommonContext):
         for base_id, total, name_factory in groups:
             index = int(location_id) - base_id
             if total > 0 and 1 <= index <= total:
+                if base_id == SHOP_LOCATION_BASE_ID:
+                    return name_factory(shop_display_indices.get(int(location_id), index), total)
                 return name_factory(index, total)
         return None
 
-    def _build_shop_display_entries(self) -> list[dict[str, Any]]:
+    def _shop_display_sort_key(self, entry: dict[str, Any]) -> tuple[int, str, int, str, int]:
+        display = entry.get("display", {})
+        return (
+            0 if entry.get("has_info") else 1,
+            str(display.get("player_name", "")).lower(),
+            int(entry.get("cost", 0) or 0),
+            str(display.get("item_name", display.get("display_name", ""))),
+            int(entry.get("token_index", 0) or 0),
+        )
+
+    def _shop_display_index_by_location_id(self) -> dict[int, int]:
+        display_entries = self._build_shop_display_entries(include_location_names=False)
+        sorted_entries = sorted(display_entries, key=self._shop_display_sort_key)
+        return {
+            int(entry["location_id"]): display_index
+            for display_index, entry in enumerate(sorted_entries, start=1)
+        }
+
+    def _build_shop_display_entries(self, *, include_location_names: bool = True) -> list[dict[str, Any]]:
         display_entries: list[dict[str, Any]] = []
         unlock_ids = list(self.slot_data_cache.get("shop_check_unlock_ids", []))
         costs = list(self.slot_data_cache.get("shop_check_costs", []))
@@ -204,6 +226,7 @@ class BG3Context(CommonContext):
                 display_entries.append(
                     {
                         "token_index": token_index,
+                        "location_id": location_id,
                         "unlock_id": unlock_id,
                         "cost": cost,
                         "display": {},
@@ -212,12 +235,20 @@ class BG3Context(CommonContext):
                 )
                 continue
 
+            try:
+                info_flags = int(getattr(info, "flags", 0) or 0)
+            except (TypeError, ValueError):
+                info_flags = 0
+            if info_flags & 0b100:
+                cost = 0
+
             item_name = self.item_names.lookup_in_slot(info.item, info.player)
             player_name = self.player_names.get(info.player, f"Player {info.player}")
             is_local_item = info.player == self.slot
             display_entries.append(
                 {
                     "token_index": token_index,
+                    "location_id": location_id,
                     "unlock_id": unlock_id,
                     "cost": cost,
                     "has_info": True,
@@ -228,12 +259,16 @@ class BG3Context(CommonContext):
                         "is_local_item": is_local_item,
                         "icon_key": self._shop_icon_key(is_local_item),
                         "bg3_item_id": AP_ITEM_TO_BG3_ID.get(item_name, ""),
-                        "location_name": self._dynamic_location_name(location_id, self.slot)
-                        or self.location_names.lookup_in_slot(location_id, self.slot),
                         "display_name": f"{item_name} -> {player_name}",
                     },
                 }
             )
+
+        if include_location_names and display_entries:
+            total_entries = len(display_entries)
+            for visual_index, entry in enumerate(sorted(display_entries, key=self._shop_display_sort_key), start=1):
+                entry["display"]["location_name"] = shop_location_name(visual_index, total_entries)
+
         return display_entries
 
     def _write_options_file(self, active_connection: bool = True) -> None:
@@ -243,7 +278,7 @@ class BG3Context(CommonContext):
         payload = dict(self.slot_data_cache)
         shop_display_entries = self._build_shop_display_entries()
         payload["shop_check_unlock_ids"] = list(self.slot_data_cache.get("shop_check_unlock_ids", []))
-        payload["shop_check_costs"] = list(self.slot_data_cache.get("shop_check_costs", []))
+        payload["shop_check_costs"] = [int(entry["cost"]) for entry in shop_display_entries]
         payload["seed_name"] = self.seed_name or ""
         payload["active_connection"] = active_connection
         payload["shop_display"] = [entry["display"] for entry in shop_display_entries]
@@ -311,14 +346,16 @@ class BG3Context(CommonContext):
             self._write_options_file(active_connection=True)
 
     def on_print_json(self, args: dict):
-        super().on_print_json(args)
+        message_parts = _normalize_notification_parts(self, copy.deepcopy(args.get("data", [])))
+        normalized_args = dict(args)
+        normalized_args["data"] = message_parts
+        super().on_print_json(normalized_args)
 
         if args.get("type") != "ItemSend" or self.slot is None:
             return
         if self.is_uninteresting_item_send(args):
             return
 
-        message_parts = copy.deepcopy(args.get("data", []))
         message = self.rawjsontotextparser(copy.deepcopy(message_parts)).strip()
         if message:
             self._append_notification(
@@ -402,6 +439,11 @@ def _text_for_notification_part(ctx: BG3Context, part: dict[str, Any]) -> str:
             return ctx.player_names.get(int(raw_text), raw_text)
         if part_type == "item_id":
             return ctx.item_names.lookup_in_slot(int(raw_text), int(part.get("player", 0) or 0))
+        if part_type == "location_name":
+            player = int(part.get("player", 0) or 0)
+            location_id = LOCATION_NAME_TO_ID.get(raw_text)
+            if location_id is not None:
+                return ctx._dynamic_location_name(location_id, player) or raw_text
         if part_type == "location_id":
             location_id = int(raw_text)
             player = int(part.get("player", 0) or 0)
@@ -429,6 +471,25 @@ def _encode_notification_segments(ctx: BG3Context, parts: list[Any]) -> list[dic
         encoded_segments.append(segment)
 
     return encoded_segments
+
+
+def _normalize_notification_parts(ctx: BG3Context, parts: list[Any]) -> list[Any]:
+    normalized_parts: list[Any] = []
+    for raw_part in parts:
+        if not isinstance(raw_part, dict):
+            normalized_parts.append(raw_part)
+            continue
+
+        part = dict(raw_part)
+        part_type = str(part.get("type", "") or "")
+        if part_type in {"location_name", "location_id"}:
+            text = _text_for_notification_part(ctx, part)
+            if text:
+                part["text"] = text
+                part["type"] = "location_name"
+        normalized_parts.append(part)
+
+    return normalized_parts
 
 
 def _encode_received_items(ctx: BG3Context) -> list[str]:

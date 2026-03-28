@@ -25,13 +25,6 @@ def _normalized_copies(value: Any) -> int:
         return 1
 
 
-def _normalized_base_cost(value: Any) -> int:
-    try:
-        return max(10, int(value))
-    except (TypeError, ValueError):
-        return 100
-
-
 def _load_unlock_catalog() -> list[dict[str, Any]]:
     catalog_text = resources.files(__package__).joinpath("trials_unlock_catalog.json").read_text(encoding="utf-8")
     raw_catalog = json.loads(catalog_text)
@@ -43,7 +36,6 @@ def _load_unlock_catalog() -> list[dict[str, Any]]:
                 "name": entry["name"],
                 "classification": entry["classification"],
                 "copies": _normalized_copies(entry.get("copies", 1)),
-                "base_cost": _normalized_base_cost(entry.get("base_cost", 100)),
             }
         )
     return normalized_catalog
@@ -66,7 +58,6 @@ for source_order, entry in enumerate(UNLOCK_CATALOG):
                 "classification": entry["classification"],
                 "copies": entry["copies"],
                 "copy_index": copy_index,
-                "base_cost": entry["base_cost"],
                 "source_order": source_order,
             }
         )
@@ -83,7 +74,6 @@ UNLOCK_SLOT_CATALOG = sorted(
 UNLOCK_ID_ORDER = [entry["id"] for entry in UNLOCK_SLOT_CATALOG]
 UNLOCK_NAME_BY_ID = {entry["id"]: entry["name"] for entry in UNLOCK_CATALOG}
 UNLOCK_CLASSIFICATION_BY_ID = {entry["id"]: entry["classification"] for entry in UNLOCK_CATALOG}
-UNLOCK_BASE_COST_BY_ID = {entry["id"]: entry["base_cost"] for entry in UNLOCK_CATALOG}
 
 
 def clear_location_id(index: int) -> int:
@@ -143,25 +133,25 @@ def build_location_name_to_id() -> dict[str, int]:
     mapping: dict[str, int] = {}
 
     for index in range(1, MAX_CLEAR_CHECKS + 1):
-        mapping[clear_location_name(index)] = clear_location_id(index)
         for total in range(index, MAX_CLEAR_CHECKS + 1):
             mapping[clear_location_name(index, total)] = clear_location_id(index)
+        mapping[clear_location_name(index)] = clear_location_id(index)
     for index in range(1, MAX_KILL_CHECKS + 1):
-        mapping[kill_location_name(index)] = kill_location_id(index)
         for total in range(index, MAX_KILL_CHECKS + 1):
             mapping[kill_location_name(index, total)] = kill_location_id(index)
+        mapping[kill_location_name(index)] = kill_location_id(index)
     for index in range(1, MAX_PERFECT_CHECKS + 1):
-        mapping[perfect_location_name(index)] = perfect_location_id(index)
         for total in range(index, MAX_PERFECT_CHECKS + 1):
             mapping[perfect_location_name(index, total)] = perfect_location_id(index)
+        mapping[perfect_location_name(index)] = perfect_location_id(index)
     for index in range(1, MAX_ROGUESCORE_CHECKS + 1):
-        mapping[roguescore_location_name(index)] = roguescore_location_id(index)
         for total in range(index, MAX_ROGUESCORE_CHECKS + 1):
             mapping[roguescore_location_name(index, total)] = roguescore_location_id(index)
+        mapping[roguescore_location_name(index)] = roguescore_location_id(index)
     for index in range(1, len(UNLOCK_SLOT_CATALOG) + 1):
-        mapping[shop_location_name(index)] = shop_location_id(index)
         for total in range(index, len(UNLOCK_SLOT_CATALOG) + 1):
             mapping[shop_location_name(index, total)] = shop_location_id(index)
+        mapping[shop_location_name(index)] = shop_location_id(index)
 
     return mapping
 

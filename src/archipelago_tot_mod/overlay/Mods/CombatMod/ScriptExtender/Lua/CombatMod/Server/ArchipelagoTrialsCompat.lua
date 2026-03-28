@@ -27,6 +27,7 @@ Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.
     received_items = {},
     granted_unlocks = {},
     shop_unlocks = {},
+    progressive_tadpole_unlock_entry = "",
     goal_completed = false,
     deathlink_out_counter = 0,
     deathlink_suppress_local = false,
@@ -212,6 +213,7 @@ local function get_state()
     state.received_items = state.received_items or {}
     state.granted_unlocks = state.granted_unlocks or {}
     state.shop_unlocks = state.shop_unlocks or {}
+    state.progressive_tadpole_unlock_entry = tostring(state.progressive_tadpole_unlock_entry or "")
     if state.goal_completed == nil then
         state.goal_completed = false
     end
@@ -300,6 +302,7 @@ local function refresh_seed_state()
     state.received_items = {}
     state.granted_unlocks = {}
     state.shop_unlocks = {}
+    state.progressive_tadpole_unlock_entry = ""
     state.goal_completed = false
     state.deathlink_out_counter = 0
     state.deathlink_suppress_local = false
@@ -872,6 +875,18 @@ end
 
 
 local function grant_unlock_reward(unlock_id, preferred_character)
+    local prerequisite_unlock_by_id = {
+        ExpMultiplier = "MOD_BOOSTS",
+        LootMultiplier = "MOD_BOOSTS",
+        CurrencyMultiplier = "MOD_BOOSTS",
+    }
+    local prerequisite_unlock_id = prerequisite_unlock_by_id[unlock_id]
+    if prerequisite_unlock_id and not get_state().granted_unlocks[prerequisite_unlock_id] then
+        if not grant_unlock_reward(prerequisite_unlock_id, preferred_character) then
+            return false
+        end
+    end
+
     capture_original_unlock_templates()
     local template = runtime.original_templates_by_id[unlock_id]
     if not template then
@@ -1036,6 +1051,34 @@ local function grant_trap_reward(entry, preferred_character)
 end
 
 
+local function grant_progressive_tadpole_reward(entry, preferred_character)
+    local state = get_state()
+    local unlock_entry = tostring(state.progressive_tadpole_unlock_entry or "")
+    local unlock_granted = state.granted_unlocks["UnlockTadpole"] ~= nil
+
+    if unlock_granted then
+        if unlock_entry == entry then
+            return true
+        end
+        return grant_unlock_reward("Tadpole", preferred_character)
+    end
+
+    if unlock_entry ~= "" and unlock_entry ~= entry then
+        return false
+    end
+
+    state.progressive_tadpole_unlock_entry = entry
+    if grant_unlock_reward("UnlockTadpole", preferred_character) then
+        return true
+    end
+
+    if unlock_entry == "" then
+        state.progressive_tadpole_unlock_entry = ""
+    end
+    return false
+end
+
+
 -- This used to be split across the old Archipelago mod and the separate ToT bridge.
 -- Now it is the single inbox processor for Trials rewards, filler payouts, and the "replay after reload" safety net.
 local function process_trials_inbox(preferred_character)
@@ -1060,6 +1103,8 @@ local function process_trials_inbox(preferred_character)
                             and state.granted_unlocks[unlock_id]
                             and not unlock_requires_regrant_on_replay(unlock_id)
                         then
+                            granted = true
+                        elseif unlock_id == "Tadpole" and grant_progressive_tadpole_reward(entry, preferred_character) then
                             granted = true
                         elseif grant_unlock_reward(unlock_id, preferred_character) then
                             granted = true
@@ -1132,8 +1177,8 @@ local function make_shop_check_unlock(template, index, options)
     unlock.Name = table_get(shop_preview, "display_name", "AP Check: " .. tostring(template.Name or template.Id))
     unlock.FallbackIcon = template.Icon
     local randomized_cost = tonumber(table_get(options.shop_check_costs, index, unlock.Cost))
-    if randomized_cost and randomized_cost > 0 then
-        unlock.Cost = randomized_cost
+    if randomized_cost ~= nil then
+        unlock.Cost = math.max(0, randomized_cost)
     end
     local explicit_icon_key = tostring(table_get(shop_preview, "icon_key", ""))
     local is_local_item = table_get(shop_preview, "is_local_item", nil)

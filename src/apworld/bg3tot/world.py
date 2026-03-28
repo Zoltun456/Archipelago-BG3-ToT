@@ -4,10 +4,11 @@ from collections.abc import Mapping
 import random
 from typing import Any, ClassVar
 
+from BaseClasses import ItemClassification
 from worlds.AutoWorld import World
 
 from . import items, locations, options, regions, rules, settings, web_world
-from .trials_data import UNLOCK_ID_ORDER
+from .trials_data import UNLOCK_ID_ORDER, shop_location_name
 
 
 SHOP_PRICE_STEP = 10
@@ -46,6 +47,16 @@ def _randomized_shop_costs(
         rolled_cost = minimum_price + (SHOP_PRICE_STEP * price_rng.randrange(step_count))
         costs.append(rolled_cost)
     return costs
+
+
+def _zero_trap_shop_costs(world: "BG3World", costs: list[int]) -> list[int]:
+    adjusted_costs = list(costs)
+    shop_check_count = int(world.options.shop_check_count)
+    for index in range(1, min(shop_check_count, len(adjusted_costs)) + 1):
+        location = world.multiworld.get_location(shop_location_name(index, shop_check_count), world.player)
+        if location.item and location.item.classification & ItemClassification.trap:
+            adjusted_costs[index - 1] = 0
+    return adjusted_costs
 
 
 class BG3World(World):
@@ -87,6 +98,7 @@ class BG3World(World):
             int(self.options.shop_price_minimum),
             int(self.options.shop_price_maximum),
         )
+        selected_shop_costs = _zero_trap_shop_costs(self, selected_shop_costs)
 
         return {
             "death_link": bool(self.options.death_link),
