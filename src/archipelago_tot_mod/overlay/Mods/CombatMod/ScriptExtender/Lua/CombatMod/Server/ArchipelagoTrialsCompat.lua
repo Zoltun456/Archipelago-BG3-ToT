@@ -1158,7 +1158,7 @@ local function grant_trap_reward(entry, preferred_character)
         Stun = { id = "STUNNED", duration = 5 },
         -- BG3's spell data applies the CONFUSION status, not CONFUSED.
         -- It also relies on a source for SourceSpellDC()-based turn saves.
-        Confusion = { id = "CONFUSION", duration = 18, force = 1, use_source = true },
+        Confusion = { id = "CONFUSION", duration = 6, force = 1, use_source = true },
         Bane = { id = "BANE", duration = 6, use_source = true },
         Blindness = { id = "BLINDNESS", duration = 6, use_source = true },
         Slow = { id = "SLOW", duration = 6, use_source = true },
