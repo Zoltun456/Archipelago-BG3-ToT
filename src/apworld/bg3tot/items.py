@@ -38,14 +38,13 @@ TRAP_OPTIONS = [
     ["Overburdened Trap", "Trap-Overburdened"],
 ]
 
+# Keep the legacy trap items registered so older seeds can still deserialize them,
+# but only the stable/tested subset should be generated going forward.
 TRAP_ITEM_NAME_BY_OPTION = {
     "Monster": "Monster Spawn Trap",
     "Bleeding": "Bleeding Trap",
     "Stun": "Stunned Trap",
     "Confusion": "Confusion Trap",
-    "Sussur": "Sussur Trap",
-    "Clown": "Clown Trap",
-    "Overburdened": "Overburdened Trap",
 }
 
 

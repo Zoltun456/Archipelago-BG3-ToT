@@ -691,6 +691,99 @@ local function resolve_reward_character(preferred_character)
 end
 
 
+local function entity_handle_uuid(entity_handle)
+    if not Ext or not Ext.Entity or entity_handle == nil then
+        return ""
+    end
+
+    local entity = Ext.Entity.Get(entity_handle)
+    if not entity or not entity.Uuid or not entity.Uuid.EntityUuid then
+        return ""
+    end
+
+    return tostring(entity.Uuid.EntityUuid or "")
+end
+
+
+local function append_trap_target(targets, seen, character)
+    character = extract_character_uuid(character)
+    if character == "" or seen[character] then
+        return
+    end
+    if Osi.IsCharacter(character) ~= 1 then
+        return
+    end
+    if Osi.CanJoinCombat(character) ~= 1 then
+        return
+    end
+
+    seen[character] = true
+    table.insert(targets, character)
+end
+
+
+local function append_party_followers(targets, seen, owner_lookup)
+    if not Ext or not Ext.Entity then
+        return
+    end
+
+    for _, follower_handle in ipairs(Ext.Entity.GetAllEntitiesWithComponent("PartyFollower") or {}) do
+        local follower_entity = Ext.Entity.Get(follower_handle)
+        local party_follower = follower_entity and follower_entity.PartyFollower
+        local followed_uuid = entity_handle_uuid(party_follower and party_follower.Following)
+        if followed_uuid ~= "" and owner_lookup[followed_uuid] then
+            append_trap_target(targets, seen, entity_handle_uuid(follower_handle))
+        end
+    end
+end
+
+
+local function append_owned_summons(targets, seen, owner_character)
+    if not Ext or not Ext.Entity then
+        return
+    end
+
+    local owner_entity = Ext.Entity.Get(owner_character)
+    local summon_container = owner_entity and owner_entity.SummonContainer
+    if not summon_container or not summon_container.Characters then
+        return
+    end
+
+    for summon_handle, _value in pairs(summon_container.Characters) do
+        append_trap_target(targets, seen, entity_handle_uuid(summon_handle))
+    end
+end
+
+
+local function collect_party_trap_targets(preferred_character)
+    local targets = {}
+    local seen = {}
+    local owner_lookup = {}
+
+    for _, character in ipairs(get_active_party_members()) do
+        append_trap_target(targets, seen, character)
+        owner_lookup[extract_character_uuid(character)] = true
+    end
+
+    local preferred = resolve_reward_character(preferred_character)
+    if preferred ~= "" then
+        append_trap_target(targets, seen, preferred)
+        owner_lookup[preferred] = true
+    end
+
+    append_party_followers(targets, seen, owner_lookup)
+
+    -- Summons can themselves own more summons, so expand until the target list stops growing.
+    local index = 1
+    while index <= #targets do
+        append_owned_summons(targets, seen, targets[index])
+        index = index + 1
+    end
+
+    return targets
+end
+
+
 local function capture_original_unlock_templates()
     if runtime.original_templates_captured then
         return
@@ -897,14 +990,23 @@ local function grant_trap_reward(entry, preferred_character)
         return false
     end
 
+    local retired_traps = {
+        Sussur = true,
+        Clown = true,
+        Overburdened = true,
+    }
+    if retired_traps[trap_kind] then
+        return true
+    end
+
     if trap_kind == "Monster" then
         -- Monster traps were a separate spawn path in the old bridge. I would rather
         -- leave this as a clean no-op than fake a spawn and break someone's run.
         return false
     end
 
-    local character = resolve_reward_character(preferred_character)
-    if character == "" or not Osi or not Osi.ApplyStatus then
+    local targets = collect_party_trap_targets(preferred_character)
+    if #targets == 0 or not Osi or not Osi.ApplyStatus then
         return false
     end
 
@@ -912,23 +1014,25 @@ local function grant_trap_reward(entry, preferred_character)
         Bleeding = { id = "BLEEDING", duration = 5 },
         Stun = { id = "STUNNED", duration = 5 },
         Confusion = { id = "CONFUSED", duration = 5 },
-        Sussur = { id = "SUSSUR_BLOOM", duration = 5 },
-        Clown = { id = "CLOWN", duration = 10 },
-        Overburdened = { id = "OVERENCUMBERED", duration = 10 },
     }
     local trap = statuses[trap_kind]
     if not trap then
         return false
     end
 
-    local ok, err = pcall(function()
-        Osi.ApplyStatus(character, trap.id, trap.duration)
-    end)
-    if not ok then
-        L.Error("ArchipelagoTrialsCompat/GrantTrap", trap_kind, err)
-        return false
+    local applied = false
+    for _, character in ipairs(targets) do
+        local ok, err = pcall(function()
+            Osi.ApplyStatus(character, trap.id, trap.duration)
+        end)
+        if not ok then
+            L.Error("ArchipelagoTrialsCompat/GrantTrap", trap_kind, character, err)
+        else
+            applied = true
+        end
     end
-    return true
+
+    return applied
 end
 
 
