@@ -1074,6 +1074,8 @@ end
 local function make_goal_unlock(template, options)
     local unlock = shallow_copy(template)
     unlock.Id = tostring(options.goal_unlock_id or AP_GOAL_UNLOCK_ID)
+    unlock.Name = "NG+"
+    unlock.Description = "Archipelago goal item. Buy this to complete the seed."
     local configured_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
         or DEFAULT_GOAL_UNLOCK_COST
     unlock.Cost = math.max(0, configured_cost)
