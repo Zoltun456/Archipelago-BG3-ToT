@@ -5,7 +5,7 @@ param(
 )
 
 $command = if ($SyncOnly) { "sync" } else { "build" }
-$args = @("tools/build_release.py", $command)
+$args = @("scripts/build_release.py", $command)
 
 if ($Clean) {
     $args += "--clean"

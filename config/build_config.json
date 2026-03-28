@@ -1,0 +1,50 @@
+{
+  "project_name": "Archipelago BG3 Trials",
+  "output_dir": "dist",
+  "cache_dir": ".cache",
+  "final_mod": {
+    "module_folder": "CombatMod",
+    "display_name": "Archipelago - Trials of Tav",
+    "pak_name": "ArchipelagoToT.pak",
+    "author": "Zoltun",
+    "description": "Trials of Tav - Reloaded bundled with Archipelago integration.",
+    "release_version": "1.1.0",
+    "version64": "36169534507319296",
+    "publish_version64": "36169534507319296"
+  },
+  "upstream": {
+    "archipelago_bg3_repo": "https://github.com/zane31415/ArchipelagoBG3",
+    "archipelago_bg3_ref": "main"
+  },
+  "sample_player": {
+    "name": "BG3Trials",
+    "description": "BG3 ToT Archipelago preset",
+    "game": "Baldur's Gate 3 - ToT",
+    "death_link": false,
+    "death_link_trigger": "full_party_wipe",
+    "goal": "clear_stages",
+    "goal_clear_target": 20,
+    "goal_rogue_score_target": 300,
+    "clear_check_count": 10,
+    "clear_check_interval": 1,
+    "kill_check_count": 10,
+    "kill_check_interval": 10,
+    "perfect_check_count": 5,
+    "perfect_check_interval": 1,
+    "roguescore_check_count": 10,
+    "roguescore_check_interval": 25,
+    "shop_check_count": 50,
+    "shop_price_minimum": 50,
+    "shop_price_maximum": 300,
+    "traps_percentage": 15,
+    "enabled_traps": [
+      "Bleeding",
+      "Stun",
+      "Confusion"
+    ]
+  },
+  "test_bundle": {
+    "divine_path": "",
+    "trials_mod_source": ""
+  }
+}

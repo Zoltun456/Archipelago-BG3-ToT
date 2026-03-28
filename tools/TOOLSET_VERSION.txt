@@ -7,7 +7,7 @@ Downloaded from:
 https://github.com/Norbyte/lslib/releases/download/v1.20.4/ExportTool-v1.20.4.zip
 
 Repo-local files in this folder are used by the build pipeline to create:
-- ArchipelagoTrials.pak
+- ArchipelagoToT.pak
 
 Key executable:
 - Divine.exe

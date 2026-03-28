@@ -1,7 +1,0 @@
-{
-  "RequiredVersion": 15,
-  "ModTable": "ArchipelagoTrials",
-  "FeatureFlags": [
-    "Lua"
-  ]
-}

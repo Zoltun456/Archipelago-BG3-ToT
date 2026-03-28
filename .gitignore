@@ -32,5 +32,12 @@ tmp/
 
 # Generated release artifacts
 *.apworld
+*.pak
 *.zip
 *.7z
+
+# Generated BG3 mod resources
+*.dds
+*.lsf
+*.osi
+story_ac.dat

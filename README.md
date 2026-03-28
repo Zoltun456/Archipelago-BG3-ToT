@@ -2,13 +2,11 @@
 
 This repo builds a Trials of Tav focused Archipelago integration for Baldur's Gate 3.
 
-Instead of using the normal BG3 quest pool, this world treats Trials activity as the main progression path. Clears, kills, perfect runs, RogueScore milestones, and randomized tav shop purchases become Archipelago checks.
-
 ## Core Gameplay Model
 
 Supported victory goals:
 
-- Buy `NG+` / `Quick Start`
+- Buy `NG+`
 - Clear `X` Trials stages
 - Reach `X` RogueScore
 
@@ -20,19 +18,7 @@ Supported check groups:
 - RogueScore thresholds
 - Shop purchase checks
 
-Shop behavior:
-
-- A configured number of Trials shop entries are replaced with Archipelago shop checks.
-- Buying one of those entries sends a `TOT-SHOP-*` location check.
-- The original reward is removed from the local purchase.
-- That reward instead becomes an Archipelago item and is granted when received from the multiworld.
-- `NG+ / Quick Start` stays local so it can still act as a win condition.
-
-<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/ec51addc-24db-4502-a507-fe96e0be9947" />
-
-## Testing Setup
-
-Most users do not need the source repo. Just download the latest release zip from GitHub and install the files it contains.
+## Install Guide
 
 ### 1. Download and extract the latest release
 
@@ -45,11 +31,17 @@ from the latest GitHub Release and extract it somewhere convenient.
 The archive contains:
 
 - `bg3tot.apworld`
-- `CombatMod.pak`
-- `Archipelago_###.pak`
-- `ArchipelagoTrials.pak`
+- `ArchipelagoToT.pak`
 - `bg3_trials_test.yaml`
 - `INSTALL.txt`
+
+Nexus Downloads:
+
+The required BG3 mod dependencies:
+  - `ImpUI`
+  - `Mod Configuration Menu`
+  - `Expansion`
+  - `AdvancedTTSpells`
 
 ### 2. Install the AP world
 
@@ -57,18 +49,23 @@ Copy:
 
 - `bg3tot.apworld`
 
-into your Archipelago `custom_worlds` folder.
+into your Archipelago `custom_worlds` folder. Or `Install APWorld` using the Archipelago client.
 
-### 3. Set BG3 Mod Manager load order
+### 3. Install the BG3 mod
 
-Use this order in BG3MM:
+Copy:
 
-0. `[Dependencies]` (`ImpUI, MCM, Expansion, AdvancedTTSpells`)
-1. `Trials of Tav - Reloaded` (`CombatMod.pak`)
-2. `Archipelago` (`Archipelago_###.pak`)
-3. `Archipelago Trials Bridge` (`ArchipelagoTrials.pak`)
+- `ArchipelagoToT.pak`
 
-<img width="804" height="275" alt="image" src="https://github.com/user-attachments/assets/1adcb5e2-4c97-4543-a7bc-315595f1e3d0" />
+into your BG3 `Mods` folder.
+
+In BG3 Mod Manager enable mods in order:
+
+1. `ImpUI`
+2. `Mod Configuration Menu`
+3. `Expansion`
+4. `AdvancedTTSpells`
+5. `Archipelago - Trials of Tav`
 
 Then:
 
@@ -88,51 +85,11 @@ In Archipelago, this world appears in the game list as:
 
 - `Baldur's Gate 3 - ToT`
 
-This keeps it separate from the original BG3 Archipelago world.
-
 ### 5. Play and connect
 
-1. Launch BG3 with the mods active.
+1. Launch BG3 with the mod active.
 2. Connect the BG3 Archipelago client.
 3. Start Trials and play normally to earn checks.
-
-## Important Files
-
-### `trials_unlock_catalog.json`
-
-Main gameplay tuning file for Trials reward items.
-
-Use it to control:
-
-- which Trials rewards can appear in the AP pool
-- their AP classification
-- how many copies of each reward exist
-- optional reference metadata like vanilla `base_cost`
-
-### `build_config.json`
-
-Main build and sample-config file.
-
-Use it to control:
-
-- sample YAML defaults
-- goal defaults
-- check counts and intervals
-- default shop price range
-- trap defaults
-- mod metadata and dependency versions
-
-### `apworld_templates/bg3/options.py`
-
-Defines the AP-side player options and their descriptions.
-
-### `combatmod_patch/`
-
-Contains the Trials-side patch that rewires the shop UI, reward handling, icon usage, and AP synchronization.
-
-### `compat_mod/`
-
-Contains the lightweight Archipelago bridge mod source.
 
 ## Option Notes
 
@@ -153,7 +110,7 @@ Key options that affect balance the most:
 - `traps_percentage`
 - `enabled_traps`
 
-Shop prices are currently seeded with pure-random values, rounded to multiples of `10`, within the configured min/max range.
+Shop prices are seeded per player and rounded to multiples of `10`.
 
 DeathLink is optional and off by default. When enabled, received DeathLinks wipe the active party so the player has to reload, and the trigger mode can be set to:
 
@@ -177,6 +134,63 @@ If things are working, `ap_out.json` should show progress tokens like:
 - `TOT-SHOP-001`
 - `TOT-GOAL-001`
 
+## Repo Layout
+
+The repo is organized around four main areas now:
+
+- `config/`
+  Build config and gameplay tuning files.
+- `src/apworld/bg3tot/`
+  The AP world and client source that gets staged into `bg3tot.apworld`.
+- `src/archipelago_tot_mod/`
+  The BG3 mod that gets merged into the final `ArchipelagoToT.pak`.
+- `assets/archipelago_branding/`
+  Archipelago art assets used for the merged mod branding and shop icons.
+
+Support files:
+
+- `scripts/build_release.py`
+  Main build script.
+- `build.ps1`
+  Small PowerShell wrapper around the Python build script.
+- `tools/`
+  Bundled third-party packaging tools. This is basically the repo-local toolchain.
+
+## Important Files
+
+### `config/trials_unlock_catalog.json`
+
+Main gameplay tuning file for Trials reward items.
+
+Use it to control:
+
+- which Trials rewards can appear in the AP pool
+- their AP classification
+- how many copies of each reward exist
+- optional reference metadata like vanilla `base_cost`
+
+### `config/build_config.json`
+
+Main build and sample-config file.
+
+Use it to control:
+
+- merged mod metadata
+- sample YAML defaults
+- goal defaults
+- check counts and intervals
+- default shop price range
+- trap defaults
+- the source path for the base Trials of Tav mod used during packaging
+
+### `src/archipelago_tot_mod/overlay/`
+
+Repo-owned Lua and asset overrides copied into the merged BG3 mod during build.
+
+### `src/apworld/bg3tot/`
+
+Repo-owned Archipelago world and client overrides layered on top of the upstream BG3 Archipelago world template.
+
 ## Build
 
 Build the full bundle:
@@ -188,16 +202,18 @@ Build the full bundle:
 Or use Python directly:
 
 ```powershell
-python tools\build_release.py build --clean
+python scripts\build_release.py build --clean
 ```
 
-If you only changed configuration or source files and want to refresh outputs without clearing everything first:
+Set `config/build_config.json -> test_bundle -> trials_mod_source` to your local `CombatMod.pak` or unpacked Trials of Tav folder if the build script cannot find it automatically.
+
+If you only changed config or source files and want to refresh outputs without clearing everything first:
 
 ```powershell
 .\build.ps1
 ```
 
-If you want to force fresh upstream clones:
+If you want to force a fresh upstream Archipelago world clone:
 
 ```powershell
 .\build.ps1 -Clean -RefreshCache
@@ -208,16 +224,17 @@ If you want to force fresh upstream clones:
 Running the build creates a ready-to-test bundle in `dist/`:
 
 - `dist/apworlds/bg3tot.apworld`
-- `dist/bg3_mods/CombatMod.pak`
-- `dist/bg3_mods/Archipelago_###.pak`
-- `dist/bg3_mods/ArchipelagoTrials.pak`
+- `dist/bg3_mods/ArchipelagoToT.pak`
 - `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
 - `dist/player_yaml/bg3_trials_test.yaml`
 - `dist/INSTALL.txt`
 - `dist/build_manifest.json`
 
-`CombatMod.pak` is the patched Trials of Tav - Reloaded mod used by this integration. The Archipelago pak and bridge pak are also rebuilt as part of the bundle.
-The release zip contains the 4 required test files plus `INSTALL.txt` and the sample YAML, so it is the easiest file to upload to a GitHub Release.
+## Repo Notes
+
+- `tools/` bundles Norbyte ExportTool and the supporting files needed to package BG3 mods.
+- `.cache/`, `dist/`, and `%TEMP%/` are local build output and are ignored in git.
+- The old standalone bridge mod source is gone from the active repo layout. The repo is centered around one merged BG3 pak now.
 
 ## Acknowledgements / Credits
 
@@ -246,12 +263,6 @@ Reference sources used while putting this project together:
 - [Archipelago BG3 world source](https://github.com/zane31415/ArchipelagoBG3)
 - [BG3 Archipelago mod source](https://github.com/zane31415/BG3ArchipelagoMod)
 - [Norbyte tools](https://github.com/Norbyte/lslib)
-
-## Repo Notes
-
-- `tools/` bundles Norbyte ExportTool and the supporting files needed to package BG3 mods.
-- `.cache/`, `dist/`, and `tmp/` are local build output and are safe to ignore in git.
-- The release layout is intentionally three BG3 paks plus one `bg3tot.apworld`; collapsing everything into one BG3 mod would currently be a much riskier structural merge.
 
 ## Third-Party Assets & Licensing
 
