@@ -24,7 +24,7 @@ Supported check groups:
 
 Download:
 
-- `Archipelago-BG3-Trials-test-bundle.zip`
+- [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 
 from the latest GitHub Release and extract it somewhere convenient.
 
@@ -38,10 +38,11 @@ The archive contains:
 Nexus Downloads:
 
 The required BG3 mod dependencies:
-  - `ImpUI`
-  - `Mod Configuration Menu`
-  - `Expansion`
-  - `AdvancedTTSpells`
+
+  - [ImpUI](https://www.nexusmods.com/baldursgate3/mods/366)
+  - [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
+  - [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
+  - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
 
 ### 2. Install the AP world
 
@@ -59,7 +60,7 @@ Copy:
 
 into your BG3 `Mods` folder.
 
-In BG3 Mod Manager enable mods in order:
+In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order:
 
 1. `ImpUI`
 2. `Mod Configuration Menu`
@@ -266,7 +267,7 @@ Reference sources used while putting this project together:
 
 ## Third-Party Assets & Licensing
 
-This project includes assets from the Archipelago asset pack. `archipelago-asset-pack/LICENSE.txt`
+This project includes assets from the Archipelago asset pack. `assets/archipelago_branding/LICENSE.txt`
 
 These assets are © 2022 by Krista Corkos and Christopher Wilson and are licensed under the Creative Commons Attribution-NonCommercial 4.0 International License:
 http://creativecommons.org/licenses/by-nc/4.0/
