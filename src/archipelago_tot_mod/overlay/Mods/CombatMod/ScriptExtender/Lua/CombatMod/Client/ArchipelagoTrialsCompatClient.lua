@@ -205,6 +205,31 @@ local function advance_ap_notification_queue()
 end
 
 
+local function sync_notification_location_segment(payload)
+    if type(payload) ~= "table" then
+        return
+    end
+
+    local text = tostring(payload.text or "")
+    local segments = payload.segments
+    if text == "" or type(segments) ~= "table" or #segments == 0 then
+        return
+    end
+
+    local location_text = string.match(text, "%(([^()]*)%)")
+    if not location_text then
+        return
+    end
+
+    for _, segment in ipairs(segments) do
+        if tostring(segment.color or "") == "green" then
+            segment.text = location_text
+            return
+        end
+    end
+end
+
+
 local function queue_ap_notification(payload)
     if type(payload) ~= "table" then
         payload = { text = tostring(payload or "") }
@@ -213,6 +238,10 @@ local function queue_ap_notification(payload)
     local text = tostring(payload.text or "")
     local segments = payload.segments
     local has_segments = type(segments) == "table" and #segments > 0
+    if has_segments then
+        sync_notification_location_segment(payload)
+        segments = payload.segments
+    end
     if text == "" and not has_segments then
         return
     end

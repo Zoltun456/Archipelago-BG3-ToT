@@ -787,6 +787,113 @@ local function collect_party_trap_targets(preferred_character)
 end
 
 
+local function collect_party_member_trap_targets(preferred_character)
+    local targets = {}
+    local seen = {}
+    local owner_lookup = {}
+
+    for _, character in ipairs(get_active_party_members()) do
+        append_trap_target(targets, seen, character)
+        owner_lookup[extract_character_uuid(character)] = true
+    end
+
+    local preferred = resolve_reward_character(preferred_character)
+    if preferred ~= "" then
+        append_trap_target(targets, seen, preferred)
+        owner_lookup[preferred] = true
+    end
+
+    append_party_followers(targets, seen, owner_lookup)
+    return targets
+end
+
+
+local function get_character_ability_value(character, ability_name)
+    if character == "" or not Osi or not Osi.GetAbility then
+        return 0
+    end
+
+    local ok, value = pcall(function()
+        return Osi.GetAbility(character, ability_name)
+    end)
+    if not ok then
+        return 0
+    end
+    return tonumber(value or 0) or 0
+end
+
+
+local function pick_highest_mental_trap_target(preferred_character)
+    local best_character = ""
+    local best_primary = -1
+    local best_total = -1
+
+    for _, character in ipairs(collect_party_member_trap_targets(preferred_character)) do
+        local intelligence = get_character_ability_value(character, "Intelligence")
+        local wisdom = get_character_ability_value(character, "Wisdom")
+        local charisma = get_character_ability_value(character, "Charisma")
+        local primary = math.max(intelligence, wisdom, charisma)
+        local total = intelligence + wisdom + charisma
+        if primary > best_primary or (primary == best_primary and total > best_total) then
+            best_character = character
+            best_primary = primary
+            best_total = total
+        end
+    end
+
+    return best_character
+end
+
+
+local function pick_random_trap_target(targets)
+    if #targets == 0 then
+        return ""
+    end
+    return tostring(targets[math.random(1, #targets)] or "")
+end
+
+
+local function get_character_position(character)
+    if character == "" or not Osi or not Osi.GetPosition then
+        return nil
+    end
+
+    local ok, x, y, z = pcall(function()
+        return Osi.GetPosition(character)
+    end)
+    if not ok then
+        return nil
+    end
+
+    return {
+        x = tonumber(x or 0) or 0,
+        y = tonumber(y or 0) or 0,
+        z = tonumber(z or 0) or 0,
+    }
+end
+
+
+local function cast_position_trap_spell(spell_id, caster_character, target_character)
+    if spell_id == "" or caster_character == "" or target_character == "" or not Osi or not Osi.UseSpellAtPosition then
+        return false
+    end
+
+    local position = get_character_position(target_character)
+    if not position then
+        return false
+    end
+
+    local ok, err = pcall(function()
+        Osi.UseSpellAtPosition(caster_character, spell_id, position.x, position.y, position.z, 1)
+    end)
+    if not ok then
+        L.Error("ArchipelagoTrialsCompat/TrapSpell", spell_id, caster_character, target_character, err)
+        return false
+    end
+    return true
+end
+
+
 local function capture_original_unlock_templates()
     if runtime.original_templates_captured then
         return
@@ -1021,24 +1128,63 @@ local function grant_trap_reward(entry, preferred_character)
     end
 
     local targets = collect_party_trap_targets(preferred_character)
-    if #targets == 0 or not Osi or not Osi.ApplyStatus then
+    if #targets == 0 or not Osi then
         return false
+    end
+    local trap_source = resolve_reward_character(preferred_character)
+    local positional_traps = {
+        Silence = function()
+            local silence_target = pick_highest_mental_trap_target(preferred_character)
+            if silence_target == "" then
+                return false
+            end
+            return cast_position_trap_spell("Target_Silence", silence_target, silence_target)
+        end,
+        Grease = function()
+            local grease_target = pick_random_trap_target(targets)
+            if grease_target == "" then
+                return false
+            end
+            return cast_position_trap_spell("Target_Grease", grease_target, grease_target)
+        end,
+    }
+    local positional_trap = positional_traps[trap_kind]
+    if positional_trap then
+        return positional_trap()
     end
 
     local statuses = {
         Bleeding = { id = "BLEEDING", duration = 5 },
         Stun = { id = "STUNNED", duration = 5 },
-        Confusion = { id = "CONFUSED", duration = 5 },
+        -- BG3's spell data applies the CONFUSION status, not CONFUSED.
+        -- It also relies on a source for SourceSpellDC()-based turn saves.
+        Confusion = { id = "CONFUSION", duration = 18, force = 1, use_source = true },
+        Bane = { id = "BANE", duration = 6, use_source = true },
+        Blindness = { id = "BLINDNESS", duration = 6, use_source = true },
+        Slow = { id = "SLOW", duration = 6, use_source = true },
+        Poisoned = { id = "POISONED", duration = 6 },
+        FaerieFire = { id = "FAERIE_FIRE", duration = 6 },
+        Ensnared = { id = "ENSNARING_STRIKE", duration = 6, use_source = true },
+        Frightened = { id = "FRIGHTENED", duration = 6, use_source = true },
+        Burning = { id = "BURNING", duration = 6 },
+        HoldPerson = { id = "HOLD_PERSON", duration = 6, force = 1, use_source = true },
     }
     local trap = statuses[trap_kind]
-    if not trap then
+    if not trap or not Osi.ApplyStatus then
         return false
     end
 
     local applied = false
     for _, character in ipairs(targets) do
         local ok, err = pcall(function()
-            Osi.ApplyStatus(character, trap.id, trap.duration)
+            if trap.use_source then
+                local source_character = trap_source ~= "" and trap_source or character
+                Osi.ApplyStatus(character, trap.id, trap.duration, tonumber(trap.force or 0), source_character)
+            elseif trap.force ~= nil then
+                Osi.ApplyStatus(character, trap.id, trap.duration, tonumber(trap.force or 0))
+            else
+                Osi.ApplyStatus(character, trap.id, trap.duration)
+            end
         end)
         if not ok then
             L.Error("ArchipelagoTrialsCompat/GrantTrap", trap_kind, character, err)

@@ -171,12 +171,50 @@ class BG3Context(CommonContext):
             for index, _unlock_id in enumerate(self.slot_data_cache.get("shop_check_unlock_ids", []), start=1)
         ]
 
+    def _checked_location_progress_index_by_location_id(self) -> dict[int, int]:
+        checked_tokens = self._load_json(self.comm_file_locations_checked, [])
+        if not isinstance(checked_tokens, list):
+            return {}
+
+        counters = {
+            CLEAR_LOCATION_BASE_ID: 0,
+            KILL_LOCATION_BASE_ID: 0,
+            PERFECT_LOCATION_BASE_ID: 0,
+            ROGUESCORE_LOCATION_BASE_ID: 0,
+            SHOP_LOCATION_BASE_ID: 0,
+        }
+        seen_locations: set[int] = set()
+        progress_indices: dict[int, int] = {}
+
+        for token in checked_tokens:
+            resolved_location = location_id_for_token(
+                str(token or ""),
+                clear_count=len(self.slot_data_cache.get("clear_thresholds", [])),
+                kill_count=len(self.slot_data_cache.get("kill_thresholds", [])),
+                perfect_count=len(self.slot_data_cache.get("perfect_thresholds", [])),
+                roguescore_count=len(self.slot_data_cache.get("roguescore_thresholds", [])),
+                shop_count=len(self.slot_data_cache.get("shop_check_unlock_ids", [])),
+            )
+            if not isinstance(resolved_location, int) or resolved_location in seen_locations:
+                continue
+
+            seen_locations.add(resolved_location)
+            for base_id in counters:
+                if base_id < resolved_location < base_id + 100:
+                    counters[base_id] += 1
+                    progress_indices[resolved_location] = counters[base_id]
+                    break
+
+        return progress_indices
+
     def _dynamic_location_name(self, location_id: int, player: int | None = None) -> str | None:
         if player is not None and self.slot is not None and player != self.slot:
             return None
 
         # AP's static lookup table knows the full theory ranges. For player-facing text,
         # rebuild the active "X/current_total" names from this slot's actual settings.
+        # For notifications, prefer the order the checks were actually earned in local play.
+        progress_indices = self._checked_location_progress_index_by_location_id()
         shop_display_indices = self._shop_display_index_by_location_id()
         groups = (
             (CLEAR_LOCATION_BASE_ID, len(self.slot_data_cache.get("clear_thresholds", [])), clear_location_name),
@@ -188,6 +226,9 @@ class BG3Context(CommonContext):
         for base_id, total, name_factory in groups:
             index = int(location_id) - base_id
             if total > 0 and 1 <= index <= total:
+                progress_index = progress_indices.get(int(location_id))
+                if progress_index is not None:
+                    return name_factory(progress_index, total)
                 if base_id == SHOP_LOCATION_BASE_ID:
                     return name_factory(shop_display_indices.get(int(location_id), index), total)
                 return name_factory(index, total)

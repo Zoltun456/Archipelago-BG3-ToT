@@ -36,15 +36,37 @@ TRAP_OPTIONS = [
     ["Sussur Trap", "Trap-Sussur"],
     ["Clown Trap", "Trap-Clown"],
     ["Overburdened Trap", "Trap-Overburdened"],
+    ["Bane Trap", "Trap-Bane"],
+    ["Blindness Trap", "Trap-Blindness"],
+    ["Slow Trap", "Trap-Slow"],
+    ["Poisoned Trap", "Trap-Poisoned"],
+    ["Faerie Fire Trap", "Trap-FaerieFire"],
+    ["Ensnared Trap", "Trap-Ensnared"],
+    ["Frightened Trap", "Trap-Frightened"],
+    ["Burning Trap", "Trap-Burning"],
+    ["Hold Person Trap", "Trap-HoldPerson"],
+    ["Silence Trap", "Trap-Silence"],
+    ["Grease Trap", "Trap-Grease"],
 ]
 
 # Keep the legacy trap items registered so older seeds can still deserialize them,
-# but only the stable/tested subset should be generated going forward.
+# but only the supported subset should be generated going forward.
 TRAP_ITEM_NAME_BY_OPTION = {
     "Monster": "Monster Spawn Trap",
     "Bleeding": "Bleeding Trap",
     "Stun": "Stunned Trap",
     "Confusion": "Confusion Trap",
+    "Bane": "Bane Trap",
+    "Blindness": "Blindness Trap",
+    "Slow": "Slow Trap",
+    "Poisoned": "Poisoned Trap",
+    "FaerieFire": "Faerie Fire Trap",
+    "Ensnared": "Ensnared Trap",
+    "Frightened": "Frightened Trap",
+    "Burning": "Burning Trap",
+    "HoldPerson": "Hold Person Trap",
+    "Silence": "Silence Trap",
+    "Grease": "Grease Trap",
 }
 
 

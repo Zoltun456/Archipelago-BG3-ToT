@@ -217,9 +217,40 @@ class EnabledTraps(OptionSet):
     Monster traps are still the least proven option and may need extra testing in Trials.
     """
 
-    valid_keys = ["Bleeding", "Stun", "Confusion", "Monster"]
+    valid_keys = [
+        "Bleeding",
+        "Stun",
+        "Confusion",
+        "Bane",
+        "Blindness",
+        "Slow",
+        "Poisoned",
+        "FaerieFire",
+        "Ensnared",
+        "Frightened",
+        "Burning",
+        "HoldPerson",
+        "Silence",
+        "Grease",
+        "Monster",
+    ]
     display_name = "Enabled Trap List"
-    default = {"Bleeding", "Stun", "Confusion"}
+    default = {
+        "Bleeding",
+        "Stun",
+        "Confusion",
+        "Bane",
+        "Blindness",
+        "Slow",
+        "Poisoned",
+        "FaerieFire",
+        "Ensnared",
+        "Frightened",
+        "Burning",
+        "HoldPerson",
+        "Silence",
+        "Grease",
+    }
 
 
 bg3_option_groups = [

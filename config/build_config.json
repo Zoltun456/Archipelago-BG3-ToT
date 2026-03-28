@@ -40,7 +40,18 @@
     "enabled_traps": [
       "Bleeding",
       "Stun",
-      "Confusion"
+      "Confusion",
+      "Bane",
+      "Blindness",
+      "Slow",
+      "Poisoned",
+      "FaerieFire",
+      "Ensnared",
+      "Frightened",
+      "Burning",
+      "HoldPerson",
+      "Silence",
+      "Grease"
     ]
   },
   "test_bundle": {
