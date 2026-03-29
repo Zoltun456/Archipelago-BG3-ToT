@@ -53,7 +53,7 @@ def _zero_trap_shop_costs(world: "BG3World", costs: list[int]) -> list[int]:
     adjusted_costs = list(costs)
     shop_check_count = int(world.options.shop_check_count)
     for index in range(1, min(shop_check_count, len(adjusted_costs)) + 1):
-        location = world.multiworld.get_location(shop_location_name(index, shop_check_count), world.player)
+        location = world.multiworld.get_location(shop_location_name(index), world.player)
         if location.item and location.item.classification & ItemClassification.trap:
             adjusted_costs[index - 1] = 0
     return adjusted_costs

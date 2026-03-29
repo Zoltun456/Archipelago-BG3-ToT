@@ -51,7 +51,7 @@ def _build_location_group(
     id_factory,
 ) -> dict[str, int]:
     return {
-        name_factory(index, count): id_factory(index)
+        name_factory(index): id_factory(index)
         for index in range(1, count + 1)
     }
 
