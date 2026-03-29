@@ -22,15 +22,15 @@ Supported check groups:
 
 ### 1. Download and extract the latest release
 
-Download:
+Download both of these from the latest GitHub Release:
 
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
+- [bg3tot.apworld](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 
-from the latest GitHub Release and extract it somewhere convenient.
+Then extract the zip somewhere convenient.
 
 The archive contains:
 
-- `bg3tot.apworld`
 - `ArchipelagoToT.pak`
 - `bg3_trials_test.yaml`
 - `INSTALL.txt`
@@ -39,7 +39,6 @@ Nexus Downloads:
 
 The required BG3 mod dependencies:
 
-  - [ImpUI](https://www.nexusmods.com/baldursgate3/mods/366)
   - [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
   - [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
   - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
@@ -62,11 +61,10 @@ into your BG3 `Mods` folder.
 
 In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order:
 
-1. `ImpUI`
-2. `Mod Configuration Menu`
-3. `Expansion`
-4. `AdvancedTTSpells`
-5. `Archipelago - Trials of Tav`
+1. `Mod Configuration Menu`
+2. `Expansion`
+3. `AdvancedTTSpells`
+4. `Archipelago - Trials of Tav`
 
 Then:
 
@@ -226,6 +224,7 @@ Running the build creates a ready-to-test bundle in `dist/`:
 - `dist/apworlds/bg3tot.apworld`
 - `dist/bg3_mods/ArchipelagoToT.pak`
 - `dist/release/Archipelago-BG3-Trials-test-bundle.zip`
+- `dist/release/bg3tot.apworld`
 - `dist/player_yaml/bg3_trials_test.yaml`
 - `dist/INSTALL.txt`
 - `dist/build_manifest.json`

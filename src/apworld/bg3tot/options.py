@@ -13,6 +13,24 @@ from .trials_data import (
 )
 
 
+DEFAULT_ENABLED_TRAPS = {
+    "Bleeding",
+    "Stun",
+    "Confusion",
+    "Bane",
+    "Blindness",
+    "Slow",
+    "Poisoned",
+    "FaerieFire",
+    "Ensnared",
+    "Frightened",
+    "Burning",
+    "HoldPerson",
+    "Silence",
+    "Grease",
+}
+
+
 class Goal(Choice):
     """
     Determines how this BG3 Trials slot wins.
@@ -235,22 +253,7 @@ class EnabledTraps(OptionSet):
         "Monster",
     ]
     display_name = "Enabled Trap List"
-    default = {
-        "Bleeding",
-        "Stun",
-        "Confusion",
-        "Bane",
-        "Blindness",
-        "Slow",
-        "Poisoned",
-        "FaerieFire",
-        "Ensnared",
-        "Frightened",
-        "Burning",
-        "HoldPerson",
-        "Silence",
-        "Grease",
-    }
+    default = DEFAULT_ENABLED_TRAPS
 
 
 bg3_option_groups = [
@@ -283,6 +286,50 @@ bg3_option_groups = [
         EnabledTraps,
     ]),
 ]
+
+
+BG3_OPTION_PRESETS = {
+    "Release Defaults": {
+        "death_link": False,
+        "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
+        "goal": Goal.option_clear_stages,
+        "goal_clear_target": 20,
+        "goal_rogue_score_target": 300,
+        "clear_check_count": 10,
+        "clear_check_interval": 1,
+        "kill_check_count": 10,
+        "kill_check_interval": 10,
+        "perfect_check_count": 5,
+        "perfect_check_interval": 1,
+        "roguescore_check_count": 10,
+        "roguescore_check_interval": 25,
+        "shop_check_count": 50,
+        "shop_price_minimum": 50,
+        "shop_price_maximum": 300,
+        "traps_percentage": 15,
+        "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
+    },
+    "Quick Trial": {
+        "death_link": False,
+        "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
+        "goal": Goal.option_clear_stages,
+        "goal_clear_target": 10,
+        "goal_rogue_score_target": 150,
+        "clear_check_count": 6,
+        "clear_check_interval": 1,
+        "kill_check_count": 6,
+        "kill_check_interval": 12,
+        "perfect_check_count": 3,
+        "perfect_check_interval": 1,
+        "roguescore_check_count": 4,
+        "roguescore_check_interval": 50,
+        "shop_check_count": 25,
+        "shop_price_minimum": 30,
+        "shop_price_maximum": 150,
+        "traps_percentage": 10,
+        "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
+    },
+}
 
 
 @dataclass

@@ -69,6 +69,24 @@ TRAP_ITEM_NAME_BY_OPTION = {
     "Grease": "Grease Trap",
 }
 
+UNLOCK_ITEM_NAMES = {unlock["name"] for unlock in UNLOCK_CATALOG}
+PROGRESSION_UNLOCK_ITEM_NAMES = {
+    unlock["name"]
+    for unlock in UNLOCK_CATALOG
+    if unlock["classification"] == "progression"
+}
+USEFUL_UNLOCK_ITEM_NAMES = {
+    unlock["name"]
+    for unlock in UNLOCK_CATALOG
+    if unlock["classification"] == "useful"
+}
+FILLER_UNLOCK_ITEM_NAMES = {
+    unlock["name"]
+    for unlock in UNLOCK_CATALOG
+    if unlock["classification"] == "filler"
+}
+TRAP_ITEM_NAMES = {str(name) for name, _trap_id in TRAP_OPTIONS}
+
 
 def _build_equipment_fillers() -> list[list[str]]:
     # Equipment still comes from the upstream BG3 world list. I only rename dupes here so the
@@ -104,6 +122,14 @@ def _extend_item_tuples(
 
 EQUIPMENT_FILLERS = _build_equipment_fillers()
 FILLER_ITEM_NAMES = [item[0] for item in CUSTOM_FILLERS + DUPLICATE_ITEM_FILLERS + EQUIPMENT_FILLERS]
+ITEM_NAME_GROUPS = {
+    "Unlocks": UNLOCK_ITEM_NAMES,
+    "Progression Unlocks": PROGRESSION_UNLOCK_ITEM_NAMES,
+    "Useful Unlocks": USEFUL_UNLOCK_ITEM_NAMES,
+    "Filler Unlocks": FILLER_UNLOCK_ITEM_NAMES,
+    "Fillers": set(FILLER_ITEM_NAMES),
+    "Traps": TRAP_ITEM_NAMES,
+}
 
 ITEM_TUPLES: list[list[str | int | ItemClassification]] = []
 for index, unlock in enumerate(UNLOCK_CATALOG, start=1):

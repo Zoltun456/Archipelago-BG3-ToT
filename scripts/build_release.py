@@ -19,8 +19,12 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "build_config.json"
 UNLOCK_CATALOG_PATH = ROOT / "config" / "trials_unlock_catalog.json"
 APWORLD_SOURCE_DIR = ROOT / "src" / "apworld" / "bg3tot"
+ARCHIPELAGO_METADATA_PATH = APWORLD_SOURCE_DIR / "archipelago.json"
+PACKAGED_UNLOCK_CATALOG_PATH = APWORLD_SOURCE_DIR / "trials_unlock_catalog.json"
 APWORLD_PACKAGE_NAME = "bg3tot"
 APWORLD_FILENAME = "bg3tot.apworld"
+APWORLD_CONTAINER_VERSION = 7
+APWORLD_COMPATIBLE_VERSION = 7
 
 MOD_OVERLAY_DIR = ROOT / "src" / "archipelago_tot_mod" / "overlay"
 BRANDING_ASSET_DIR = ROOT / "assets" / "archipelago_branding"
@@ -150,6 +154,39 @@ def normalize_config(config: dict[str, Any]) -> bool:
     return changed
 
 
+def sync_archipelago_world_version(config: dict[str, Any]) -> bool:
+    release_version = str(config.get("final_mod", {}).get("release_version", "") or "").strip()
+    if not release_version:
+        return False
+
+    metadata = load_json(ARCHIPELAGO_METADATA_PATH)
+    if metadata.get("world_version") == release_version:
+        return False
+
+    metadata["world_version"] = release_version
+    dump_json(ARCHIPELAGO_METADATA_PATH, metadata)
+    return True
+
+
+def sync_unlock_catalog() -> bool:
+    source_contents = UNLOCK_CATALOG_PATH.read_text(encoding="utf-8")
+    if PACKAGED_UNLOCK_CATALOG_PATH.exists():
+        packaged_contents = PACKAGED_UNLOCK_CATALOG_PATH.read_text(encoding="utf-8")
+        if packaged_contents == source_contents:
+            return False
+
+    PACKAGED_UNLOCK_CATALOG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    PACKAGED_UNLOCK_CATALOG_PATH.write_text(source_contents, encoding="utf-8")
+    return True
+
+
+def write_packaged_apworld_manifest(staged_world_dir: Path) -> None:
+    metadata = load_json(staged_world_dir / "archipelago.json")
+    metadata["version"] = APWORLD_CONTAINER_VERSION
+    metadata["compatible_version"] = APWORLD_COMPATIBLE_VERSION
+    dump_json(staged_world_dir / "archipelago.json", metadata)
+
+
 def render_sample_yaml(config: dict[str, Any]) -> str:
     sample = config["sample_player"]
     trap_lines = "\n".join(f"    - {trap}" for trap in sample["enabled_traps"])
@@ -195,16 +232,11 @@ def ensure_git_clone(target: Path, repo_url: str, ref: str, refresh: bool) -> No
     )
 
 
-def stage_trials_apworld(source_world_dir: Path, staged_world_dir: Path) -> None:
-    shutil.copytree(source_world_dir, staged_world_dir, dirs_exist_ok=True)
-    shutil.copy2(UNLOCK_CATALOG_PATH, staged_world_dir / "trials_unlock_catalog.json")
-
-    for template_path in APWORLD_SOURCE_DIR.iterdir():
-        destination = staged_world_dir / template_path.name
-        if template_path.is_dir():
-            shutil.copytree(template_path, destination, dirs_exist_ok=True)
-        else:
-            shutil.copy2(template_path, destination)
+def stage_trials_apworld(staged_world_dir: Path) -> None:
+    if staged_world_dir.exists():
+        shutil.rmtree(staged_world_dir)
+    shutil.copytree(APWORLD_SOURCE_DIR, staged_world_dir)
+    write_packaged_apworld_manifest(staged_world_dir)
 
 
 def zip_directory(source_dir: Path, archive_path: Path, root_name: str) -> None:
@@ -230,6 +262,14 @@ def build_release_archive(
             arcname = Path(root_name) / relative_name
             zip_handle.write(source_path, arcname.as_posix())
     return str(archive_path.resolve())
+
+
+def copy_release_asset(source_path: Path, destination_path: Path) -> str:
+    destination_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_path, destination_path)
+    return str(destination_path.resolve())
+
+
 def iter_divine_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]:
     candidates: list[tuple[str, Path]] = []
     seen: set[str] = set()
@@ -767,16 +807,8 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     divine_info = resolve_divine_path(config)
     trials_mod_info = resolve_trials_mod_source(config)
 
-    archipelago_bg3_cache = cache_dir / "ArchipelagoBG3"
-    ensure_git_clone(
-        archipelago_bg3_cache,
-        config["upstream"]["archipelago_bg3_repo"],
-        config["upstream"]["archipelago_bg3_ref"],
-        refresh=args.refresh_cache,
-    )
-
     staged_world_dir = output_dir / "staging" / APWORLD_PACKAGE_NAME
-    stage_trials_apworld(archipelago_bg3_cache / "worlds" / "bg3", staged_world_dir)
+    stage_trials_apworld(staged_world_dir)
     apworld_path = output_dir / "apworlds" / APWORLD_FILENAME
     zip_directory(staged_world_dir, apworld_path, APWORLD_PACKAGE_NAME)
 
@@ -803,14 +835,17 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         f"""
         Archipelago BG3 Trials test bundle
 
-        This archive contains the files needed for public testing:
+        This release ships as two GitHub assets:
         - {APWORLD_FILENAME}
+        - {slugify_filename(config["project_name"])}-test-bundle.zip
+
+        This zip archive contains:
         - {final_mod['pak_name']}
         - bg3_trials_test.yaml
 
         Brief setup:
-        1. Put {APWORLD_FILENAME} into your Archipelago custom_worlds folder.
-        2. Put {final_mod['pak_name']} into your BG3 Mods folder.
+        1. Download {APWORLD_FILENAME} from the same release page and put it into your Archipelago custom_worlds folder.
+        2. Extract this zip and put {final_mod['pak_name']} into your BG3 Mods folder.
         3. In BG3 Mod Manager, enable "{final_mod['display_name']}" and export the load order.
         4. Launch BG3 and start Trials of Tav as normal.
 
@@ -820,20 +855,28 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     write_text(install_path, instructions)
     artifacts.append({"kind": "install", "path": str(install_path.resolve())})
 
+    release_dir = output_dir / "release"
     release_bundle_path = output_dir / "release" / f"{slugify_filename(config['project_name'])}-test-bundle.zip"
+    release_apworld_path = release_dir / APWORLD_FILENAME
     release_bundle_archive = None
+    release_apworld_asset = None
     release_bundle_missing = []
     release_bundle_candidates = [
-        (apworld_path, APWORLD_FILENAME),
         (final_pak_path, str(final_mod["pak_name"])),
         (sample_yaml_path, sample_yaml_path.name),
         (install_path, "INSTALL.txt"),
     ]
-    for source_path, relative_name in release_bundle_candidates:
-        if not source_path.exists() and relative_name in {APWORLD_FILENAME, str(final_mod["pak_name"])}:
+    required_release_assets = [
+        (apworld_path, APWORLD_FILENAME),
+        (final_pak_path, str(final_mod["pak_name"])),
+    ]
+    for source_path, relative_name in required_release_assets:
+        if not source_path.exists():
             release_bundle_missing.append(relative_name)
 
     if not release_bundle_missing:
+        release_apworld_asset = copy_release_asset(apworld_path, release_apworld_path)
+        artifacts.append({"kind": "release_apworld", "path": release_apworld_asset})
         release_bundle_archive = build_release_archive(config, release_bundle_path, release_bundle_candidates)
         artifacts.append({"kind": "release_zip", "path": release_bundle_archive})
 
@@ -846,6 +889,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         "release_bundle": {
             "created": release_bundle_archive is not None,
             "path": release_bundle_archive or str(release_bundle_path.resolve()),
+            "apworld_path": release_apworld_asset or str(release_apworld_path.resolve()),
             "missing_required_files": release_bundle_missing,
         },
     }
@@ -876,6 +920,8 @@ def main() -> None:
     config = load_json(CONFIG_PATH)
     if normalize_config(config):
         dump_json(CONFIG_PATH, config)
+    sync_archipelago_world_version(config)
+    sync_unlock_catalog()
 
     if args.command == "sync":
         print("Synced generated config values from config/build_config.json")
