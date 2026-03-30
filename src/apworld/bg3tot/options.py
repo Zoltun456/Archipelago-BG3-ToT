@@ -26,6 +26,7 @@ DEFAULT_ENABLED_TRAPS = {
     "Frightened",
     "Burning",
     "HoldPerson",
+    "Cheesed",
     "Silence",
     "Grease",
 }
@@ -248,6 +249,7 @@ class EnabledTraps(OptionSet):
         "Frightened",
         "Burning",
         "HoldPerson",
+        "Cheesed",
         "Silence",
         "Grease",
         "Monster",

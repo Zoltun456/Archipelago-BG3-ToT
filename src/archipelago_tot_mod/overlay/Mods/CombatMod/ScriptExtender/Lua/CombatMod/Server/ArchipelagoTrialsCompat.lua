@@ -894,6 +894,22 @@ local function cast_position_trap_spell(spell_id, caster_character, target_chara
 end
 
 
+local function cast_targeted_trap_spell(spell_id, caster_character, target_character)
+    if spell_id == "" or caster_character == "" or target_character == "" or not Osi or not Osi.UseSpell then
+        return false
+    end
+
+    local ok, err = pcall(function()
+        Osi.UseSpell(caster_character, spell_id, target_character)
+    end)
+    if not ok then
+        L.Error("ArchipelagoTrialsCompat/TrapSpell", spell_id, caster_character, target_character, err)
+        return false
+    end
+    return true
+end
+
+
 local function capture_original_unlock_templates()
     if runtime.original_templates_captured then
         return
@@ -1151,6 +1167,24 @@ local function grant_trap_reward(entry, preferred_character)
     local positional_trap = positional_traps[trap_kind]
     if positional_trap then
         return positional_trap()
+    end
+
+    local targeted_traps = {
+        Cheesed = function()
+            local applied = false
+            for _, character in ipairs(targets) do
+                -- The circus cheese spell is concentration-based, so each target self-casts it.
+                -- That keeps the whole party cheesed instead of one shared caster dropping older applications.
+                if cast_targeted_trap_spell("Target_WYR_PolymorhphCheese_Djinni", character, character) then
+                    applied = true
+                end
+            end
+            return applied
+        end,
+    }
+    local targeted_trap = targeted_traps[trap_kind]
+    if targeted_trap then
+        return targeted_trap()
     end
 
     local statuses = {

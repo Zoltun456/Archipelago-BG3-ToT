@@ -32,10 +32,10 @@ You can win by:
 Trap items are filler that punish the current run instead of giving a normal reward.
 
 Working trap types include direct status traps such as `Bleeding`, `Stun`, `Confusion`, `Bane`, `Blindness`,
-`Slow`, `Poisoned`, `Faerie Fire`, `Ensnared`, `Frightened`, `Burning`, and `Hold Person`, plus positional traps
-such as `Silence` and `Grease`.
+`Slow`, `Poisoned`, `Faerie Fire`, `Ensnared`, `Frightened`, `Burning`, and `Hold Person`, a targeted polymorph
+trap `Cheesed`, plus positional traps such as `Silence` and `Grease`.
 
-Most status traps affect the full party, companions, and summons.
+Most status and targeted spell traps affect the full party, companions, and summons.
 
 ## What should players know before starting?
 

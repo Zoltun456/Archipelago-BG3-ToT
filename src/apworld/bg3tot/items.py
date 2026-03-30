@@ -21,9 +21,9 @@ CUSTOM_FILLERS = [
     ["Currency +25", "ToTFiller:Currency:25"],
     ["Currency +50", "ToTFiller:Currency:50"],
     ["Currency +100", "ToTFiller:Currency:100"],
-    ["RogueScore +5", "ToTFiller:RogueScore:5"],
-    ["RogueScore +10", "ToTFiller:RogueScore:10"],
-    ["RogueScore +25", "ToTFiller:RogueScore:25"],
+    #["RogueScore +5", "ToTFiller:RogueScore:5"],
+    #["RogueScore +10", "ToTFiller:RogueScore:10"],
+    #["RogueScore +25", "ToTFiller:RogueScore:25"],
     ["XP +1000", "ToTFiller:Experience:1000"],
     ["XP +3000", "ToTFiller:Experience:3000"],
 ]
@@ -45,6 +45,7 @@ TRAP_OPTIONS = [
     ["Frightened Trap", "Trap-Frightened"],
     ["Burning Trap", "Trap-Burning"],
     ["Hold Person Trap", "Trap-HoldPerson"],
+    ["Cheesed Trap", "Trap-Cheesed"],
     ["Silence Trap", "Trap-Silence"],
     ["Grease Trap", "Trap-Grease"],
 ]
@@ -65,6 +66,7 @@ TRAP_ITEM_NAME_BY_OPTION = {
     "Frightened": "Frightened Trap",
     "Burning": "Burning Trap",
     "HoldPerson": "Hold Person Trap",
+    "Cheesed": "Cheesed Trap",
     "Silence": "Silence Trap",
     "Grease": "Grease Trap",
 }
