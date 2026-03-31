@@ -29,8 +29,7 @@ Download apworld and mod zip:
 Download dependency mods from Nexus:
 - [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
 - [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
-
-`AdvancedTTSpells` is bundled into the generated `ArchipelagoToT.pak`, so it no longer needs a separate download for this repo's release build.
+- [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
 
 Download BG3 Mod Manager:
 - [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
@@ -44,9 +43,8 @@ Download BG3 Mod Manager:
 In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order (BG3MM has a nice guide on GIT if you need help setting it up):
 1. `Mod Configuration Menu`
 2. `Expansion`
-3. `Archipelago - Trials of Tav`
-
-If BG3MM exposes a bundled `AdvancedTTSpells` entry from the same `ArchipelagoToT.pak`, enable it too and keep it above `Archipelago - Trials of Tav`.
+3. `AdvancedTTSpells`
+4. `Archipelago - Trials of Tav`
 
 Then:
 1. Save Load Order
@@ -181,8 +179,6 @@ python scripts\build_release.py build --clean
 
 Set `config/build_config.json -> test_bundle -> trials_mod_source` to your local `CombatMod.pak` or unpacked Trials of Tav folder if the build script cannot find it automatically.
 
-Set `config/build_config.json -> test_bundle -> attspells_mod_source` to your local `AdvancedTTSpells*.pak` or unpacked ATTSpells folder if the build script cannot find it automatically.
-
 If you only changed config or source files and want to refresh outputs without clearing everything first:
 
 ```powershell
@@ -211,7 +207,7 @@ Running the build creates a ready-to-test bundle in `dist/`:
 
 - `tools/` bundles Norbyte ExportTool and the supporting files needed to package BG3 mods.
 - `.cache/`, `dist/`, and `%TEMP%/` are local build output and are ignored in git.
-- The old standalone bridge mod source is gone from the active repo layout. The repo is centered around one merged BG3 pak now.
+- The old standalone bridge mod source is gone from the active repo layout. The repo now ships one repo-built BG3 pak and expects external gameplay dependencies to be installed separately.
 
 ## Acknowledgements / Credits
 

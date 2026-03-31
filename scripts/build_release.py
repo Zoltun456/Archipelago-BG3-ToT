@@ -68,7 +68,14 @@ DEFAULT_FINAL_MOD = {
 
 ADVANCED_TT_SPELLS_UUID = "fa49db03-caa7-49c8-7c76-e6c38b60267a"
 ADVANCED_TT_SPELLS_MODULE_FOLDER = f"AdvancedTTSpells_{ADVANCED_TT_SPELLS_UUID}"
-ADVANCED_TT_SPELLS_PAK_NAME = f"{ADVANCED_TT_SPELLS_MODULE_FOLDER}.pak"
+ADVANCED_TT_SPELLS_DEPENDENCY = {
+    "folder": ADVANCED_TT_SPELLS_MODULE_FOLDER,
+    "md5": "fa19e41de1e324ab801d286efdc89b3c",
+    "name": "AdvancedTTSpells",
+    "publish_handle": "0",
+    "uuid": ADVANCED_TT_SPELLS_UUID,
+    "version64": "36169553834672129",
+}
 
 TOOLKIT_GUSTAVX_DEPENDENCY = {
     "folder": "GustavX",
@@ -167,10 +174,13 @@ def normalize_config(config: dict[str, Any]) -> bool:
         changed = True
 
     test_bundle = config.setdefault("test_bundle", {})
-    for key in ("divine_path", "trials_mod_source", "attspells_mod_source"):
+    for key in ("divine_path", "trials_mod_source"):
         if key not in test_bundle:
             test_bundle[key] = ""
             changed = True
+    if "attspells_mod_source" in test_bundle:
+        del test_bundle["attspells_mod_source"]
+        changed = True
 
     return changed
 
@@ -405,76 +415,6 @@ def iter_trials_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]
 
 def resolve_trials_mod_source(config: dict[str, Any]) -> dict[str, str | bool]:
     for source, candidate in iter_trials_mod_candidates(config):
-        if candidate.exists():
-            return {
-                "found": True,
-                "path": str(candidate.resolve()),
-                "source": source,
-            }
-
-    return {
-        "found": False,
-        "path": "",
-        "source": "",
-    }
-
-
-def iter_attspells_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]:
-    candidates: list[tuple[str, Path]] = []
-    seen: set[str] = set()
-
-    def add(label: str, raw_path: str | Path | None) -> None:
-        if not raw_path:
-            return
-        candidate = Path(raw_path).expanduser()
-        normalized = str(candidate).lower()
-        if normalized in seen:
-            return
-        seen.add(normalized)
-        candidates.append((label, candidate))
-
-    configured_source = config.get("test_bundle", {}).get("attspells_mod_source", "")
-    if configured_source:
-        add("config:test_bundle.attspells_mod_source", configured_source)
-
-    for env_var in ("BG3_ATTSPELLS_MOD_SOURCE", "ADVANCED_TT_SPELLS_SOURCE", "ATTSPELLS_SOURCE"):
-        if os.environ.get(env_var):
-            add(f"env:{env_var}", os.environ[env_var])
-
-    local_appdata = Path(os.environ.get("LOCALAPPDATA", ""))
-    user_profile = Path(os.environ.get("USERPROFILE", ""))
-    common_candidates = [
-        ROOT / ".cache" / "attspells_extract",
-        local_appdata / "Larian Studios" / "Baldur's Gate 3" / "Mods" / ADVANCED_TT_SPELLS_PAK_NAME,
-        ROOT / ADVANCED_TT_SPELLS_PAK_NAME,
-        ROOT / "third_party" / ADVANCED_TT_SPELLS_PAK_NAME,
-        user_profile / "Downloads" / ADVANCED_TT_SPELLS_PAK_NAME,
-    ]
-    for candidate in common_candidates:
-        add("common", candidate)
-
-    glob_roots = [
-        ROOT,
-        ROOT / "third_party",
-        user_profile / "Downloads",
-        local_appdata / "Larian Studios" / "Baldur's Gate 3" / "Mods",
-    ]
-    for glob_root in glob_roots:
-        if not glob_root.exists():
-            continue
-        for candidate in sorted(glob_root.glob("AdvancedTTSpells*.pak")):
-            add("common_glob", candidate)
-
-    vortex_root = user_profile / "AppData" / "Roaming" / "Vortex" / "baldursgate3" / "mods"
-    if vortex_root.exists():
-        for candidate in sorted(vortex_root.glob("**/AdvancedTTSpells*.pak")):
-            add("vortex_staging", candidate)
-
-    return candidates
-
-
-def resolve_attspells_mod_source(config: dict[str, Any]) -> dict[str, str | bool]:
-    for source, candidate in iter_attspells_mod_candidates(config):
         if candidate.exists():
             return {
                 "found": True,
@@ -824,10 +764,20 @@ def write_dependency_nodes(config_root: ET.Element, dependencies: list[dict[str,
         upsert_xml_attribute(dependency_node, "Version64", "int64", dependency.get("version64", "0"))
 
 
+def remove_xml_attribute(node: ET.Element | None, attribute_id: str) -> None:
+    if node is None:
+        return
+    for attribute in list(node.findall("attribute")):
+        if attribute.attrib.get("id") == attribute_id:
+            node.remove(attribute)
+
+
 def patch_mod_meta(
     meta_path: Path,
     final_mod: dict[str, Any],
     dependencies: list[dict[str, str]] | None = None,
+    patch_module_info: bool = True,
+    patch_publish_handle: bool = True,
 ) -> None:
     tree = ET.parse(meta_path)
     root = tree.getroot()
@@ -835,19 +785,22 @@ def patch_mod_meta(
     publish_version = root.find(".//node[@id='PublishVersion']")
     config_root = root.find(".//region[@id='Config']/node[@id='root']")
 
-    set_xml_attribute(module_info, "Author", str(final_mod.get("author", "")))
-    set_xml_attribute(module_info, "Description", str(final_mod.get("description", "")))
-    set_xml_attribute(module_info, "Name", str(final_mod.get("display_name", "")))
+    if patch_module_info:
+        set_xml_attribute(module_info, "Author", str(final_mod.get("author", "")))
+        set_xml_attribute(module_info, "Description", str(final_mod.get("description", "")))
+        set_xml_attribute(module_info, "Name", str(final_mod.get("display_name", "")))
 
-    version64 = str(final_mod.get("version64", ""))
-    publish_version64 = str(final_mod.get("publish_version64", version64))
-    publish_handle = str(final_mod.get("publish_handle", "") or "").strip()
-    if version64:
-        set_xml_attribute(module_info, "Version64", version64)
-    if publish_version64:
-        set_xml_attribute(publish_version, "Version64", publish_version64)
-    if publish_handle:
-        upsert_xml_attribute(module_info, "PublishHandle", "uint64", publish_handle)
+        version64 = str(final_mod.get("version64", ""))
+        publish_version64 = str(final_mod.get("publish_version64", version64))
+        publish_handle = str(final_mod.get("publish_handle", "") or "").strip()
+        if version64:
+            set_xml_attribute(module_info, "Version64", version64)
+        if publish_version64:
+            set_xml_attribute(publish_version, "Version64", publish_version64)
+        if patch_publish_handle and publish_handle:
+            upsert_xml_attribute(module_info, "PublishHandle", "uint64", publish_handle)
+        elif not patch_publish_handle:
+            remove_xml_attribute(module_info, "PublishHandle")
     if dependencies is not None and config_root is not None:
         write_dependency_nodes(config_root, dependencies)
 
@@ -882,6 +835,83 @@ def read_additional_mod_metas(mods_root: Path, primary_module_folder: str) -> li
             continue
         metas.append(mod_meta)
     return metas
+
+
+def read_dependency_nodes_from_meta(meta_path: Path) -> list[dict[str, str]]:
+    tree = ET.parse(meta_path)
+    root = tree.getroot()
+    dependencies_root = root.find(".//region[@id='Config']/node[@id='root']/children/node[@id='Dependencies']/children")
+    if dependencies_root is None:
+        return []
+
+    dependencies: list[dict[str, str]] = []
+    for dependency_node in dependencies_root.findall("node[@id='ModuleShortDesc']"):
+        dependencies.append(
+            {
+                "folder": get_xml_attribute(dependency_node, "Folder"),
+                "md5": get_xml_attribute(dependency_node, "MD5"),
+                "name": get_xml_attribute(dependency_node, "Name"),
+                "publish_handle": get_xml_attribute(dependency_node, "PublishHandle", "0"),
+                "uuid": get_xml_attribute(dependency_node, "UUID"),
+                "version64": get_xml_attribute(dependency_node, "Version64"),
+            }
+        )
+    return dependencies
+
+
+def list_child_directories(root: Path) -> list[str]:
+    if not root.exists():
+        return []
+    return sorted(entry.name for entry in root.iterdir() if entry.is_dir())
+
+
+def validate_staged_final_mod(staged_mod_dir: Path, final_mod: dict[str, Any]) -> dict[str, Any]:
+    module_folder = str(final_mod["module_folder"])
+    mods_directories = list_child_directories(staged_mod_dir / "Mods")
+    public_directories = list_child_directories(staged_mod_dir / "Public")
+
+    for root_label, directories in (("Mods", mods_directories), ("Public", public_directories)):
+        unexpected = [entry for entry in directories if entry != module_folder]
+        if unexpected:
+            raise ValueError(
+                f"Staged final mod contains unexpected {root_label} modules: {', '.join(unexpected)}. "
+                f"Expected only '{module_folder}'."
+            )
+        if root_label == "Mods" and module_folder not in directories:
+            raise ValueError(
+                f"Staged final mod is missing its primary Mods/{module_folder} directory."
+            )
+
+    mod_meta = read_mod_meta(staged_mod_dir / "Mods" / module_folder / "meta.lsx")
+    if str(mod_meta.get("folder", "")) != module_folder:
+        raise ValueError(
+            f"Staged final mod metadata is missing the expected module folder '{module_folder}'."
+        )
+    expected_meta = {
+        "author": str(final_mod.get("author", "")),
+        "description": str(final_mod.get("description", "")),
+        "name": str(final_mod.get("display_name", "")),
+        "version64": str(final_mod.get("version64", "")),
+    }
+    for field_name, expected_value in expected_meta.items():
+        if expected_value and str(mod_meta.get(field_name, "")) != expected_value:
+            raise ValueError(
+                f"Staged final mod metadata field '{field_name}' was '{mod_meta.get(field_name, '')}', "
+                f"expected '{expected_value}'."
+            )
+
+    dependency_nodes = read_dependency_nodes_from_meta(staged_mod_dir / "Mods" / module_folder / "meta.lsx")
+    if dependency_nodes:
+        raise ValueError(
+            "Staged final mod should not ship runtime dependency nodes; external dependencies must be installed separately."
+        )
+
+    return {
+        "mods_directories": mods_directories,
+        "public_directories": public_directories,
+        "meta": mod_meta,
+        "dependencies": dependency_nodes,
+    }
 
 
 def patch_toolkit_mod_meta(
@@ -959,9 +989,9 @@ def render_toolkit_publish_readme(module_folder: str, display_name: str, pak_nam
           Runtime mod files such as `meta.lsx`, Script Extender Lua, and publish logo assets.
         - `Data/Public/{module_folder}/`
           Public resources that need to be packed into the published `.pak`.
-        - Additional bundled dependency modules
-          When the build inlines supported dependencies into the final `{pak_name}`, their `Mods/` and `Public/`
-          folders are copied here too so the Toolkit sees the same project layout as the runtime package.
+        - Dependency metadata for supported external mods
+          The generated `meta.lsx` keeps dependency entries such as `AdvancedTTSpells`, but external dependency
+          files are not copied into this Toolkit staging folder.
         - `Data/Localization/`
           Localization files copied from the working build.
         - `Data/Editor/` and `Data/Generated/`
@@ -970,8 +1000,7 @@ def render_toolkit_publish_readme(module_folder: str, display_name: str, pak_nam
         ## Recommended Workflow
 
         1. Close the BG3 Toolkit if it is open.
-        2. Back up any existing Toolkit project data for `{module_folder}` and any bundled dependency folders from
-           your BG3 `Data` folder.
+        2. Back up any existing Toolkit project data for `{module_folder}` from your BG3 `Data` folder.
         3. Copy the contents of this folder's `Data/` directory into your BG3 install `Data/` directory.
            Typical Steam path: `C:\\Program Files (x86)\\Steam\\steamapps\\common\\Baldurs Gate 3\\Data\\`
         4. Launch the BG3 Toolkit and open the `{display_name}` project.
@@ -1015,7 +1044,9 @@ def stage_toolkit_publish_layout(staged_mod_dir: Path, destination_dir: Path, fi
     data_root = destination_dir / "Data"
     project_dir = data_root / "Projects" / module_folder
     mods_dir = data_root / "Mods" / module_folder
-    bundled_dependency_metas = read_additional_mod_metas(staged_mod_dir / "Mods", module_folder)
+    bundled_dependency_metas = dedupe_dependencies(
+        read_dependency_nodes_from_meta(mods_root / "meta.lsx") + [ADVANCED_TT_SPELLS_DEPENDENCY]
+    )
 
     write_text(
         project_dir / "meta.lsx",
@@ -1111,40 +1142,21 @@ def patch_dependency_version_checks(lua_root: Path) -> None:
         write_text(lua_path, contents)
 
 
-def overlay_mod_source(source: Path, destination_dir: Path, divine_path: str, scratch_dir: Path) -> None:
-    remove_path_if_exists(scratch_dir)
-    if source.is_dir():
-        shutil.copytree(source, scratch_dir, dirs_exist_ok=True)
-    else:
-        extract_pak(divine_path, source, scratch_dir)
-    shutil.copytree(scratch_dir, destination_dir, dirs_exist_ok=True)
-    remove_path_if_exists(scratch_dir)
-
-
 def stage_final_mod(
     source: Path,
     staged_mod_dir: Path,
     divine_path: str,
     final_mod: dict[str, Any],
-    bundled_sources: list[Path] | None = None,
-) -> list[dict[str, str]]:
+) -> None:
     module_folder = str(final_mod["module_folder"])
+    remove_path_if_exists(staged_mod_dir)
     if source.is_dir():
         shutil.copytree(source, staged_mod_dir, dirs_exist_ok=True)
     else:
         extract_pak(divine_path, source, staged_mod_dir)
 
-    for index, bundled_source in enumerate(bundled_sources or []):
-        overlay_mod_source(
-            bundled_source,
-            staged_mod_dir,
-            divine_path,
-            staged_mod_dir.parent / "_bundled_mod_extract" / f"dependency_{index}",
-        )
-
     public_root = staged_mod_dir / "Public" / module_folder
     mods_root = staged_mod_dir / "Mods" / module_folder
-    bundled_dependency_metas = read_additional_mod_metas(staged_mod_dir / "Mods", module_folder)
 
     remove_path_if_exists(mods_root / "ScriptExtender" / "VirtualTextures.json")
     remove_path_if_exists(public_root / "Assets" / "VirtualTextures")
@@ -1170,7 +1182,9 @@ def stage_final_mod(
     patch_mod_meta(
         mods_root / "meta.lsx",
         final_mod,
-        [module_meta_to_dependency(mod_meta) for mod_meta in bundled_dependency_metas],
+        dependencies=None,
+        patch_module_info=True,
+        patch_publish_handle=False,
     )
 
     publish_logo_path = mods_root / "mod_publish_logo.png"
@@ -1178,7 +1192,6 @@ def stage_final_mod(
         shutil.copy2(BRANDING_ASSET_DIR / "color-icon.png", publish_logo_path)
 
     patch_combatmod_custom_atlas_assets(staged_mod_dir, divine_path, module_folder)
-    return bundled_dependency_metas
 
 
 def build_pak(
@@ -1213,6 +1226,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     output_dir = ROOT / config["output_dir"]
     cache_dir = ROOT / config["cache_dir"]
     staged_mod_dir: Path | None = None
+    final_mod_validation: dict[str, Any] | None = None
 
     if args.clean and output_dir.exists():
         shutil.rmtree(output_dir)
@@ -1220,9 +1234,17 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
     output_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
+    final_mod = config["final_mod"]
+    final_pak_path = output_dir / "bg3_mods" / str(final_mod["pak_name"])
+    legacy_dependency_pak_path = output_dir / "bg3_mods" / f"{ADVANCED_TT_SPELLS_MODULE_FOLDER}.pak"
+    remove_path_if_exists(output_dir / "bg3_mods" / "ArchipelagoToT_unpacked")
+    remove_path_if_exists(output_dir / "bg3_mods" / "_bundled_mod_extract")
+    remove_path_if_exists(final_pak_path)
+    remove_path_if_exists(legacy_dependency_pak_path)
+    remove_path_if_exists(output_dir / "staging" / "_dependency_meta_extract")
+
     divine_info = resolve_divine_path(config)
     trials_mod_info = resolve_trials_mod_source(config)
-    attspells_mod_info = resolve_attspells_mod_source(config)
 
     staged_world_dir = output_dir / "staging" / APWORLD_PACKAGE_NAME
     stage_trials_apworld(staged_world_dir)
@@ -1233,17 +1255,15 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         {"kind": "apworld", "path": str(apworld_path.resolve())},
     ]
 
-    final_mod = config["final_mod"]
-    final_pak_path = output_dir / "bg3_mods" / str(final_mod["pak_name"])
-    if divine_info["found"] and trials_mod_info["found"] and attspells_mod_info["found"]:
+    if divine_info["found"] and trials_mod_info["found"]:
         staged_mod_dir = output_dir / "bg3_mods" / "ArchipelagoToT_unpacked"
         stage_final_mod(
             Path(str(trials_mod_info["path"])),
             staged_mod_dir,
             str(divine_info["path"]),
             final_mod,
-            bundled_sources=[Path(str(attspells_mod_info["path"]))],
         )
+        final_mod_validation = validate_staged_final_mod(staged_mod_dir, final_mod)
         artifacts.append({"kind": "final_mod_unpacked", "path": str(staged_mod_dir.resolve())})
         built_final_pak, _ = build_pak(config, staged_mod_dir, final_pak_path)
         if built_final_pak:
@@ -1268,10 +1288,9 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
 
         Brief setup:
         1. Download {APWORLD_FILENAME} from the same release page and put it into your Archipelago custom_worlds folder.
-        2. Extract this zip and put {final_mod['pak_name']} into your BG3 Mods folder.
-        3. {final_mod['pak_name']} bundles the required AdvancedTTSpells module.
-        4. In BG3 Mod Manager, enable "{final_mod['display_name']}" and export the load order.
-           If BG3MM also exposes a bundled "AdvancedTTSpells" entry from the same pak, enable it too and keep it before "{final_mod['display_name']}".
+        2. Install the required external BG3 dependencies from the project README, including `AdvancedTTSpells`.
+        3. Extract this zip and put `{final_mod['pak_name']}` into your BG3 Mods folder.
+        4. In BG3 Mod Manager, enable "AdvancedTTSpells" before "{final_mod['display_name']}", and export the load order.
         5. Launch BG3 and start Trials of Tav as normal.
 
         For full instructions, troubleshooting, and current notes, read the repository README on GitHub.
@@ -1315,7 +1334,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         "project": config["project_name"],
         "divine": divine_info,
         "trials_mod_source": trials_mod_info,
-        "attspells_mod_source": attspells_mod_info,
+        "final_mod_validation": final_mod_validation,
         "artifacts": artifacts,
         "release_bundle": {
             "created": release_bundle_archive is not None,
