@@ -1336,24 +1336,25 @@ local function grant_trap_reward(entry, preferred_character)
     end
     local trap_source = resolve_reward_character(preferred_character)
 
+    local trap_round_duration = 6.0
     local statuses = {
-        Bleeding = { id = "BLEEDING", duration = 5 },
-        Stun = { id = "STUNNED", duration = 5 },
+        Bleeding = { id = "BLEEDING", duration = trap_round_duration },
+        Stun = { id = "STUNNED", duration = trap_round_duration, force = 1 },
         -- BG3's spell data applies the CONFUSION status, not CONFUSED.
-        -- It also relies on a source for SourceSpellDC()-based turn saves.
-        Confusion = { id = "CONFUSION", duration = 6, force = 1, use_source = true },
-        Bane = { id = "BANE", duration = 6, use_source = true },
-        Blindness = { id = "BLINDNESS", duration = 6, use_source = true },
-        Slow = { id = "SLOW", duration = 6, use_source = true },
-        Poisoned = { id = "POISONED", duration = 6 },
-        FaerieFire = { id = "FAERIE_FIRE", duration = 6 },
-        Ensnared = { id = "ENSNARING_STRIKE", duration = 6, use_source = true },
-        Frightened = { id = "FRIGHTENED", duration = 6, use_source = true },
-        Burning = { id = "BURNING", duration = 6 },
-        HoldPerson = { id = "HOLD_PERSON", duration = 6, force = 1, use_source = true },
-        Silence = { id = "SILENCED", duration = 1 },
-        Grease = { id = "PRONE", duration = 1 },
-        Cheesed = { id = "POLYMORPH_CHEESE", duration = 1 },
+        -- Only statuses with SourceSpellDC()-based turn saves need a source.
+        Confusion = { id = "CONFUSION", duration = trap_round_duration, use_source = true },
+        Bane = { id = "BANE", duration = trap_round_duration },
+        Blindness = { id = "BLINDNESS", duration = trap_round_duration, use_source = true },
+        Slow = { id = "SLOW", duration = trap_round_duration, use_source = true },
+        Poisoned = { id = "POISONED", duration = trap_round_duration },
+        FaerieFire = { id = "FAERIE_FIRE", duration = trap_round_duration },
+        Ensnared = { id = "ENSNARING_STRIKE", duration = trap_round_duration, use_source = true },
+        Frightened = { id = "FRIGHTENED", duration = trap_round_duration },
+        Burning = { id = "BURNING", duration = trap_round_duration },
+        HoldPerson = { id = "HOLD_PERSON", duration = trap_round_duration, force = 1, use_source = true },
+        Silence = { id = "SILENCED", duration = trap_round_duration },
+        Grease = { id = "PRONE", duration = trap_round_duration },
+        Cheesed = { id = "POLYMORPH_CHEESE", duration = trap_round_duration },
     }
     local trap = statuses[trap_kind]
     if not trap or not Osi.ApplyStatus then
