@@ -26,13 +26,18 @@ Download apworld and mod zip:
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 - [bg3tot.apworld](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 
-Download dependency mods from Nexus:
-- [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
-- [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
+Download dependency mod from Nexus:
 - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
 
 Download BG3 Mod Manager:
 - [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
+
+Optional Mods:
+- Player Levels 13-20: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
+  - Dependency: [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
+- Extra Monsters and Bosses: [Spells of Exandria](https://www.nexusmods.com/baldursgate3/mods/18441)
+  - Dependency: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
+  - Dependency: [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
 ### 2. Install the AP world
 
 - Move `bg3tot.apworld` into your Archipelago `custom_worlds` folder. Or `Install APWorld` using the Archipelago client.
@@ -40,11 +45,12 @@ Download BG3 Mod Manager:
 
 - Move `.pak` files from mod downloads into your BG3 `Mods` folder usually located at: `%LocalAppData%\Larian Studios\Baldur's Gate 3\Mods`
 
-In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order (BG3MM has a nice guide on GIT if you need help setting it up):
+In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order, skip optional mods if you didn't download them (BG3MM has a nice guide on GIT if you need help setting it up):
 1. `Mod Configuration Menu`
 2. `Expansion`
 3. `AdvancedTTSpells`
-4. `Archipelago - Trials of Tav`
+4. `Spells of Exandria`
+5. `Archipelago - Trials of Tav`
 
 Then:
 1. Save Load Order
@@ -215,8 +221,10 @@ This repo builds on a lot of work from other people in the BG3 and Archipelago c
 
 - **Trials of Tav** by **Hippo0o**
   - The original roguelike game mode that made this entire Trials-first AP direction possible.
-- **Trials of Tav - Reloaded** by **celerev**
+- **Trials of Tav - Reloaded**, **Spells of Exandria** and **Advanced Tabletop Spells** by **celerev**
   - The modern maintained Trials base that this repo patches and builds against.
+- **Expansion Level 13-20 (Configurable)** by **DiZ91891**
+  - Level 13-20 mod used by celerev for Trials of Tav - Reloaded 
 - **Archipelago** by the **ArchipelagoMW team**
   - The core multiworld randomizer framework, server, generator, launcher, and web tooling this project depends on.
 - **BG3 Archipelago world and mod work** by **Broney**
@@ -230,8 +238,12 @@ This repo builds on a lot of work from other people in the BG3 and Archipelago c
 
 Reference sources used while putting this project together:
 
+- [Mod Configuration Menu (MCM)](https://www.nexusmods.com/baldursgate3/mods/9162)
 - [Trials of Tav - a roguelike mode](https://www.nexusmods.com/baldursgate3/mods/9907)
 - [Trials of Tav - Reloaded](https://www.nexusmods.com/baldursgate3/mods/14430)
+- [Spells of Exandria](https://www.nexusmods.com/baldursgate3/mods/18441)
+- [Advanced Tabletop Spells](https://www.nexusmods.com/baldursgate3/mods/14429)
+- [Expansion Level 13-20 (Configurable)](https://www.nexusmods.com/baldursgate3/mods/279)
 - [Archipelago](https://archipelago.gg/)
 - [Archipelago BG3 world source](https://github.com/zane31415/ArchipelagoBG3)
 - [BG3 Archipelago mod source](https://github.com/zane31415/BG3ArchipelagoMod)
