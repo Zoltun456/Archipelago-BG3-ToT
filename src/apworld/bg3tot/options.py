@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from Options import Choice, DeathLink, OptionGroup, OptionSet, PerGameCommonOptions, Range
+from Options import Choice, DeathLink, OptionGroup, OptionSet, PerGameCommonOptions, Range, Toggle
 
 from .trials_data import (
     MAX_CLEAR_CHECKS,
@@ -200,6 +200,36 @@ class ShopPriceMaximum(Range):
     default = 250
 
 
+class PermanentBuffTarget(Choice):
+    """
+    Chooses who receives character-bound useful AP unlock rewards.
+
+    User Character: Gives the reward to the receiving player's chosen character.
+    Random Party Member: Gives the reward to one random active party member.
+    All Party Members: Gives the reward to every active party member.
+
+    Progression rewards ignore this setting and still keep their whole-party or global behavior.
+    """
+
+    display_name = "Permanent Buff Target"
+
+    option_user_character = 0
+    option_random_party_member = 1
+    option_all_party_members = 2
+
+    default = option_random_party_member
+
+
+class VanillaPixieBlessingInShop(Toggle):
+    """
+    Restores Pixie Blessing as a normal local shop unlock instead of randomizing it into the AP pool.
+
+    When enabled, Moonshield is removed from the randomized shop check pool and the vanilla 30-cost shop entry stays local.
+    """
+
+    display_name = "Vanilla Pixie Blessing In Shop"
+
+
 class DeathLinkTrigger(Choice):
     """
     Chooses what local Trials death condition sends a DeathLink.
@@ -282,6 +312,8 @@ bg3_option_groups = [
         ShopCheckCount,
         ShopPriceMinimum,
         ShopPriceMaximum,
+        VanillaPixieBlessingInShop,
+        PermanentBuffTarget,
     ]),
     OptionGroup("Client & Traps", [
         TrapsPercentage,
@@ -308,6 +340,8 @@ BG3_OPTION_PRESETS = {
         "shop_check_count": 50,
         "shop_price_minimum": 50,
         "shop_price_maximum": 300,
+        "vanilla_pixie_blessing_in_shop": False,
+        "permanent_buff_target": PermanentBuffTarget.option_random_party_member,
         "traps_percentage": 15,
         "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
     },
@@ -328,6 +362,8 @@ BG3_OPTION_PRESETS = {
         "shop_check_count": 25,
         "shop_price_minimum": 30,
         "shop_price_maximum": 150,
+        "vanilla_pixie_blessing_in_shop": False,
+        "permanent_buff_target": PermanentBuffTarget.option_random_party_member,
         "traps_percentage": 10,
         "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
     },
@@ -352,5 +388,7 @@ class BG3Options(PerGameCommonOptions):
     shop_check_count: ShopCheckCount
     shop_price_minimum: ShopPriceMinimum
     shop_price_maximum: ShopPriceMaximum
+    vanilla_pixie_blessing_in_shop: VanillaPixieBlessingInShop
+    permanent_buff_target: PermanentBuffTarget
     traps_percentage: TrapsPercentage
     enabled_traps: EnabledTraps

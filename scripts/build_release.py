@@ -211,6 +211,8 @@ game: {sample['game']}
   shop_check_count: {sample['shop_check_count']}
   shop_price_minimum: {sample['shop_price_minimum']}
   shop_price_maximum: {sample['shop_price_maximum']}
+  vanilla_pixie_blessing_in_shop: {str(bool(sample.get('vanilla_pixie_blessing_in_shop', False))).lower()}
+  permanent_buff_target: {sample.get('permanent_buff_target', 'random_party_member')}
   traps_percentage: {sample['traps_percentage']}
   enabled_traps:
 {trap_lines}

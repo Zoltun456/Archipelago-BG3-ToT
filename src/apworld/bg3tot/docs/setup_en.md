@@ -45,6 +45,11 @@ After setting the order, save and export it to the game before launching.
   How many catalog entries are turned into AP shop checks.
 - `shop_price_minimum`, `shop_price_maximum`
   Seeded random price range for AP shop entries, rounded to multiples of `10`.
+- `vanilla_pixie_blessing_in_shop`
+  Keeps Pixie Blessing as the normal local 30-cost shop unlock and removes it from the randomized AP shop pool.
+- `permanent_buff_target`
+  Character-bound useful AP unlocks can go to the receiving player, a random party member, or the whole party.
+  Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore this setting.
 - `traps_percentage`
   Percent of filler items that become traps.
 - `enabled_traps`
@@ -61,6 +66,7 @@ Instead:
 3. The reward is granted only when that AP item is received.
 
 `NG+ / Quick Start` remains a normal local shop unlock.
+If `vanilla_pixie_blessing_in_shop` is enabled, `Pixie Blessing` also stays as its normal local shop unlock.
 
 ### DeathLink Behavior
 

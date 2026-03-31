@@ -75,6 +75,7 @@ class BG3Context(CommonContext):
         self.syncing = False
         self.slot_data_cache: dict[str, Any] = {}
         self.incoming_deathlink_counter = 0
+        self.notification_counter = 0
 
         game_options = BG3World.settings
         if "localappdata" in os.environ:
@@ -171,10 +172,10 @@ class BG3Context(CommonContext):
             for index, _unlock_id in enumerate(self.slot_data_cache.get("shop_check_unlock_ids", []), start=1)
         ]
 
-    def _checked_location_progress_index_by_location_id(self) -> dict[int, int]:
+    def _checked_location_indices_by_location_id(self) -> tuple[dict[int, int], dict[int, int]]:
         checked_tokens = self._load_json(self.comm_file_locations_checked, [])
         if not isinstance(checked_tokens, list):
-            return {}
+            return {}, {}
 
         counters = {
             CLEAR_LOCATION_BASE_ID: 0,
@@ -184,7 +185,9 @@ class BG3Context(CommonContext):
             SHOP_LOCATION_BASE_ID: 0,
         }
         seen_locations: set[int] = set()
+        sequence_indices: dict[int, int] = {}
         progress_indices: dict[int, int] = {}
+        location_sequence = 0
 
         for token in checked_tokens:
             resolved_location = location_id_for_token(
@@ -199,12 +202,18 @@ class BG3Context(CommonContext):
                 continue
 
             seen_locations.add(resolved_location)
+            location_sequence += 1
+            sequence_indices[resolved_location] = location_sequence
             for base_id in counters:
                 if base_id < resolved_location < base_id + 100:
                     counters[base_id] += 1
                     progress_indices[resolved_location] = counters[base_id]
                     break
 
+        return sequence_indices, progress_indices
+
+    def _checked_location_progress_index_by_location_id(self) -> dict[int, int]:
+        _sequence_indices, progress_indices = self._checked_location_indices_by_location_id()
         return progress_indices
 
     def _dynamic_location_name(self, location_id: int, player: int | None = None) -> str | None:
@@ -340,6 +349,8 @@ class BG3Context(CommonContext):
         pending = self._load_json(self.comm_file_notifications, [])
         if not isinstance(pending, list):
             pending = []
+        self.notification_counter += 1
+        payload["queue_order"] = self.notification_counter
         pending.append(payload)
         self._write_json(self.comm_file_notifications, pending)
 
@@ -387,7 +398,8 @@ class BG3Context(CommonContext):
             self._write_options_file(active_connection=True)
 
     def on_print_json(self, args: dict):
-        message_parts = _normalize_notification_parts(self, copy.deepcopy(args.get("data", [])))
+        raw_message_parts = copy.deepcopy(args.get("data", []))
+        message_parts = _normalize_notification_parts(self, args, copy.deepcopy(raw_message_parts))
         normalized_args = dict(args)
         normalized_args["data"] = message_parts
         super().on_print_json(normalized_args)
@@ -399,12 +411,14 @@ class BG3Context(CommonContext):
 
         message = self.rawjsontotextparser(copy.deepcopy(message_parts)).strip()
         if message:
+            notification_payload = {
+                "text": message,
+                "segments": _encode_notification_segments(self, message_parts),
+                "type": args.get("type", ""),
+            }
+            notification_payload.update(_notification_sort_metadata(self, args, raw_message_parts))
             self._append_notification(
-                {
-                    "text": message,
-                    "segments": _encode_notification_segments(self, message_parts),
-                    "type": args.get("type", ""),
-                }
+                notification_payload
             )
 
     def on_deathlink(self, data: dict, text: str = "") -> None:
@@ -495,6 +509,104 @@ def _text_for_notification_part(ctx: BG3Context, part: dict[str, Any]) -> str:
     return raw_text
 
 
+def _location_id_for_notification_part(ctx: BG3Context, part: dict[str, Any]) -> int | None:
+    part_type = str(part.get("type", "") or "")
+    raw_text = str(part.get("text", "") or "")
+
+    try:
+        if part_type == "location_id":
+            return int(raw_text)
+        if part_type == "location_name":
+            return LOCATION_NAME_TO_ID.get(raw_text)
+    except (TypeError, ValueError):
+        return None
+
+    return None
+
+
+def _notification_sender_slot(ctx: BG3Context, args: dict[str, Any], parts: list[Any]) -> int | None:
+    if ctx.slot is None:
+        return None
+
+    for key in ("sending", "source", "sender"):
+        try:
+            sender = int(args.get(key, 0) or 0)
+        except (TypeError, ValueError):
+            sender = 0
+        if sender > 0:
+            return sender
+
+    own_name = str(ctx.player_names.get(ctx.slot, "") or "")
+    first_player_name: str | None = None
+    for raw_part in parts:
+        if not isinstance(raw_part, dict):
+            continue
+
+        part_type = str(raw_part.get("type", "") or "")
+        raw_text = str(raw_part.get("text", "") or "")
+        if part_type == "player_id":
+            try:
+                return int(raw_text)
+            except (TypeError, ValueError):
+                return None
+        if part_type == "player_name" and first_player_name is None:
+            first_player_name = raw_text
+
+    if own_name and first_player_name == own_name:
+        return ctx.slot
+    return None
+
+
+def _location_matches_active_slot(ctx: BG3Context, location_id: int) -> bool:
+    groups = (
+        (CLEAR_LOCATION_BASE_ID, len(ctx.slot_data_cache.get("clear_thresholds", []))),
+        (KILL_LOCATION_BASE_ID, len(ctx.slot_data_cache.get("kill_thresholds", []))),
+        (PERFECT_LOCATION_BASE_ID, len(ctx.slot_data_cache.get("perfect_thresholds", []))),
+        (ROGUESCORE_LOCATION_BASE_ID, len(ctx.slot_data_cache.get("roguescore_thresholds", []))),
+        (SHOP_LOCATION_BASE_ID, len(ctx.slot_data_cache.get("shop_check_unlock_ids", []))),
+    )
+    for base_id, total in groups:
+        index = int(location_id) - base_id
+        if total > 0 and 1 <= index <= total:
+            return True
+    return False
+
+
+def _local_location_id_for_notification(ctx: BG3Context, args: dict[str, Any], parts: list[Any]) -> int | None:
+    if ctx.slot is None:
+        return None
+    if _notification_sender_slot(ctx, args, parts) != ctx.slot:
+        return None
+
+    for raw_part in parts:
+        if not isinstance(raw_part, dict):
+            continue
+
+        location_id = _location_id_for_notification_part(ctx, raw_part)
+        if location_id is None:
+            continue
+        if _location_matches_active_slot(ctx, location_id):
+            return location_id
+
+    return None
+
+
+def _notification_sort_metadata(ctx: BG3Context, args: dict[str, Any], parts: list[Any]) -> dict[str, int]:
+    if ctx.slot is None:
+        return {}
+
+    local_location_id = _local_location_id_for_notification(ctx, args, parts)
+    if local_location_id is None:
+        return {}
+
+    sequence_indices, _progress_indices = ctx._checked_location_indices_by_location_id()
+    local_sequence = sequence_indices.get(local_location_id)
+    if local_sequence is not None:
+        return {"queue_sort_sequence": local_sequence}
+
+    return {}
+
+
 def _encode_notification_segments(ctx: BG3Context, parts: list[Any]) -> list[dict[str, str]]:
     encoded_segments: list[dict[str, str]] = []
     for raw_part in parts:
@@ -514,7 +626,12 @@ def _encode_notification_segments(ctx: BG3Context, parts: list[Any]) -> list[dic
     return encoded_segments
 
 
-def _normalize_notification_parts(ctx: BG3Context, parts: list[Any]) -> list[Any]:
+def _normalize_notification_parts(ctx: BG3Context, args: dict[str, Any], parts: list[Any]) -> list[Any]:
+    local_location_id = _local_location_id_for_notification(ctx, args, parts)
+    local_location_name = None
+    if local_location_id is not None:
+        local_location_name = ctx._dynamic_location_name(local_location_id)
+
     normalized_parts: list[Any] = []
     for raw_part in parts:
         if not isinstance(raw_part, dict):
@@ -524,7 +641,7 @@ def _normalize_notification_parts(ctx: BG3Context, parts: list[Any]) -> list[Any
         part = dict(raw_part)
         part_type = str(part.get("type", "") or "")
         if part_type in {"location_name", "location_id"}:
-            text = _text_for_notification_part(ctx, part)
+            text = local_location_name or _text_for_notification_part(ctx, part)
             if text:
                 part["text"] = text
                 part["type"] = "location_name"

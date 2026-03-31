@@ -8,6 +8,8 @@ local AP_OPTIONS_FILE = "ap_options.json"
 local AP_DEATHLINK_IN_FILE = "ap_deathlink_in.json"
 local AP_DEATHLINK_OUT_FILE = "ap_deathlink_out.json"
 local AP_PENDING_RECEIVED_FILE = "ap_pending_received.json"
+local AP_PENDING_SHOP_UNLOCKS_FILE = "ap_pending_shop_unlocks.json"
+local AP_DEBUG_SHOP_SERVER_FILE = "ap_debug_shop_server.json"
 
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
@@ -15,10 +17,16 @@ local GOAL_REACH_ROGUESCORE = 2
 local DEATHLINK_TRIGGER_FULL_PARTY_WIPE = 0
 local DEATHLINK_TRIGGER_ANY_PARTY_KILL = 1
 local DEATHLINK_TRIGGER_ANY_PARTY_DOWNED = 2
+local PERMANENT_BUFF_TARGET_USER_CHARACTER = 0
+local PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER = 1
+local PERMANENT_BUFF_TARGET_ALL_PARTY_MEMBERS = 2
 local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_COST = 2000
 local AP_NOTIFICATION_DURATION = 6
+local AP_NOTIFICATION_REORDER_GRACE_MS = 2500
+local AP_PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
+local PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
 
 Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat or {
     scenario_clears = 0,
@@ -47,6 +55,8 @@ local runtime = {
     deathlink_events_ready = false,
     deathlink_party_wipe_active = false,
     pending_received_replay = {},
+    pending_shop_unlock_replay = {},
+    notification_next_sort_sequence = nil,
     logged_unhandled_received = {},
 }
 
@@ -112,6 +122,54 @@ local function save_json_array(path, data)
 end
 
 
+local function save_json_object(path, data)
+    Ext.IO.SaveFile(path, Ext.Json.Stringify(data))
+end
+
+
+local function unlock_id_list(unlocks)
+    local ids = {}
+    for _, unlock in ipairs(unlocks or {}) do
+        table.insert(ids, tostring(table_get(unlock, "Id", "") or ""))
+    end
+    return ids
+end
+
+
+local function unlock_list_has_id(unlocks, unlock_id)
+    unlock_id = tostring(unlock_id or "")
+    for _, unlock in ipairs(unlocks or {}) do
+        if tostring(table_get(unlock, "Id", "") or "") == unlock_id then
+            return true
+        end
+    end
+    return false
+end
+
+
+local function write_shop_debug_snapshot(stage, transformed)
+    local options = load_json_object(AP_OPTIONS_FILE)
+    local current_unlocks = PersistentVars.Unlocks or {}
+    save_json_object(AP_DEBUG_SHOP_SERVER_FILE, {
+        stage = tostring(stage or ""),
+        generated_at = Ext.Utils.MonotonicTime(),
+        active_connection = options.active_connection == true,
+        seed_name = tostring(options.seed_name or ""),
+        vanilla_pixie_blessing_in_shop = options.vanilla_pixie_blessing_in_shop == true,
+        transformed_count = #((transformed or {})),
+        transformed_ids = unlock_id_list(transformed or {}),
+        current_unlock_count = #current_unlocks,
+        current_unlock_ids = unlock_id_list(current_unlocks),
+        has_goal_unlock = unlock_list_has_id(transformed or {}, AP_GOAL_UNLOCK_ID)
+            or unlock_list_has_id(current_unlocks, AP_GOAL_UNLOCK_ID),
+        has_pixie_unlock = unlock_list_has_id(transformed or {}, AP_PIXIE_BLESSING_UNLOCK_ID)
+            or unlock_list_has_id(current_unlocks, AP_PIXIE_BLESSING_UNLOCK_ID),
+        has_moonshield_unlock = unlock_list_has_id(transformed or {}, PIXIE_BLESSING_UNLOCK_ID)
+            or unlock_list_has_id(current_unlocks, PIXIE_BLESSING_UNLOCK_ID),
+    })
+end
+
+
 local function build_lookup(values)
     local lookup = {}
     for _, value in ipairs(values or {}) do
@@ -130,8 +188,35 @@ local function clear_pending_received()
 end
 
 
+local function copy_shop_unlock_record(record)
+    return {
+        Bought = tonumber(table_get(record, "Bought", 0) or 0) or 0,
+        BoughtBy = shallow_copy(table_get(record, "BoughtBy", {}) or {}),
+    }
+end
+
+
+local function clear_pending_shop_unlocks()
+    runtime.pending_shop_unlock_replay = {}
+    save_json_object(AP_PENDING_SHOP_UNLOCKS_FILE, {})
+end
+
+
 local function load_pending_received_replay()
     runtime.pending_received_replay = build_lookup(load_json_array(AP_PENDING_RECEIVED_FILE))
+end
+
+
+local function load_pending_shop_unlock_replay()
+    runtime.pending_shop_unlock_replay = {}
+
+    local pending = load_json_object(AP_PENDING_SHOP_UNLOCKS_FILE)
+    for unlock_id, record in pairs(pending or {}) do
+        unlock_id = tostring(unlock_id or "")
+        if unlock_id ~= "" and type(record) == "table" then
+            runtime.pending_shop_unlock_replay[unlock_id] = copy_shop_unlock_record(record)
+        end
+    end
 end
 
 
@@ -150,6 +235,19 @@ local function remember_pending_received(entry)
 
     table.insert(pending, entry)
     save_json_array(AP_PENDING_RECEIVED_FILE, pending)
+end
+
+
+local function remember_pending_shop_unlock(unlock_id, record)
+    unlock_id = tostring(unlock_id or "")
+    if unlock_id == "" then
+        return
+    end
+
+    local pending = load_json_object(AP_PENDING_SHOP_UNLOCKS_FILE)
+    pending[unlock_id] = copy_shop_unlock_record(record)
+    save_json_object(AP_PENDING_SHOP_UNLOCKS_FILE, pending)
+    runtime.pending_shop_unlock_replay[unlock_id] = copy_shop_unlock_record(record)
 end
 
 
@@ -193,17 +291,109 @@ local function notify_player(notification)
 end
 
 
+local function notification_queue_order(entry, fallback_order)
+    if type(entry) == "table" then
+        local queue_order = tonumber(entry.queue_order)
+        if queue_order ~= nil then
+            return queue_order
+        end
+    end
+    return tonumber(fallback_order or 0) or 0
+end
+
+
+local function notification_queue_sort_sequence(entry)
+    if type(entry) ~= "table" then
+        return nil
+    end
+    return tonumber(entry.queue_sort_sequence)
+end
+
+
+local function sort_notification_queue(queue)
+    for index, entry in ipairs(queue or {}) do
+        if type(entry) == "table" and tonumber(entry.queue_order) == nil then
+            entry.queue_order = index
+        end
+    end
+
+    table.sort(queue, function(a, b)
+        local a_sequence = notification_queue_sort_sequence(a)
+        local b_sequence = notification_queue_sort_sequence(b)
+        if a_sequence ~= nil and b_sequence ~= nil and a_sequence ~= b_sequence then
+            return a_sequence < b_sequence
+        end
+
+        return notification_queue_order(a, 0) < notification_queue_order(b, 0)
+    end)
+end
+
+
+local function notification_queue_seen_at(entry, default_value)
+    if type(entry) ~= "table" then
+        return tonumber(default_value or 0) or 0
+    end
+
+    local seen_at = tonumber(entry.queue_seen_at)
+    if seen_at ~= nil then
+        return seen_at
+    end
+
+    seen_at = tonumber(default_value or 0) or 0
+    entry.queue_seen_at = seen_at
+    return seen_at
+end
+
+
 local function process_ap_notifications()
     local queue = load_json_array(AP_NOTIFICATION_FILE)
     if #queue == 0 then
         return
     end
 
+    sort_notification_queue(queue)
+
+    local now = Ext.Utils.MonotonicTime()
+    local next_sequence = tonumber(runtime.notification_next_sort_sequence)
+    if next_sequence == nil then
+        for _, entry in ipairs(queue) do
+            local sequence = notification_queue_sort_sequence(entry)
+            if sequence ~= nil then
+                next_sequence = sequence
+                break
+            end
+        end
+    end
+
+    local ready = {}
+    local remaining = {}
     for _, entry in ipairs(queue) do
+        local sequence = notification_queue_sort_sequence(entry)
+        if sequence == nil or next_sequence == nil then
+            table.insert(ready, entry)
+        elseif sequence < next_sequence then
+            table.insert(ready, entry)
+        elseif sequence == next_sequence then
+            table.insert(ready, entry)
+            next_sequence = next_sequence + 1
+        else
+            local seen_at = notification_queue_seen_at(entry, now)
+            if now - seen_at >= AP_NOTIFICATION_REORDER_GRACE_MS then
+                table.insert(ready, entry)
+                next_sequence = sequence + 1
+            else
+                table.insert(remaining, entry)
+            end
+        end
+    end
+
+    runtime.notification_next_sort_sequence = next_sequence
+
+    for _, entry in ipairs(ready) do
         notify_player(entry)
     end
 
-    save_json_array(AP_NOTIFICATION_FILE, {})
+    save_json_array(AP_NOTIFICATION_FILE, remaining)
 end
 
 
@@ -245,6 +435,10 @@ local function get_options()
     options.goal = tonumber(options.goal or GOAL_BUY_NG_PLUS)
     options.goal_clear_target = tonumber(options.goal_clear_target or 0)
     options.goal_rogue_score_target = tonumber(options.goal_rogue_score_target or 0)
+    options.vanilla_pixie_blessing_in_shop = options.vanilla_pixie_blessing_in_shop == true
+        or tonumber(options.vanilla_pixie_blessing_in_shop or 0) == 1
+    options.permanent_buff_target = tonumber(options.permanent_buff_target or PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER)
+    options.unlock_classifications_by_id = options.unlock_classifications_by_id or {}
     options.goal_unlock_template_id = tostring(
         options.goal_unlock_template_id or DEFAULT_GOAL_UNLOCK_TEMPLATE_ID
     )
@@ -263,7 +457,10 @@ end
 
 
 local function is_ap_runtime_unlock_id(unlock_id)
-    return unlock_id == AP_GOAL_UNLOCK_ID or string.match(tostring(unlock_id or ""), "^APCHECK::") ~= nil
+    unlock_id = tostring(unlock_id or "")
+    return unlock_id == AP_GOAL_UNLOCK_ID
+        or unlock_id == AP_PIXIE_BLESSING_UNLOCK_ID
+        or string.match(unlock_id, "^APCHECK::") ~= nil
 end
 
 
@@ -314,6 +511,8 @@ local function refresh_seed_state()
     save_json_array(AP_DEATHLINK_IN_FILE, {})
     save_json_array(AP_DEATHLINK_OUT_FILE, {})
     clear_pending_received()
+    clear_pending_shop_unlocks()
+    runtime.notification_next_sort_sequence = nil
     return true
 end
 
@@ -694,6 +893,84 @@ local function resolve_reward_character(preferred_character)
 end
 
 
+local function append_reward_target(targets, seen, character)
+    local ok, normalized = is_valid_reward_character(character)
+    if not ok or seen[normalized] then
+        return
+    end
+
+    seen[normalized] = true
+    table.insert(targets, normalized)
+end
+
+
+local function collect_reward_party_members(preferred_character)
+    local targets = {}
+    local seen = {}
+
+    for _, character in ipairs(get_active_party_members()) do
+        append_reward_target(targets, seen, character)
+    end
+
+    local preferred = resolve_reward_character(preferred_character)
+    if preferred ~= "" then
+        append_reward_target(targets, seen, preferred)
+    end
+
+    return targets
+end
+
+
+local function determine_unlock_reward_targets(unlock_id, template, preferred_character)
+    local fallback_character = resolve_reward_character(preferred_character)
+    if fallback_character == "" then
+        return {}
+    end
+
+    local options = get_options()
+    local classification = tostring(table_get(options.unlock_classifications_by_id, unlock_id, ""))
+    local excluded_useful_unlocks = {
+        BuyLootRare = true,
+        BuyLootEpic = true,
+        BuyLootLegendary = true,
+    }
+
+    if classification == "progression" then
+        if template.Character then
+            local targets = collect_reward_party_members(preferred_character)
+            if #targets > 0 then
+                return targets
+            end
+        end
+        return { fallback_character }
+    end
+
+    if classification ~= "useful"
+        or excluded_useful_unlocks[unlock_id]
+        or template.Character ~= true
+    then
+        return { fallback_character }
+    end
+
+    if options.permanent_buff_target == PERMANENT_BUFF_TARGET_ALL_PARTY_MEMBERS then
+        local targets = collect_reward_party_members(preferred_character)
+        if #targets > 0 then
+            return targets
+        end
+        return { fallback_character }
+    end
+
+    if options.permanent_buff_target == PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER then
+        local targets = collect_reward_party_members(preferred_character)
+        if #targets > 0 then
+            return { targets[math.random(#targets)] }
+        end
+    end
+
+    return { fallback_character }
+end
+
+
 local function entity_handle_uuid(entity_handle)
     if not Ext or not Ext.Entity or entity_handle == nil then
         return ""
@@ -787,129 +1064,6 @@ local function collect_party_trap_targets(preferred_character)
 end
 
 
-local function collect_party_member_trap_targets(preferred_character)
-    local targets = {}
-    local seen = {}
-    local owner_lookup = {}
-
-    for _, character in ipairs(get_active_party_members()) do
-        append_trap_target(targets, seen, character)
-        owner_lookup[extract_character_uuid(character)] = true
-    end
-
-    local preferred = resolve_reward_character(preferred_character)
-    if preferred ~= "" then
-        append_trap_target(targets, seen, preferred)
-        owner_lookup[preferred] = true
-    end
-
-    append_party_followers(targets, seen, owner_lookup)
-    return targets
-end
-
-
-local function get_character_ability_value(character, ability_name)
-    if character == "" or not Osi or not Osi.GetAbility then
-        return 0
-    end
-
-    local ok, value = pcall(function()
-        return Osi.GetAbility(character, ability_name)
-    end)
-    if not ok then
-        return 0
-    end
-    return tonumber(value or 0) or 0
-end
-
-
-local function pick_highest_mental_trap_target(preferred_character)
-    local best_character = ""
-    local best_primary = -1
-    local best_total = -1
-
-    for _, character in ipairs(collect_party_member_trap_targets(preferred_character)) do
-        local intelligence = get_character_ability_value(character, "Intelligence")
-        local wisdom = get_character_ability_value(character, "Wisdom")
-        local charisma = get_character_ability_value(character, "Charisma")
-        local primary = math.max(intelligence, wisdom, charisma)
-        local total = intelligence + wisdom + charisma
-        if primary > best_primary or (primary == best_primary and total > best_total) then
-            best_character = character
-            best_primary = primary
-            best_total = total
-        end
-    end
-
-    return best_character
-end
-
-
-local function pick_random_trap_target(targets)
-    if #targets == 0 then
-        return ""
-    end
-    return tostring(targets[math.random(1, #targets)] or "")
-end
-
-
-local function get_character_position(character)
-    if character == "" or not Osi or not Osi.GetPosition then
-        return nil
-    end
-
-    local ok, x, y, z = pcall(function()
-        return Osi.GetPosition(character)
-    end)
-    if not ok then
-        return nil
-    end
-
-    return {
-        x = tonumber(x or 0) or 0,
-        y = tonumber(y or 0) or 0,
-        z = tonumber(z or 0) or 0,
-    }
-end
-
-
-local function cast_position_trap_spell(spell_id, caster_character, target_character)
-    if spell_id == "" or caster_character == "" or target_character == "" or not Osi or not Osi.UseSpellAtPosition then
-        return false
-    end
-
-    local position = get_character_position(target_character)
-    if not position then
-        return false
-    end
-
-    local ok, err = pcall(function()
-        Osi.UseSpellAtPosition(caster_character, spell_id, position.x, position.y, position.z, 1)
-    end)
-    if not ok then
-        L.Error("ArchipelagoTrialsCompat/TrapSpell", spell_id, caster_character, target_character, err)
-        return false
-    end
-    return true
-end
-
-
-local function cast_targeted_trap_spell(spell_id, caster_character, target_character)
-    if spell_id == "" or caster_character == "" or target_character == "" or not Osi or not Osi.UseSpell then
-        return false
-    end
-
-    local ok, err = pcall(function()
-        Osi.UseSpell(caster_character, spell_id, target_character)
-    end)
-    if not ok then
-        L.Error("ArchipelagoTrialsCompat/TrapSpell", spell_id, caster_character, target_character, err)
-        return false
-    end
-    return true
-end
-
-
 local function capture_original_unlock_templates()
     if runtime.original_templates_captured then
         return
@@ -954,6 +1108,32 @@ local function get_shop_unlock_record(unlock_id)
     record.Bought = tonumber(record.Bought or 0)
     record.BoughtBy = record.BoughtBy or {}
     return record
+end
+
+
+local function merge_shop_unlock_record(target_record, source_record)
+    target_record.Bought = math.max(
+        tonumber(target_record.Bought or 0) or 0,
+        tonumber(table_get(source_record, "Bought", 0) or 0) or 0
+    )
+    target_record.BoughtBy = target_record.BoughtBy or {}
+    for uuid, bought in pairs(table_get(source_record, "BoughtBy", {}) or {}) do
+        if bought then
+            target_record.BoughtBy[uuid] = true
+        end
+    end
+end
+
+
+local function reapply_pending_shop_unlocks()
+    if next(runtime.pending_shop_unlock_replay or {}) == nil then
+        return
+    end
+
+    for unlock_id, replay_record in pairs(runtime.pending_shop_unlock_replay) do
+        local saved_record = get_shop_unlock_record(unlock_id)
+        merge_shop_unlock_record(saved_record, replay_record)
+    end
 end
 
 
@@ -1016,8 +1196,8 @@ local function grant_unlock_reward(unlock_id, preferred_character)
         return false
     end
 
-    local character = resolve_reward_character(preferred_character)
-    if character == "" then
+    local targets = determine_unlock_reward_targets(unlock_id, template, preferred_character)
+    if #targets == 0 then
         return false
     end
 
@@ -1027,11 +1207,18 @@ local function grant_unlock_reward(unlock_id, preferred_character)
     end
 
     ensure_granted_unlock_initialized(unlock_id, unlock)
-    local ok, err = pcall(function()
-        unlock:Buy(character)
-    end)
-    if not ok then
-        L.Error("ArchipelagoTrialsCompat/GrantUnlock", unlock_id, err)
+    local granted = false
+    for _, character in ipairs(targets) do
+        local ok, err = pcall(function()
+            unlock:Buy(character)
+        end)
+        if not ok then
+            L.Error("ArchipelagoTrialsCompat/GrantUnlock", unlock_id, character, err)
+        else
+            granted = true
+        end
+    end
+    if not granted then
         return false
     end
 
@@ -1148,44 +1335,6 @@ local function grant_trap_reward(entry, preferred_character)
         return false
     end
     local trap_source = resolve_reward_character(preferred_character)
-    local positional_traps = {
-        Silence = function()
-            local silence_target = pick_highest_mental_trap_target(preferred_character)
-            if silence_target == "" then
-                return false
-            end
-            return cast_position_trap_spell("Target_Silence", silence_target, silence_target)
-        end,
-        Grease = function()
-            local grease_target = pick_random_trap_target(targets)
-            if grease_target == "" then
-                return false
-            end
-            return cast_position_trap_spell("Target_Grease", grease_target, grease_target)
-        end,
-    }
-    local positional_trap = positional_traps[trap_kind]
-    if positional_trap then
-        return positional_trap()
-    end
-
-    local targeted_traps = {
-        Cheesed = function()
-            local applied = false
-            for _, character in ipairs(targets) do
-                -- The circus cheese spell is concentration-based, so each target self-casts it.
-                -- That keeps the whole party cheesed instead of one shared caster dropping older applications.
-                if cast_targeted_trap_spell("Target_WYR_PolymorhphCheese_Djinni", character, character) then
-                    applied = true
-                end
-            end
-            return applied
-        end,
-    }
-    local targeted_trap = targeted_traps[trap_kind]
-    if targeted_trap then
-        return targeted_trap()
-    end
 
     local statuses = {
         Bleeding = { id = "BLEEDING", duration = 5 },
@@ -1202,6 +1351,9 @@ local function grant_trap_reward(entry, preferred_character)
         Frightened = { id = "FRIGHTENED", duration = 6, use_source = true },
         Burning = { id = "BURNING", duration = 6 },
         HoldPerson = { id = "HOLD_PERSON", duration = 6, force = 1, use_source = true },
+        Silence = { id = "SILENCED", duration = 1 },
+        Grease = { id = "PRONE", duration = 1 },
+        Cheesed = { id = "POLYMORPH_CHEESE", duration = 1 },
     }
     local trap = statuses[trap_kind]
     if not trap or not Osi.ApplyStatus then
@@ -1330,6 +1482,7 @@ local function build_refresh_signature(options)
         goal_unlock_id = options.goal_unlock_id or "",
         goal_unlock_template_id = options.goal_unlock_template_id or "",
         goal_unlock_cost = options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST,
+        vanilla_pixie_blessing_in_shop = options.vanilla_pixie_blessing_in_shop == true,
         shop_check_unlock_ids = options.shop_check_unlock_ids or {},
         shop_check_costs = options.shop_check_costs or {},
         shop_display = options.shop_display or {},
@@ -1395,6 +1548,7 @@ local function make_shop_check_unlock(template, index, options)
         local saved_purchase = get_shop_unlock_record(self.Id)
         saved_purchase.Bought = tonumber(self.Bought or 0)
         saved_purchase.BoughtBy = shallow_copy(self.BoughtBy or {})
+        remember_pending_shop_unlock(self.Id, saved_purchase)
     end
     return unlock
 end
@@ -1424,6 +1578,18 @@ local function make_goal_unlock(template, options)
 end
 
 
+local function make_pixie_blessing_unlock(template)
+    local unlock = shallow_copy(template)
+    unlock.Id = AP_PIXIE_BLESSING_UNLOCK_ID
+    unlock.Cost = 30
+    unlock.Persistent = false
+    unlock.Requirement = nil
+    unlock.HideStock = true
+    unlock.Icon = tostring(unlock.Icon or "statIcons_Moonshield")
+    return unlock
+end
+
+
 local function register_shop_patch()
     if runtime.patch_registered then
         return
@@ -1435,6 +1601,18 @@ local function register_shop_patch()
     Unlock.GetTemplates = function()
         local options = get_options()
         local transformed = {}
+        local goal_template = runtime.original_templates_by_id[options.goal_unlock_template_id]
+        if goal_template then
+            table.insert(transformed, make_goal_unlock(goal_template, options))
+        end
+
+        if options.vanilla_pixie_blessing_in_shop == true then
+            local pixie_blessing_template = runtime.original_templates_by_id[PIXIE_BLESSING_UNLOCK_ID]
+            if pixie_blessing_template then
+                table.insert(transformed, make_pixie_blessing_unlock(pixie_blessing_template))
+            end
+        end
+
         for index, unlock_id in ipairs(options.shop_check_unlock_ids or {}) do
             local template = runtime.original_templates_by_id[unlock_id]
             if template then
@@ -1442,11 +1620,7 @@ local function register_shop_patch()
             end
         end
 
-        local goal_template = runtime.original_templates_by_id[options.goal_unlock_template_id]
-        if goal_template then
-            table.insert(transformed, make_goal_unlock(goal_template, options))
-        end
-
+        write_shop_debug_snapshot("unlock_get_templates", transformed)
         return transformed
     end
 
@@ -1466,6 +1640,7 @@ local function refresh_shop_configuration(force)
 
     runtime.refresh_signature = signature
     Unlock.Sync()
+    write_shop_debug_snapshot("refresh_shop_configuration", Unlock.Get())
 end
 
 
@@ -1558,6 +1733,8 @@ end
 local function initialize_archipelago_trials_compat()
     -- This is the single init path now that the standalone bridge mod is gone.
     load_pending_received_replay()
+    load_pending_shop_unlock_replay()
+    reapply_pending_shop_unlocks()
     register_shop_patch()
     subscribe_progress_events()
     subscribe_score_events()
@@ -1577,6 +1754,8 @@ Event.On("ModInit", initialize_archipelago_trials_compat, true)
 Ext.Events.SessionLoaded:Subscribe(function()
     get_state().deathlink_suppress_local = false
     load_pending_received_replay()
+    load_pending_shop_unlock_replay()
+    reapply_pending_shop_unlocks()
     sync_connection_state(true)
     update_party_wipe_state()
     if runtime.patch_registered then
@@ -1590,5 +1769,6 @@ end)
 Ext.Events.GameStateChanged:Subscribe(function(event)
     if event.FromState == "Save" and event.ToState == "Running" then
         clear_pending_received()
+        clear_pending_shop_unlocks()
     end
 end)

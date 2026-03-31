@@ -106,10 +106,15 @@ Key options that affect balance the most:
 - `shop_check_count`
 - `shop_price_minimum`
 - `shop_price_maximum`
+- `vanilla_pixie_blessing_in_shop`
+- `permanent_buff_target`
 - `traps_percentage`
 - `enabled_traps`
 
 Shop prices are seeded per player and rounded to multiples of `10`.
+Pixie Blessing can optionally stay as its vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
+Character-bound useful AP unlocks can target the receiving player, a random party member, or the whole party.
+Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore that setting.
 
 DeathLink is optional and off by default. When enabled, received DeathLinks wipe the active party so the player has to reload, and the trigger mode can be set to:
 

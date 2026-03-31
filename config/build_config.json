@@ -36,6 +36,8 @@
     "shop_check_count": 50,
     "shop_price_minimum": 50,
     "shop_price_maximum": 300,
+    "vanilla_pixie_blessing_in_shop": false,
+    "permanent_buff_target": "random_party_member",
     "traps_percentage": 15,
     "enabled_traps": [
       "Bleeding",

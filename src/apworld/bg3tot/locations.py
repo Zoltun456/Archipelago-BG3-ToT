@@ -20,6 +20,7 @@ from .trials_data import (
     perfect_location_name,
     roguescore_location_id,
     roguescore_location_name,
+    selected_shop_unlock_ids,
     shop_location_id,
     shop_location_name,
 )
@@ -75,7 +76,16 @@ def create_all_locations(world: BG3World) -> None:
         _build_location_group(int(world.options.roguescore_check_count), roguescore_location_name, roguescore_location_id)
     )
     location_name_to_id.update(
-        _build_location_group(int(world.options.shop_check_count), shop_location_name, shop_location_id)
+        _build_location_group(
+            len(
+                selected_shop_unlock_ids(
+                    int(world.options.shop_check_count),
+                    randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+                )
+            ),
+            shop_location_name,
+            shop_location_id,
+        )
     )
 
     trials_region.add_locations(location_name_to_id, BG3Location)

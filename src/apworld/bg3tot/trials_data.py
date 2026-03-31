@@ -16,6 +16,7 @@ KILL_LOCATION_BASE_ID = 20100
 PERFECT_LOCATION_BASE_ID = 20200
 ROGUESCORE_LOCATION_BASE_ID = 20300
 SHOP_LOCATION_BASE_ID = 20400
+PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
 
 
 def _normalized_copies(value: Any) -> int:
@@ -74,6 +75,17 @@ UNLOCK_SLOT_CATALOG = sorted(
 UNLOCK_ID_ORDER = [entry["id"] for entry in UNLOCK_SLOT_CATALOG]
 UNLOCK_NAME_BY_ID = {entry["id"]: entry["name"] for entry in UNLOCK_CATALOG}
 UNLOCK_CLASSIFICATION_BY_ID = {entry["id"]: entry["classification"] for entry in UNLOCK_CATALOG}
+
+
+def selected_shop_unlock_ids(
+    shop_check_count: int,
+    *,
+    randomize_pixie_blessing: bool = True,
+) -> list[str]:
+    unlock_ids = UNLOCK_ID_ORDER
+    if not randomize_pixie_blessing:
+        unlock_ids = [unlock_id for unlock_id in unlock_ids if unlock_id != PIXIE_BLESSING_UNLOCK_ID]
+    return unlock_ids[: max(0, int(shop_check_count))]
 
 
 def clear_location_id(index: int) -> int:

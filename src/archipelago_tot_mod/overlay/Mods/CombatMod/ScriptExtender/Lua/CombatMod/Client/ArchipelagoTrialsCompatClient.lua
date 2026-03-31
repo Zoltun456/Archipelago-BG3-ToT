@@ -5,7 +5,9 @@ local patched = false
 local original_get_stock = nil
 
 local GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
+local PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
 local AP_ATLAS_TEXTURE_UUID = "aa417c69-e69a-f1ef-5a8d-65b7b5d4e195"
+local AP_CLIENT_DEBUG_SHOP_FILE = "ap_debug_shop_client.json"
 local AP_ICON_UVS = {
     ["original-logo"] = {
         { 0.0009765625, 0.0009765625 },
@@ -58,6 +60,45 @@ local function stringify(value)
     end
 
     return tostring(value)
+end
+
+
+local function save_debug_object(path, data)
+    Ext.IO.SaveFile(path, Ext.Json.Stringify(data))
+end
+
+
+local function unlock_id_list(unlocks)
+    local ids = {}
+    for _, unlock in ipairs(unlocks or {}) do
+        table.insert(ids, stringify(unlock and unlock.Id))
+    end
+    return ids
+end
+
+
+local function write_shop_debug_snapshot(stage, state, visible_unlocks)
+    local all_unlocks = table.values((state and state.Unlocks) or {})
+    save_debug_object(AP_CLIENT_DEBUG_SHOP_FILE, {
+        stage = stringify(stage),
+        generated_at = Ext.Utils.MonotonicTime(),
+        total_unlock_count = table.size((state and state.Unlocks) or {}),
+        visible_unlock_count = table.size(visible_unlocks or {}),
+        total_unlock_ids = unlock_id_list(all_unlocks),
+        visible_unlock_ids = unlock_id_list(visible_unlocks),
+        has_goal_unlock = table.find(all_unlocks, function(unlock)
+            return stringify(unlock and unlock.Id) == GOAL_UNLOCK_ID
+        end) ~= nil,
+        has_pixie_unlock = table.find(all_unlocks, function(unlock)
+            return stringify(unlock and unlock.Id) == PIXIE_BLESSING_UNLOCK_ID
+        end) ~= nil,
+        pixie_visible = table.find(visible_unlocks or {}, function(unlock)
+            return stringify(unlock and unlock.Id) == PIXIE_BLESSING_UNLOCK_ID
+        end) ~= nil,
+        has_moonshield_unlock = table.find(all_unlocks, function(unlock)
+            return stringify(unlock and unlock.Id) == "Moonshield"
+        end) ~= nil,
+    })
 end
 
 
@@ -307,15 +348,19 @@ local function shop_unlock_sort_key(unlock)
         return 0, "", 0, tostring(unlock.Name or ""), 0
     end
 
+    if unlock and unlock.Id == PIXIE_BLESSING_UNLOCK_ID then
+        return 1, "", tonumber(unlock.Cost or 0) or 0, tostring(unlock.Name or ""), 0
+    end
+
     if unlock and unlock.Id and string.match(tostring(unlock.Id), "^APCHECK::") then
-        return 1,
+        return 2,
             tostring(unlock.SortPlayerName or ""):lower(),
             tonumber(unlock.SortPrice or unlock.Cost or 0) or 0,
             tostring(unlock.SortItemName or unlock.Name or ""),
             tonumber(unlock.SortTokenIndex or 0) or 0
     end
 
-    return 2, "", 0, tostring(unlock.Name or ""), 0
+    return 3, "", 0, tostring(unlock.Name or ""), 0
 end
 
 
@@ -347,7 +392,9 @@ local function is_visible_ap_unlock(unlock)
     end
 
     local unlock_id = tostring(unlock.Id)
-    local is_ap_entry = unlock_id == GOAL_UNLOCK_ID or string.match(unlock_id, "^APCHECK::") ~= nil
+    local is_ap_entry = unlock_id == GOAL_UNLOCK_ID
+        or unlock_id == PIXIE_BLESSING_UNLOCK_ID
+        or string.match(unlock_id, "^APCHECK::") ~= nil
     if not is_ap_entry then
         return false
     end
@@ -570,6 +617,7 @@ local function patch_unlock_ui()
 
         local function rebuild(state)
             local unlocks = sort_unlocks(table.filter(table.values(state.Unlocks or {}), is_visible_ap_unlock))
+            write_shop_debug_snapshot("client_rebuild", state, unlocks)
             if table.size(unlocks) == 0 then
                 if content then
                     content:Destroy()

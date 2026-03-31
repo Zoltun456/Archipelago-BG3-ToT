@@ -32,16 +32,19 @@ You can win by:
 Trap items are filler that punish the current run instead of giving a normal reward.
 
 Working trap types include direct status traps such as `Bleeding`, `Stun`, `Confusion`, `Bane`, `Blindness`,
-`Slow`, `Poisoned`, `Faerie Fire`, `Ensnared`, `Frightened`, `Burning`, and `Hold Person`, a targeted polymorph
-trap `Cheesed`, plus positional traps such as `Silence` and `Grease`.
+`Slow`, `Poisoned`, `Faerie Fire`, `Ensnared`, `Frightened`, `Burning`, `Hold Person`, `Silence`, `Grease`
+(`Prone`), and `Cheesed`.
 
-Most status and targeted spell traps affect the full party, companions, and summons.
+Most traps affect the full party, companions, and summons.
 
 ## What should players know before starting?
 
 - This is a Trials of Tav focused world, not the standard Baldur's Gate 3 campaign Archipelago experience.
 - You need the packaged BG3 mod alongside the AP world for checks, items, and notifications to function.
 - DeathLink is optional and can be configured to send on full wipes, any party death, or any party down.
+- Pixie Blessing can optionally stay as the vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
+- Character-bound useful AP unlocks can be aimed at the receiving player, a random party member, or the whole party.
+  Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore that option.
 
 ## What can appear in other players' worlds?
 

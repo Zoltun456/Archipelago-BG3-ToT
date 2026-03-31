@@ -8,7 +8,12 @@ if TYPE_CHECKING:
     from .world import BG3World
 
 from .equipment import EQUIPMENT
-from .trials_data import UNLOCK_CATALOG, UNLOCK_CLASSIFICATION_BY_ID, UNLOCK_ID_ORDER, UNLOCK_NAME_BY_ID
+from .trials_data import (
+    UNLOCK_CATALOG,
+    UNLOCK_CLASSIFICATION_BY_ID,
+    UNLOCK_NAME_BY_ID,
+    selected_shop_unlock_ids,
+)
 
 
 DUPLICATE_ITEM_FILLERS = [
@@ -179,7 +184,13 @@ def create_item_with_correct_classification(world: BG3World, name: str) -> BG3It
 
 
 def create_all_items(world: BG3World) -> None:
-    itempool = [world.create_item(UNLOCK_ITEM_NAME_BY_ID[unlock_id]) for unlock_id in UNLOCK_ID_ORDER[: int(world.options.shop_check_count)]]
+    itempool = [
+        world.create_item(UNLOCK_ITEM_NAME_BY_ID[unlock_id])
+        for unlock_id in selected_shop_unlock_ids(
+            int(world.options.shop_check_count),
+            randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+        )
+    ]
 
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     needed_number_of_filler_items = max(0, number_of_unfilled_locations - len(itempool))

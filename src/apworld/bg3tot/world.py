@@ -8,7 +8,7 @@ from BaseClasses import ItemClassification
 from worlds.AutoWorld import World
 
 from . import items, locations, options, regions, rules, settings, web_world
-from .trials_data import UNLOCK_ID_ORDER, shop_location_name
+from .trials_data import UNLOCK_CLASSIFICATION_BY_ID, selected_shop_unlock_ids, shop_location_name
 
 
 SHOP_PRICE_STEP = 10
@@ -91,12 +91,15 @@ class BG3World(World):
         return items.get_random_filler_item_name(self)
 
     def fill_slot_data(self) -> Mapping[str, Any]:
-        selected_shop_unlock_ids = UNLOCK_ID_ORDER[: int(self.options.shop_check_count)]
+        chosen_shop_unlock_ids = selected_shop_unlock_ids(
+            int(self.options.shop_check_count),
+            randomize_pixie_blessing=not bool(self.options.vanilla_pixie_blessing_in_shop),
+        )
         seed_basis = getattr(self.multiworld, "seed_name", None) or getattr(self.multiworld, "seed", None) or "BG3Trials"
         selected_shop_costs = _randomized_shop_costs(
             seed_basis,
             self.player,
-            selected_shop_unlock_ids,
+            chosen_shop_unlock_ids,
             int(self.options.shop_price_minimum),
             int(self.options.shop_price_maximum),
         )
@@ -124,8 +127,11 @@ class BG3World(World):
                 int(self.options.roguescore_check_count),
                 int(self.options.roguescore_check_interval),
             ),
-            "shop_check_unlock_ids": selected_shop_unlock_ids,
+            "shop_check_unlock_ids": chosen_shop_unlock_ids,
             "shop_check_costs": selected_shop_costs,
+            "vanilla_pixie_blessing_in_shop": bool(self.options.vanilla_pixie_blessing_in_shop),
+            "permanent_buff_target": int(self.options.permanent_buff_target),
+            "unlock_classifications_by_id": dict(UNLOCK_CLASSIFICATION_BY_ID),
             "goal_unlock_id": "APGOAL::QUICKSTART",
             "goal_unlock_template_id": "QUICKSTART",
             "goal_unlock_cost": 2000,
