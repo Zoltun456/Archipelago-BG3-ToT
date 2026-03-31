@@ -22,6 +22,15 @@ Enable:
 
 After setting the order, save and export it to the game before launching.
 
+### Archipelago Connection
+
+Use the in-game `Archipelago Client` tab in the Trials GUI for:
+
+1. room connection
+2. disconnect
+3. resync
+4. log viewing
+
 ### Goals
 
 - `buy_ng_plus`

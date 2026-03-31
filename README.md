@@ -20,7 +20,13 @@ Supported check groups:
 
 ## Install Guide:
 
-### 1. Downloads
+### 0. BG3 Mod Manager
+
+If you have never modded BG3 please refer to the Git below on how BG3MM works and how to install *Norbyte'sScript Extender* using it.
+
+Download BG3 Mod Manager:
+- [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
+### 1. Mod Downloads
 
 Download apworld and mod zip:
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
@@ -28,9 +34,6 @@ Download apworld and mod zip:
 
 Download dependency mod from Nexus:
 - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
-
-Download BG3 Mod Manager:
-- [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
 
 Optional Mods:
 - Player Levels 13-20: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
@@ -61,13 +64,11 @@ Then:
 ### 4. Generate a seed
 
 Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launcher `Options Creator`.
-### 5. Connect Archipelago client
+### 5. Connect in game
 
-Open `Baldur's Gate 3 - ToT Client` from inside the Archipelago launcher and connect to the Archipelago room.
+With the mods active, create a new save and opt into all the in-game pop-ups for Trials of Tav to start the gamemode. In the Trials GUI, switch to the `Archipelago Client` tab. Use that tab to connect to the Archipelago room, watch logs, disconnect, and resync. 
 
-### 6. Play
-
-With the mods active and the client connected, create a new save and opt into all the in-game pop-ups for Trials of Tav. If everything is set up correctly, the shop items should be randomized apworld items.
+If everything is set up correctly, the shop items should be randomized apworld items.
 ## Option Notes
 
 Key options that affect balance the most:
@@ -107,6 +108,8 @@ Useful local files while testing:
 - `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_out.json`
 - `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_in.json`
 - `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_options.json`
+- `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_client_status.json`
+- `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_client_log.json`
 
 If things are working, `ap_out.json` should show progress tokens like:
 

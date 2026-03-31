@@ -1,0 +1,11 @@
+new entry "Interrupt_Smite_Divine"
+type "InterruptData"
+using "Interrupt_Smite_Divine"
+data "Conditions" "IsAbleToReact(context.Observer) and not Item() and (IsMeleeAttack() or IsMeleeUnarmedAttack()) and not IsDivineSmite() and Self(context.Source,context.Observer) and HasDamageEffectFlag(DamageFlags.Hit) and (IsWeaponAttack() or IsUnarmedAttack()) and not IsCritical() and not IsKillingBlow() and not AnyEntityIsItem()"
+data "EnableCondition" ""
+data "EnableContext" "OnStatusApplied;OnStatusRemoved"
+
+new entry "Interrupt_Smite_Divine_Critical"
+type "InterruptData"
+using "Interrupt_Smite_Divine_Critical"
+data "Conditions" "IsAbleToReact(context.Observer) and not Item() and (IsMeleeAttack() or IsMeleeUnarmedAttack()) and not IsDivineSmite() and Self(context.Source,context.Observer) and HasDamageEffectFlag(DamageFlags.Hit) and (IsWeaponAttack() or IsUnarmedAttack()) and IsCritical() and not IsKillingBlow() and not AnyEntityIsItem()"

@@ -8,7 +8,6 @@ import re
 import shutil
 import subprocess
 import textwrap
-import uuid
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -27,7 +26,7 @@ APWORLD_FILENAME = "bg3tot.apworld"
 APWORLD_CONTAINER_VERSION = 7
 APWORLD_COMPATIBLE_VERSION = 7
 
-MOD_OVERLAY_DIR = ROOT / "src" / "archipelago_tot_mod" / "overlay"
+REPO_TRIALS_MOD_SOURCE_DIR = ROOT / "src" / "archipelago_tot_mod" / "source"
 BRANDING_ASSET_DIR = ROOT / "assets" / "archipelago_branding"
 TEXCONV_PATH = ROOT / "tools" / "texconv.exe"
 
@@ -75,15 +74,6 @@ ADVANCED_TT_SPELLS_DEPENDENCY = {
     "publish_handle": "0",
     "uuid": ADVANCED_TT_SPELLS_UUID,
     "version64": "36169553834672129",
-}
-
-TOOLKIT_GUSTAVX_DEPENDENCY = {
-    "folder": "GustavX",
-    "md5": "ef3fcba3f3684b3088ad1f9874d4957c",
-    "name": "GustavX",
-    "publish_handle": "0",
-    "uuid": "cb555efe-2d9e-131f-8195-a89329d218ea",
-    "version64": "145241946983300916",
 }
 
 
@@ -379,6 +369,8 @@ def iter_trials_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]
         if not raw_path:
             return
         candidate = Path(raw_path).expanduser()
+        if not candidate.is_absolute():
+            candidate = ROOT / candidate
         normalized = str(candidate).lower()
         if normalized in seen:
             return
@@ -396,10 +388,10 @@ def iter_trials_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]
     local_appdata = Path(os.environ.get("LOCALAPPDATA", ""))
     user_profile = Path(os.environ.get("USERPROFILE", ""))
     common_candidates = [
+        REPO_TRIALS_MOD_SOURCE_DIR,
         ROOT / ".cache" / "combatmod_extract",
         local_appdata / "Larian Studios" / "Baldur's Gate 3" / "Mods" / "CombatMod.pak",
         ROOT / "CombatMod.pak",
-        ROOT / "third_party" / "CombatMod.pak",
         user_profile / "Downloads" / "CombatMod.pak",
     ]
     for candidate in common_candidates:
@@ -413,9 +405,23 @@ def iter_trials_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]
     return candidates
 
 
+def is_valid_trials_mod_source(candidate: Path, module_folder: str) -> bool:
+    if not candidate.exists():
+        return False
+    if candidate.is_file():
+        return candidate.suffix.lower() == ".pak"
+    if not candidate.is_dir():
+        return False
+
+    mods_root = candidate / "Mods" / module_folder
+    public_root = candidate / "Public" / module_folder
+    return mods_root.exists() and public_root.exists()
+
+
 def resolve_trials_mod_source(config: dict[str, Any]) -> dict[str, str | bool]:
+    module_folder = str(config.get("final_mod", {}).get("module_folder", "CombatMod"))
     for source, candidate in iter_trials_mod_candidates(config):
-        if candidate.exists():
+        if is_valid_trials_mod_source(candidate, module_folder):
             return {
                 "found": True,
                 "path": str(candidate.resolve()),
@@ -467,13 +473,6 @@ def convert_resource(divine_path: str, source_path: Path, destination_path: Path
         check=True,
         cwd=ROOT,
     )
-
-
-def patch_bootstrap_require(bootstrap_path: Path, require_line: str) -> None:
-    contents = bootstrap_path.read_text(encoding="utf-8").replace("\r\n", "\n")
-    if require_line in contents:
-        return
-    write_text(bootstrap_path, contents.rstrip() + "\n" + require_line)
 
 
 def remove_path_if_exists(path: Path) -> None:
@@ -719,17 +718,6 @@ def ensure_child_node(parent_node: ET.Element, child_id: str) -> ET.Element:
     return ET.SubElement(children, "node", {"id": child_id})
 
 
-def module_meta_to_dependency(mod_meta: dict[str, str]) -> dict[str, str]:
-    return {
-        "folder": mod_meta.get("folder", ""),
-        "md5": mod_meta.get("md5", ""),
-        "name": mod_meta.get("name", ""),
-        "publish_handle": mod_meta.get("publish_handle", "0"),
-        "uuid": mod_meta.get("uuid", ""),
-        "version64": mod_meta.get("version64", ""),
-    }
-
-
 def dedupe_dependencies(dependencies: list[dict[str, str]]) -> list[dict[str, str]]:
     deduped: list[dict[str, str]] = []
     seen: set[str] = set()
@@ -914,173 +902,6 @@ def validate_staged_final_mod(staged_mod_dir: Path, final_mod: dict[str, Any]) -
     }
 
 
-def patch_toolkit_mod_meta(
-    meta_path: Path,
-    mod_meta: dict[str, str],
-    dependencies: list[dict[str, str]] | None = None,
-) -> None:
-    tree = ET.parse(meta_path)
-    root = tree.getroot()
-    version = root.find("version")
-    if version is not None:
-        version.set("major", "4")
-        version.set("minor", "8")
-        version.set("revision", "0")
-        version.set("build", "500")
-
-    config_root = root.find(".//region[@id='Config']/node[@id='root']")
-    if config_root is None:
-        raise ValueError(f"Could not find Config/root in toolkit meta source: {meta_path}")
-
-    ensure_child_node(config_root, "Conflicts")
-    module_info = ensure_child_node(config_root, "ModuleInfo")
-    dependency_entries = [TOOLKIT_GUSTAVX_DEPENDENCY]
-    if dependencies:
-        dependency_entries.extend(module_meta_to_dependency(dependency) for dependency in dependencies)
-    write_dependency_nodes(config_root, dependency_entries)
-
-    upsert_xml_attribute(module_info, "Author", "LSString", mod_meta["author"])
-    upsert_xml_attribute(module_info, "Description", "LSString", mod_meta["description"])
-    upsert_xml_attribute(module_info, "FileSize", "uint64", "0")
-    upsert_xml_attribute(module_info, "Folder", "LSString", mod_meta["folder"])
-    upsert_xml_attribute(module_info, "MD5", "LSString", get_xml_attribute(module_info, "MD5", ""))
-    upsert_xml_attribute(module_info, "Name", "LSString", mod_meta["name"])
-    upsert_xml_attribute(module_info, "PublishHandle", "uint64", get_xml_attribute(module_info, "PublishHandle", "0"))
-    upsert_xml_attribute(module_info, "UUID", "FixedString", mod_meta["uuid"])
-    upsert_xml_attribute(module_info, "Version64", "int64", mod_meta["version64"])
-
-    tree.write(meta_path, encoding="utf-8", xml_declaration=True)
-
-
-def render_toolkit_project_meta(project_name: str, module_uuid: str, project_uuid: str) -> str:
-    return f"""<?xml version="1.0" encoding="UTF-8"?>
-<save>
-    <version major="4" minor="8" revision="0" build="500"/>
-    <region id="MetaData">
-        <node id="root">
-            <attribute id="GameProject" type="LSString" value=""/>
-            <attribute id="Module" type="LSString" value="{escape(module_uuid)}"/>
-            <attribute id="Name" type="LSString" value="{escape(project_name)}"/>
-            <attribute id="UUID" type="LSString" value="{escape(project_uuid)}"/>
-            <attribute id="UpdatedDependencies" type="bool" value="true"/>
-            <children>
-                <node id="Categories"/>
-            </children>
-        </node>
-    </region>
-</save>"""
-
-
-def render_toolkit_publish_readme(module_folder: str, display_name: str, pak_name: str) -> str:
-    return textwrap.dedent(
-        f"""
-        # Toolkit Publish Staging
-
-        This folder is generated from the fully working unpacked build so you can publish through the BG3 Toolkit
-        without importing `{pak_name}` back into the editor.
-
-        The Toolkit importer is lossy for existing `.pak` mods, so this staging folder is the safer publish path.
-
-        ## What Is Here
-
-        - `Data/Projects/{module_folder}/`
-          Toolkit project metadata and thumbnail so the project shows up in the Browser.
-        - `Data/Mods/{module_folder}/`
-          Runtime mod files such as `meta.lsx`, Script Extender Lua, and publish logo assets.
-        - `Data/Public/{module_folder}/`
-          Public resources that need to be packed into the published `.pak`.
-        - Dependency metadata for supported external mods
-          The generated `meta.lsx` keeps dependency entries such as `AdvancedTTSpells`, but external dependency
-          files are not copied into this Toolkit staging folder.
-        - `Data/Localization/`
-          Localization files copied from the working build.
-        - `Data/Editor/` and `Data/Generated/`
-          Included only if this build produced matching Toolkit-side files.
-
-        ## Recommended Workflow
-
-        1. Close the BG3 Toolkit if it is open.
-        2. Back up any existing Toolkit project data for `{module_folder}` from your BG3 `Data` folder.
-        3. Copy the contents of this folder's `Data/` directory into your BG3 install `Data/` directory.
-           Typical Steam path: `C:\\Program Files (x86)\\Steam\\steamapps\\common\\Baldurs Gate 3\\Data\\`
-        4. Launch the BG3 Toolkit and open the `{display_name}` project.
-        5. Open `Project > Project Settings`.
-        6. Use `Publish Local` to sanity-check the package, or `Publish` to upload to mod.io.
-        7. If the Toolkit prompts you to load a level, you can cancel it. Publishing does not require a level.
-
-        ## Important Notes
-
-        - Do not re-import `{pak_name}` into the Toolkit after copying these files.
-        - If you previously imported the mod, replacing the old `{module_folder}` project folders with these generated files is recommended.
-        - The normal runtime/test artifact is still `{pak_name}`. This staging folder only exists to feed the Toolkit a complete project layout.
-        - `Publish Local` in the Toolkit may still generate a file named like `{module_folder}_<uuid>.pak`. That is expected: the Toolkit names local exports from the preserved internal module identity, while the repo-built release asset remains `{pak_name}`.
-        """
-    ).strip()
-
-
-def copytree_if_exists(source_dir: Path, destination_dir: Path) -> bool:
-    if not source_dir.exists():
-        return False
-    shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
-    return True
-
-
-def stage_toolkit_publish_layout(staged_mod_dir: Path, destination_dir: Path, final_mod: dict[str, Any]) -> str:
-    remove_path_if_exists(destination_dir)
-
-    module_folder = str(final_mod["module_folder"])
-    mods_root = staged_mod_dir / "Mods" / module_folder
-    public_root = staged_mod_dir / "Public" / module_folder
-    mod_meta = read_mod_meta(mods_root / "meta.lsx")
-    module_uuid = mod_meta["uuid"]
-    if module_uuid:
-        try:
-            project_uuid = str(uuid.uuid5(uuid.UUID(module_uuid), "bg3-toolkit-project"))
-        except ValueError:
-            project_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"bg3-toolkit-project:{module_uuid}"))
-    else:
-        project_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"bg3-toolkit-project:{module_folder}"))
-
-    data_root = destination_dir / "Data"
-    project_dir = data_root / "Projects" / module_folder
-    mods_dir = data_root / "Mods" / module_folder
-    bundled_dependency_metas = dedupe_dependencies(
-        read_dependency_nodes_from_meta(mods_root / "meta.lsx") + [ADVANCED_TT_SPELLS_DEPENDENCY]
-    )
-
-    write_text(
-        project_dir / "meta.lsx",
-        render_toolkit_project_meta(
-            project_name=mod_meta["name"] or str(final_mod.get("display_name", module_folder)),
-            module_uuid=module_uuid,
-            project_uuid=project_uuid,
-        ),
-    )
-
-    thumbnail_source = mods_root / "mod_publish_logo.png"
-    if thumbnail_source.exists():
-        project_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(thumbnail_source, project_dir / "thumbnail.png")
-
-    copytree_if_exists(staged_mod_dir / "Mods", data_root / "Mods")
-    patch_toolkit_mod_meta(mods_dir / "meta.lsx", mod_meta, bundled_dependency_metas)
-    copytree_if_exists(staged_mod_dir / "Public", data_root / "Public")
-    copytree_if_exists(staged_mod_dir / "Localization", data_root / "Localization")
-    copytree_if_exists(staged_mod_dir / "Editor", data_root / "Editor")
-    copytree_if_exists(staged_mod_dir / "Generated", data_root / "Generated")
-
-    write_text(
-        destination_dir / "README.md",
-        render_toolkit_publish_readme(
-            module_folder=module_folder,
-            display_name=mod_meta["name"] or str(final_mod.get("display_name", module_folder)),
-            pak_name=str(final_mod.get("pak_name", "")),
-        ),
-    )
-
-    return str(destination_dir.resolve())
-
-
 DEPENDENCY_VERSION_HELPER = """-- The upstream Trials scripts sometimes compare dependency versions as one exact tuple.
 -- We patch those to a minimum-version check so newer compatible releases do not throw false warnings.
 local function dependency_version_at_least(version_parts, major, minor, revision, build)
@@ -1166,17 +987,6 @@ def stage_final_mod(
     remove_path_if_exists(public_root / "Content" / "UI" / "[PAK]_UI" / "_merged.lsf")
     remove_path_if_exists(public_root / "Assets" / "Textures" / "Icons" / "Icons_ArchipelagoTrials.png")
     remove_path_if_exists(public_root / "Assets" / "Textures" / "Icons" / ARCHIPELAGO_ATLAS_DDS_NAME)
-
-    shutil.copytree(MOD_OVERLAY_DIR, staged_mod_dir, dirs_exist_ok=True)
-
-    patch_bootstrap_require(
-        mods_root / "ScriptExtender" / "Lua" / "BootstrapServer.lua",
-        'Ext.Require("CombatMod/Server/ArchipelagoTrialsCompat.lua")',
-    )
-    patch_bootstrap_require(
-        mods_root / "ScriptExtender" / "Lua" / "BootstrapClient.lua",
-        'Ext.Require("CombatMod/Client/ArchipelagoTrialsCompatClient.lua")',
-    )
 
     patch_dependency_version_checks(mods_root / "ScriptExtender" / "Lua")
     patch_mod_meta(
@@ -1323,11 +1133,6 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         artifacts.append({"kind": "release_apworld", "path": release_apworld_asset})
         release_bundle_archive = build_release_archive(config, release_bundle_path, release_bundle_candidates)
         artifacts.append({"kind": "release_zip", "path": release_bundle_archive})
-
-    if staged_mod_dir and staged_mod_dir.exists():
-        toolkit_publish_dir = release_dir / "toolkit_publish"
-        toolkit_publish_path = stage_toolkit_publish_layout(staged_mod_dir, toolkit_publish_dir, final_mod)
-        artifacts.append({"kind": "release_toolkit_publish", "path": toolkit_publish_path})
 
     manifest = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),

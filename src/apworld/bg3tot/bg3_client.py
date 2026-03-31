@@ -7,6 +7,7 @@ import json
 import logging
 import os
 import sys
+import time
 import typing
 
 from typing import Any, Dict
@@ -48,6 +49,12 @@ from CommonClient import (
 )
 from NetUtils import ClientStatus
 
+BRIDGE_COMMAND_FILE = "ap_client_commands.json"
+BRIDGE_STATUS_FILE = "ap_client_status.json"
+BRIDGE_LOG_FILE = "ap_client_log.json"
+BRIDGE_LOG_LIMIT = 200
+BRIDGE_POLL_INTERVAL_SECONDS = 1.0
+
 
 class BG3ClientCommandProcessor(ClientCommandProcessor):
     def _cmd_resync(self):
@@ -70,12 +77,21 @@ class BG3Context(CommonContext):
     shop_icon_blue = "ap_trials_icon_blue_001"
     shop_icon_color = "ap_trials_icon_color_001"
 
-    def __init__(self, server_address: str | None, password: str | None):
+    def __init__(self, server_address: str | None, password: str | None, *, bridge_mode: bool = False):
         super().__init__(server_address, password)
+        self.bridge_mode = bridge_mode
         self.syncing = False
         self.slot_data_cache: dict[str, Any] = {}
         self.incoming_deathlink_counter = 0
         self.notification_counter = 0
+        self.bridge_heartbeat = 0
+        self.bridge_connection_state = "disconnected"
+        self.bridge_status_text = (
+            "Use the in-game Archipelago tab to connect."
+            if bridge_mode
+            else "Disconnected."
+        )
+        self.bridge_last_error = ""
 
         game_options = BG3World.settings
         if "localappdata" in os.environ:
@@ -102,16 +118,22 @@ class BG3Context(CommonContext):
         self._ensure_json_file(self.comm_file_notifications)
         self._ensure_json_file(self.comm_file_deathlink_in)
         self._ensure_json_file(self.comm_file_deathlink_out)
+        self._ensure_json_file(BRIDGE_COMMAND_FILE)
+        self._ensure_json_file(BRIDGE_LOG_FILE)
+        self._ensure_json_file(BRIDGE_STATUS_FILE, {})
         self._deactivate_bridge_state(clear_files=True)
+        self._write_bridge_status()
 
     def _file_path(self, file_name: str) -> str:
         return os.path.join(self.se_bg3, file_name)
 
-    def _ensure_json_file(self, file_name: str) -> None:
+    def _ensure_json_file(self, file_name: str, default_value: Any | None = None) -> None:
+        if default_value is None:
+            default_value = []
         path = self._file_path(file_name)
         if not os.path.isfile(path):
             with open(path, "w", encoding="utf-8") as file_handle:
-                file_handle.write("[]")
+                json.dump(default_value, file_handle)
 
     def _shop_icon_key(self, is_local_item: bool) -> str:
         return self.shop_icon_blue if is_local_item else self.shop_icon_color
@@ -134,6 +156,52 @@ class BG3Context(CommonContext):
         with open(path, "w", encoding="utf-8") as file_handle:
             json.dump(payload, file_handle)
 
+    def _bridge_slot_name(self) -> str:
+        return str(getattr(self, "auth", None) or getattr(self, "username", None) or "")
+
+    def _write_bridge_status(self, *, bridge_running: bool = True) -> None:
+        self.bridge_heartbeat += 1
+        self._write_json(
+            BRIDGE_STATUS_FILE,
+            {
+                "bridge_running": bridge_running,
+                "heartbeat": self.bridge_heartbeat,
+                "connection_state": self.bridge_connection_state,
+                "status_text": self.bridge_status_text,
+                "last_error": self.bridge_last_error,
+                "server_address": getattr(self, "server_address", "") or "",
+                "slot_name": self._bridge_slot_name(),
+                "seed_name": getattr(self, "seed_name", "") or "",
+                "death_link_enabled": self._death_link_enabled(),
+                "items_received": len(getattr(self, "items_received", [])),
+                "locations_checked": len(getattr(self, "checked_locations", [])),
+                "connected": getattr(self, "slot", None) is not None,
+            },
+        )
+
+    def _append_bridge_log(self, text: str, *, level: str = "info") -> None:
+        message = str(text or "").strip()
+        if not message:
+            return
+
+        existing = self._load_json(BRIDGE_LOG_FILE, [])
+        if not isinstance(existing, list):
+            existing = []
+
+        existing.append(
+            {
+                "timestamp": time.strftime("%H:%M:%S"),
+                "level": str(level or "info"),
+                "text": message,
+            }
+        )
+        if len(existing) > BRIDGE_LOG_LIMIT:
+            existing = existing[-BRIDGE_LOG_LIMIT:]
+        self._write_json(BRIDGE_LOG_FILE, existing)
+
+    def _clear_bridge_log(self) -> None:
+        self._write_json(BRIDGE_LOG_FILE, [])
+
     def _deactivate_bridge_state(self, clear_files: bool = False) -> None:
         if clear_files:
             self._write_json(self.comm_file_sent_items, [])
@@ -149,6 +217,12 @@ class BG3Context(CommonContext):
                 "active_connection": False,
             },
         )
+        self.bridge_connection_state = "disconnected"
+        if self.bridge_mode:
+            self.bridge_status_text = "Use the in-game Archipelago tab to connect."
+        else:
+            self.bridge_status_text = "Disconnected."
+        self.bridge_last_error = ""
 
     def _reset_for_new_seed_if_needed(self) -> None:
         current_seed = self.seed_name or ""
@@ -356,9 +430,47 @@ class BG3Context(CommonContext):
 
     async def server_auth(self, password_requested: bool = False):
         if password_requested and not self.password:
+            if self.bridge_mode:
+                self.bridge_connection_state = "error"
+                self.bridge_status_text = "Archipelago room password required."
+                self.bridge_last_error = "The room requires a password."
+                self._append_bridge_log(self.bridge_last_error, level="error")
+                self._write_bridge_status()
+                return self.password
             await super().server_auth(password_requested)
+
+        if self.bridge_mode and not (self.auth or self.username):
+            self.bridge_connection_state = "error"
+            self.bridge_status_text = "Archipelago slot name required."
+            self.bridge_last_error = "A slot name is required before connecting."
+            self._append_bridge_log(self.bridge_last_error, level="error")
+            self._write_bridge_status()
+            return self.password
+
         await self.get_username()
         await self.send_connect()
+        return self.password
+
+    async def connection_closed(self):
+        await super().connection_closed()
+        self._write_options_file(active_connection=False)
+        if self.bridge_connection_state != "error":
+            if self.server_address and self.username and not self.disconnected_intentionally:
+                self.bridge_connection_state = "connecting"
+                self.bridge_status_text = "Connection lost. Waiting to reconnect."
+            else:
+                self.bridge_connection_state = "disconnected"
+                self.bridge_status_text = "Disconnected."
+        self._write_bridge_status()
+
+    async def disconnect(self, allow_autoreconnect: bool = False):
+        await super().disconnect(allow_autoreconnect)
+        self._write_options_file(active_connection=False)
+        if not allow_autoreconnect and self.bridge_connection_state != "error":
+            self.bridge_connection_state = "disconnected"
+            self.bridge_status_text = "Disconnected."
+            self.bridge_last_error = ""
+        self._write_bridge_status()
 
     @property
     def endpoints(self):
@@ -381,21 +493,34 @@ class BG3Context(CommonContext):
             self._write_options_file(active_connection=True)
             self._request_shop_scouts()
             self._write_json(self.comm_file_sent_items, _encode_received_items(self))
+            self.bridge_connection_state = "connected"
+            self.bridge_status_text = f"Connected to {self.server_address or 'Archipelago room'}."
+            self.bridge_last_error = ""
+            self._append_bridge_log(
+                f"Connected to {self.server_address or 'Archipelago room'} as {self._bridge_slot_name() or 'unknown slot'}."
+            )
             asyncio.create_task(
                 self.update_death_link(self._death_link_enabled()),
                 name="BG3DeathLinkConnected",
             )
+            self._write_bridge_status()
 
         if cmd == "RoomInfo":
             self.seed_name = args["seed_name"]
             self._reset_for_new_seed_if_needed()
             self._write_options_file(active_connection=True)
+            if self.bridge_connection_state != "connected":
+                self.bridge_connection_state = "connecting"
+                self.bridge_status_text = f"Connecting to {self.server_address or 'Archipelago room'}."
+            self._write_bridge_status()
 
         if cmd == "ReceivedItems":
             self._write_json(self.comm_file_sent_items, _encode_received_items(self))
+            self._write_bridge_status()
 
         if cmd == "LocationInfo":
             self._write_options_file(active_connection=True)
+            self._write_bridge_status()
 
     def on_print_json(self, args: dict):
         raw_message_parts = copy.deepcopy(args.get("data", []))
@@ -403,13 +528,15 @@ class BG3Context(CommonContext):
         normalized_args = dict(args)
         normalized_args["data"] = message_parts
         super().on_print_json(normalized_args)
+        message = self.rawjsontotextparser(copy.deepcopy(message_parts)).strip()
+        if message:
+            self._append_bridge_log(message)
 
         if args.get("type") != "ItemSend" or self.slot is None:
             return
         if self.is_uninteresting_item_send(args):
             return
 
-        message = self.rawjsontotextparser(copy.deepcopy(message_parts)).strip()
         if message:
             notification_payload = {
                 "text": message,
@@ -441,9 +568,15 @@ class BG3Context(CommonContext):
             }
         )
         self._write_json(self.comm_file_deathlink_in, pending)
+        self._append_bridge_log(
+            f"Received DeathLink from {data.get('source', 'Archipelago')}: {data.get('cause', '') or text or 'Trials defeat.'}",
+            level="warning",
+        )
+        self._write_bridge_status()
 
     async def shutdown(self):
         await self.update_death_link(False)
+        self._write_bridge_status(bridge_running=False)
         self._deactivate_bridge_state(clear_files=True)
         await super().shutdown()
 
@@ -685,6 +818,89 @@ def _encode_received_items(ctx: BG3Context) -> list[str]:
     return encoded_output
 
 
+async def _process_bridge_command(ctx: BG3Context, command: dict[str, Any]) -> None:
+    command_type = str(command.get("type", "") or "").strip().lower()
+    if not command_type:
+        return
+
+    if command_type == "connect":
+        server_address = str(command.get("server_address", "") or "").strip()
+        slot_name = str(command.get("slot_name", "") or "").strip()
+        password = str(command.get("password", "") or "")
+        if not server_address:
+            ctx.bridge_connection_state = "error"
+            ctx.bridge_status_text = "Archipelago room address required."
+            ctx.bridge_last_error = "Cannot connect without a room address."
+            ctx._append_bridge_log(ctx.bridge_last_error, level="error")
+            ctx._write_bridge_status()
+            return
+        if not slot_name:
+            ctx.bridge_connection_state = "error"
+            ctx.bridge_status_text = "Archipelago slot name required."
+            ctx.bridge_last_error = "Cannot connect without a slot name."
+            ctx._append_bridge_log(ctx.bridge_last_error, level="error")
+            ctx._write_bridge_status()
+            return
+
+        ctx.server_address = server_address
+        ctx.username = slot_name
+        ctx.auth = slot_name
+        ctx.password = password or None
+        ctx.bridge_connection_state = "connecting"
+        ctx.bridge_status_text = f"Connecting to {server_address} as {slot_name}."
+        ctx.bridge_last_error = ""
+        ctx._append_bridge_log(f"Connecting to {server_address} as {slot_name}.")
+        ctx._write_bridge_status()
+        await ctx.connect(server_address)
+        return
+
+    if command_type == "disconnect":
+        ctx._append_bridge_log("Disconnect requested from the in-game Archipelago tab.")
+        await ctx.disconnect()
+        return
+
+    if command_type == "resync":
+        if ctx.slot is None:
+            ctx._append_bridge_log("Resync requested while disconnected.", level="warning")
+        else:
+            ctx._append_bridge_log("Manual resync requested from the in-game Archipelago tab.")
+            ctx.syncing = True
+        ctx._write_bridge_status()
+        return
+
+    if command_type == "clear_log":
+        ctx._clear_bridge_log()
+        return
+
+    ctx._append_bridge_log(f"Unknown bridge command ignored: {command_type}", level="warning")
+
+
+async def bridge_watcher(ctx: BG3Context):
+    while not ctx.exit_event.is_set():
+        try:
+            pending_commands = ctx._load_json(BRIDGE_COMMAND_FILE, [])
+            if not isinstance(pending_commands, list):
+                pending_commands = []
+
+            if pending_commands:
+                ctx._write_json(BRIDGE_COMMAND_FILE, [])
+                for command in pending_commands:
+                    if not isinstance(command, dict):
+                        continue
+                    await _process_bridge_command(ctx, command)
+
+            ctx._write_bridge_status()
+            await asyncio.sleep(BRIDGE_POLL_INTERVAL_SECONDS)
+        except Exception as err:
+            logger.error("Exception in BG3 bridge watcher: %s", err)
+            ctx.bridge_connection_state = "error"
+            ctx.bridge_status_text = "Archipelago bridge command error."
+            ctx.bridge_last_error = str(err)
+            ctx._append_bridge_log(f"Bridge watcher error: {err}", level="error")
+            ctx._write_bridge_status()
+            await asyncio.sleep(BRIDGE_POLL_INTERVAL_SECONDS)
+
+
 async def game_watcher(ctx: BG3Context):
     while not ctx.exit_event.is_set():
         try:
@@ -752,6 +968,8 @@ async def game_watcher(ctx: BG3Context):
             await asyncio.sleep(3)
         except Exception as err:
             logger.error("Exception in communication thread, a check may not have been sent: " + str(err))
+            ctx._append_bridge_log(f"Communication thread error: {err}", level="error")
+            ctx._write_bridge_status()
 
 
 def print_error_and_close(msg: str):
@@ -763,22 +981,31 @@ def print_error_and_close(msg: str):
 def launch_bg3_client(*launch_args: str):
     async def main():
         args = parser.parse_args(launch_args)
-        ctx = BG3Context(args.connect, args.password)
-        ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
-        if gui_enabled:
-            ctx.run_gui()
-        ctx.run_cli()
+        ctx = BG3Context(args.connect, args.password, bridge_mode=args.bridge_mode)
+        bridge_task = asyncio.create_task(bridge_watcher(ctx), name="BG3BridgeWatcher")
+        if not args.bridge_mode or args.connect:
+            ctx.server_task = asyncio.create_task(server_loop(ctx), name="server loop")
+        if not args.bridge_mode:
+            if gui_enabled:
+                ctx.run_gui()
+            ctx.run_cli()
         progression_watcher = asyncio.create_task(game_watcher(ctx), name="BG3ProgressionWatcher")
 
         await ctx.exit_event.wait()
         ctx.server_address = None
 
+        await bridge_task
         await progression_watcher
         await ctx.shutdown()
 
     import colorama
 
     parser = get_base_parser(description="BG3 Trials client, for text interfacing.")
+    parser.add_argument(
+        "--bridge-mode",
+        action="store_true",
+        help="Run without the standalone UI and accept commands from the in-game Archipelago tab.",
+    )
 
     colorama.just_fix_windows_console()
     asyncio.run(main())

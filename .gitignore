@@ -41,3 +41,8 @@ tmp/
 *.lsf
 *.osi
 story_ac.dat
+
+# Repo-owned unpacked Trials source should stay commit-able even if it contains
+# the resource formats we usually ignore elsewhere in the repo.
+!src/archipelago_tot_mod/source/
+!src/archipelago_tot_mod/source/**

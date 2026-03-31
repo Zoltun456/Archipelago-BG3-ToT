@@ -1,0 +1,1040 @@
+{
+    "%d RogueScore required;1": {
+        "Handle": "h8c0d708fgd958g425dgabf3ge43bc9d1c619",
+        "Stack": [],
+        "Text": "%d RogueScore required",
+        "Version": 1
+    },
+    "%s is now active.;1": {
+        "Handle": "h3b8161bbg6ed4g434ega08bg252882a9070a",
+        "Stack": [],
+        "Text": "%s is now active.",
+        "Version": 1
+    },
+    "%s required;1": {
+        "Handle": "h28bc4630g7de9g4136g91b8gf750339ad572",
+        "Stack": [],
+        "Text": "%s required",
+        "Version": 1
+    },
+    "'Bias' refers to the way that budget is spent. High Bias leans toward selecting expensive monsters. Low Bias leans toward selecting many cheap monsters.;1": {
+        "Handle": "hbeac8647gebf9g4d31ga8d9gfb574afbd975",
+        "Stack": [],
+        "Text": "'Bias' refers to the way that budget is spent. High Bias leans toward selecting expensive monsters. Low Bias leans toward selecting many cheap monsters.",
+        "Version": 1
+    },
+    ";1": {
+        "Handle": "h148726aeg41d2g473fgb27bg4159d059637b",
+        "Stack": [],
+        "Text": "",
+        "Version": 1
+    },
+    "A challenge for experienced players. Increases Encounter Budget, increases rate of Enemy Scaling, and allows more powerful monsters to arrive sooner.;1": {
+        "Handle": "he5e0d749gb0b5g4821g8d6dg3e47af4f1c65",
+        "Stack": [],
+        "Text": "A challenge for experienced players. Increases Encounter Budget, increases rate of Enemy Scaling, and allows more powerful monsters to arrive sooner.",
+        "Version": 1
+    },
+    "A scenario rebalanced for solo players. Press ResetTemplates button at bottom of page after enabling or disabling.;1": {
+        "Handle": "h7db9022eg28ecg4577gb4e8ga311d6ca8133",
+        "Stack": [],
+        "Text": "A scenario rebalanced for solo players. Press ResetTemplates button at bottom of page after enabling or disabling.",
+        "Version": 1
+    },
+    "Accelerates the beginning of a run by capapulting you into more dangerous encounters.;1": {
+        "Handle": "hd854417eg8d01g4142gbeb6g7724dc945506",
+        "Stack": [],
+        "Text": "Accelerates the beginning of a run by capapulting you into more dangerous encounters.",
+        "Version": 1
+    },
+    "Alfira is barely functional. Larian did not fully implement her as a companion, just a set piece for one camp night. Use at your own risk.;1": {
+        "Handle": "h5d8139c8g08d4g46c9g96ebg20afb4c9028d",
+        "Stack": [],
+        "Text": "Alfira is barely functional. Larian did not fully implement her as a companion, just a set piece for one camp night. Use at your own risk.",
+        "Version": 1
+    },
+    "An unfair challenge for players who want a punishing experience. Powerful monsters will arrive much sooner and begin swarming.;1": {
+        "Handle": "hd3a90714g86fcg4524g9e09ga3427c2b8160",
+        "Stack": [],
+        "Text": "An unfair challenge for players who want a punishing experience. Powerful monsters will arrive much sooner and begin swarming.",
+        "Version": 1
+    },
+    "Auto Hide;1": {
+        "Handle": "h3c609e26g6935g4cb7gb0f5g3ad152d718f3",
+        "Stack": [],
+        "Text": "Auto Hide",
+        "Version": 1
+    },
+    "Auto Toggle;1": {
+        "Handle": "h34411c36g6114g4496gb077g22f0525500d2",
+        "Stack": [],
+        "Text": "Auto Toggle",
+        "Version": 1
+    },
+    "Auto-Pickup for Armor;1": {
+        "Handle": "h94e5715dgc1b0g4240g8a7dg6426e85f4604",
+        "Stack": [],
+        "Text": "Auto-Pickup for Armor",
+        "Version": 1
+    },
+    "Auto-Pickup for Combat Objects;1": {
+        "Handle": "h91fd8555gc4a8g4d00g8a2cgeb66680ec944",
+        "Stack": [],
+        "Text": "Auto-Pickup for Combat Objects",
+        "Version": 1
+    },
+    "Auto-Pickup for Objects;1": {
+        "Handle": "hc777ee1dg9222g4bb4g8f44g4dd2ed666ff0",
+        "Stack": [],
+        "Text": "Auto-Pickup for Objects",
+        "Version": 1
+    },
+    "Auto-Pickup for Weapons;1": {
+        "Handle": "hfe76c8bdgab23g49deg8cd4g5fb8eef67d9a",
+        "Stack": [],
+        "Text": "Auto-Pickup for Weapons",
+        "Version": 1
+    },
+    "Automatically earned by defeating a CR30 divine avatar: Unlock features for rapidly accelerating the beginning of your next run and making it more dangerous.;1": {
+        "Handle": "hb3c9920ege69cg4c75gb80fgaa13da2d8831",
+        "Stack": [],
+        "Text": "Automatically earned by defeating a CR30 divine avatar: Unlock features for rapidly accelerating the beginning of your next run and making it more dangerous.",
+        "Version": 1
+    },
+    "Awakened Illithid Powers;1": {
+        "Handle": "hf34df053ga618g4a50gac07gec360e25ce14",
+        "Stack": [],
+        "Text": "Awakened Illithid Powers",
+        "Version": 1
+    },
+    "BETA: A mode where the Host controls all monsters, acting as the psuedo-Game Master of the scenario. Intended for multiplayer.;1": {
+        "Handle": "h38b88b07g6dedg4de5ga0b8gbb83429a99a1",
+        "Stack": [],
+        "Text": "BETA: A mode where the Host controls all monsters, acting as the psuedo-Game Master of the scenario. Intended for multiplayer.",
+        "Version": 1
+    },
+    "Battle-Ready Owlbear;1": {
+        "Handle": "hb2385d5age76dg4080gb810gb6e69a3294c4",
+        "Stack": [],
+        "Text": "Battle-Ready Owlbear",
+        "Version": 1
+    },
+    "Bear the Absolute's Brand.;1": {
+        "Handle": "hc38ac208g96dfg4975g9f0bg9f13bd29bd31",
+        "Stack": [],
+        "Text": "Bear the Absolute's Brand.",
+        "Version": 1
+    },
+    "Blacklisted mods will not have their items dropped.;1": {
+        "Handle": "h25b59712g70e0g4c24gb168g6a42134a4860",
+        "Stack": [],
+        "Text": "Blacklisted mods will not have their items dropped.",
+        "Version": 1
+    },
+    "Break/Restore Oath;1": {
+        "Handle": "h337385c4g6626g4d09g9004g0b6f7226294d",
+        "Stack": [],
+        "Text": "Break/Restore Oath",
+        "Version": 1
+    },
+    "Buy 40 Camp Supplies;1": {
+        "Handle": "hab83587fgfed6g40d2ga98bg06b4cba92496",
+        "Stack": [],
+        "Text": "Buy 40 Camp Supplies",
+        "Version": 1
+    },
+    "Buy for character;1": {
+        "Handle": "h2cb33b1dg79e6g46e4g81f8g0082e3da22a0",
+        "Stack": [],
+        "Text": "Buy for character",
+        "Version": 1
+    },
+    "Buy;1": {
+        "Handle": "h322023aeg6775g476fgb011g3109d233132b",
+        "Stack": [],
+        "Text": "Buy",
+        "Version": 1
+    },
+    "Bypass Story;1": {
+        "Handle": "h29375bf8g7c62g40eag91a0g468cb38264ae",
+        "Stack": [],
+        "Text": "Bypass Story",
+        "Version": 1
+    },
+    "Cancel Dialog;1": {
+        "Handle": "h2f6f8b9cg7a3ag4decg91c5gcb8af3e7e9a8",
+        "Stack": [],
+        "Text": "Cancel Dialog",
+        "Version": 1
+    },
+    "Causes a limited amount of Long Rest resources to be regained on each Short Rest. The amount scales with character level.;1": {
+        "Handle": "h0f1c219ag5a49g474cgb3c2gf12a91e0d308",
+        "Stack": [],
+        "Text": "Causes a limited amount of Long Rest resources to be regained on each Short Rest. The amount scales with character level.",
+        "Version": 1
+    },
+    "Challenge Mode;1": {
+        "Handle": "h26aa74f2g73ffg421agb159g947c137bb65e",
+        "Stack": [],
+        "Text": "Challenge Mode",
+        "Version": 1
+    },
+    "Clear All Entities;1": {
+        "Handle": "h3bc40171g6e91g4542g808fg732422ad5106",
+        "Stack": [],
+        "Text": "Clear All Entities",
+        "Version": 1
+    },
+    "Clear Area;1": {
+        "Handle": "h31b7af7eg64e2g4fa2gb028g49c4d20a6be6",
+        "Stack": [],
+        "Text": "Clear Area",
+        "Version": 1
+    },
+    "Clearing all entities;1": {
+        "Handle": "h8cb6b79dgd9e3g4e2cg8bf8g584ae9da7a68",
+        "Stack": [],
+        "Text": "Clearing all entities",
+        "Version": 1
+    },
+    "Common;1": {
+        "Handle": "h22e2080eg77b7g45d5gb11dg13b3d33f3191",
+        "Stack": [],
+        "Text": "Common",
+        "Version": 1
+    },
+    "Config updated;1": {
+        "Handle": "h2e624d0ag7b37g4185gb1d5g17e393f735c1",
+        "Stack": [],
+        "Text": "Config updated",
+        "Version": 1
+    },
+    "Config;1": {
+        "Handle": "h23c73e06g7692g46b5gb10fg40d3532d62f1",
+        "Stack": [],
+        "Text": "Config",
+        "Version": 1
+    },
+    "Cost: %s;1": {
+        "Handle": "h38df043eg6d8ag4516gb0begc370d29ce152",
+        "Stack": [],
+        "Text": "Cost: %s",
+        "Version": 1
+    },
+    "Counter the Shadow Curse.;1": {
+        "Handle": "h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e",
+        "Stack": [],
+        "Text": "Counter the Shadow Curse.",
+        "Version": 1
+    },
+    "Creation;1": {
+        "Handle": "h20c028a6g7595g47dfgb13fg31b9531d139b",
+        "Stack": [],
+        "Text": "Creation",
+        "Version": 1
+    },
+    "Currency owned: %d   RogueScore: %d;1": {
+        "Handle": "h16af0aafg43fag45ffga259gc399c07be1bb",
+        "Stack": [],
+        "Text": "Currency owned: %d   RogueScore: %d",
+        "Version": 1
+    },
+    "Debug;1": {
+        "Handle": "h366718e6g6332g44dbgb055g42bd5277609f",
+        "Stack": [],
+        "Text": "Debug",
+        "Version": 1
+    },
+    "Default Config;1": {
+        "Handle": "h29b77480g7ce2g421dg91a8g447b338a6659",
+        "Stack": [],
+        "Text": "Default Config",
+        "Version": 1
+    },
+    "Destroy All;1": {
+        "Handle": "h2cf955d8g79acg4008g91fcga66eb3de844c",
+        "Stack": [],
+        "Text": "Destroy All",
+        "Version": 1
+    },
+    "Destroy;1": {
+        "Handle": "h254298eeg7017g4cdbgb167g1abdd345389f",
+        "Stack": [],
+        "Text": "Destroy",
+        "Version": 1
+    },
+    "Difficulty;1": {
+        "Handle": "h2c9ee446g79cbg4b11gb1fagdd7753d8ff55",
+        "Stack": [],
+        "Text": "Difficulty",
+        "Version": 1
+    },
+    "Don't show ingame notifications.;1": {
+        "Handle": "hf95a1c84gac0fg449dg9ca6g92fb7e84b0d9",
+        "Stack": [],
+        "Text": "Don't show ingame notifications.",
+        "Version": 1
+    },
+    "Drop Camp Clothes;1": {
+        "Handle": "h3e82a111g6bd7g4f44g80dbg192222f93b00",
+        "Stack": [],
+        "Text": "Drop Camp Clothes",
+        "Version": 1
+    },
+    "Enable Debug;1": {
+        "Handle": "h29620d0ag7c37g4585gb1a5g13e3938731c1",
+        "Stack": [],
+        "Text": "Enable Debug",
+        "Version": 1
+    },
+    "End Long Rest;1": {
+        "Handle": "h2af0133ag7fa5g4466gb19cg320093be1022",
+        "Stack": [],
+        "Text": "End Long Rest",
+        "Version": 1
+    },
+    "End the current dialog.;1": {
+        "Handle": "h83573dd3gd602g4688gab06g40ee092462cc",
+        "Stack": [],
+        "Text": "End the current dialog.",
+        "Version": 1
+    },
+    "Enemies;1": {
+        "Handle": "h20450ab6g7510g45fegb137g6398531541ba",
+        "Stack": [],
+        "Text": "Enemies",
+        "Version": 1
+    },
+    "Enemy Stat Scaling Modifier;1": {
+        "Handle": "h1cd23d77g4987g4682ga2feg10e440dc32c6",
+        "Stack": [],
+        "Text": "Enemy Stat Scaling Modifier",
+        "Version": 1
+    },
+    "Equipped with Mol's tricks of the trade. Reduce Fire damage by 5 and gain the ability to cast Rays of Fire.;1": {
+        "Handle": "h41328a2ag1467g4df7gb720g1b91950239b3",
+        "Stack": [],
+        "Text": "Equipped with Mol's tricks of the trade. Reduce Fire damage by 5 and gain the ability to cast Rays of Fire.",
+        "Version": 1
+    },
+    "Exp Multiplier;1": {
+        "Handle": "h2c411dfcg7914g448ag91f7g22ecf3d500ce",
+        "Stack": [],
+        "Text": "Exp Multiplier",
+        "Version": 1
+    },
+    "Extra features;1": {
+        "Handle": "h3550957ag6005g4c02gb066g3a6492441846",
+        "Stack": [],
+        "Text": "Extra features",
+        "Version": 1
+    },
+    "Extras;1": {
+        "Handle": "h20891676g75dcg4432gb13bga25453198076",
+        "Stack": [],
+        "Text": "Extras",
+        "Version": 1
+    },
+    "Fix Factions;1": {
+        "Handle": "h2f8e40d4g7adbg4158g91cbgd73e73e9f51c",
+        "Stack": [],
+        "Text": "Fix Factions",
+        "Version": 1
+    },
+    "Fix Long Rest;1": {
+        "Handle": "h2c31139ag7964g446cgb1f0g220a93d20028",
+        "Stack": [],
+        "Text": "Fix Long Rest",
+        "Version": 1
+    },
+    "Gain 20%% more Currency;1": {
+        "Handle": "hce43e6c9g9b16g4b39g8fd7g0d5fadf52f7d",
+        "Stack": [],
+        "Text": "Gain 20%% more Currency",
+        "Version": 1
+    },
+    "Gain 50%% more loot;1": {
+        "Handle": "h972818a9gc27dg44dfg8a41gb2b9a863909b",
+        "Stack": [],
+        "Text": "Gain 50%% more loot",
+        "Version": 1
+    },
+    "Gain ability to conjure an intellect devourer companion;1": {
+        "Handle": "h3450ea1cg6105g4bf4g9076g3d92f2541fb0",
+        "Stack": [],
+        "Text": "Gain ability to conjure an intellect devourer companion",
+        "Version": 1
+    },
+    "Gain double XP;1": {
+        "Handle": "h294ce46eg7c19g4b13gb1a7gfd75d385df57",
+        "Stack": [],
+        "Text": "Gain double XP",
+        "Version": 1
+    },
+    "Game Master Mode;1": {
+        "Handle": "h37f1aaabg62a4g4fffga04cg2999826e0bbb",
+        "Stack": [],
+        "Text": "Game Master Mode",
+        "Version": 1
+    },
+    "Get Pixie Blessing;1": {
+        "Handle": "h27f7bcfeg72a2g4e9agb14cg48fcd36e6ade",
+        "Stack": [],
+        "Text": "Get Pixie Blessing",
+        "Version": 1
+    },
+    "Get a Tadpole;1": {
+        "Handle": "h36f8f1b6g63adg4a4egb05cgbc28527e9e0a",
+        "Stack": [],
+        "Text": "Get a Tadpole",
+        "Version": 1
+    },
+    "Global Settings - Host only;1": {
+        "Handle": "h501f8202g054ag4d75gb632gcb131410e931",
+        "Stack": [],
+        "Text": "Global Settings - Host only",
+        "Version": 1
+    },
+    "Go to Camp;1": {
+        "Handle": "h3160102eg6435g4457gb025g3231d2071013",
+        "Stack": [],
+        "Text": "Go to Camp",
+        "Version": 1
+    },
+    "Hell Mode;1": {
+        "Handle": "h38cb985eg6d9eg4cd0gb0bfg8ab6d29da894",
+        "Stack": [],
+        "Text": "Hell Mode",
+        "Version": 1
+    },
+    "Hide this window when entering a map. Show this window when starting a scenario.;1": {
+        "Handle": "hd9d18c01g8c84g4d95g8eaeg2bf32c8c09d1",
+        "Stack": [],
+        "Text": "Hide this window when entering a map. Show this window when starting a scenario.",
+        "Version": 1
+    },
+    "Hide this window when the native UI is focused.;1": {
+        "Handle": "h193979fag4c6cg42cagb2a0ga4ac9082868e",
+        "Stack": [],
+        "Text": "Hide this window when the native UI is focused.",
+        "Version": 1
+    },
+    "Highlight Spawns;1": {
+        "Handle": "h24936cf3g71c6g439aga17ag05fc035827de",
+        "Stack": [],
+        "Text": "Highlight Spawns",
+        "Version": 1
+    },
+    "In roguelike mode, scale the stats of enemies based on this number.;1": {
+        "Handle": "hf099a598ga5ccg4f0cg9c3aga96abe188b48",
+        "Stack": [],
+        "Text": "In roguelike mode, scale the stats of enemies based on this number.",
+        "Version": 1
+    },
+    "In roguelike mode, teleport back to camp after combat automatically. Set to 0 to disable auto-teleport;1": {
+        "Handle": "ha4163608gf143g4635g9972g5053bb507271",
+        "Stack": [],
+        "Text": "In roguelike mode, teleport back to camp after combat automatically. Set to 0 to disable auto-teleport",
+        "Version": 1
+    },
+    "Include camp clothes in item drops;1": {
+        "Handle": "hd8cafdddg8d9fg4a88g8ebfg9ceeec9dbecc",
+        "Stack": [],
+        "Text": "Include camp clothes in item drops",
+        "Version": 1
+    },
+    "Includes %s;1": {
+        "Handle": "h2544d6fag7011g483agb167g7e5c93455c7e",
+        "Stack": [],
+        "Text": "Includes %s",
+        "Version": 1
+    },
+    "Items will spawn at the current player's position instead of the map's entry point.;1": {
+        "Handle": "hb77766a4ge222g433fg9844g45597a66677b",
+        "Stack": [],
+        "Text": "Items will spawn at the current player's position instead of the map's entry point.",
+        "Version": 1
+    },
+    "Items;1": {
+        "Handle": "h322608ceg6773g45d9gb011g53bfd233719d",
+        "Stack": [],
+        "Text": "Items",
+        "Version": 1
+    },
+    "Kill spawned;1": {
+        "Handle": "h2d5b4e72g780eg41b2gb1e6g87d413c4a5f6",
+        "Stack": [],
+        "Text": "Kill spawned",
+        "Version": 1
+    },
+    "Legendary;1": {
+        "Handle": "h2795a4eeg72c0g4f1bgb14ag697dd3684b5f",
+        "Stack": [],
+        "Text": "Legendary",
+        "Version": 1
+    },
+    "Level will be reset. Inventory will be emptied.;1": {
+        "Handle": "h5bd81560g0e8dg4403g968egb26534ac9047",
+        "Stack": [],
+        "Text": "Level will be reset. Inventory will be emptied.",
+        "Version": 1
+    },
+    "Logs;1": {
+        "Handle": "h31b714deg64e2g4418gb028g427ed20a605c",
+        "Stack": [],
+        "Text": "Logs",
+        "Version": 1
+    },
+    "Lone Wolf Mode is recommended for players who want to play solo. It can be enabled on the Config tab, and it can be used in conjunction with Challenge Mode or Hell Mode. Remember to Reset Templates after enabling or disabling Lone Wolf Mode.;1": {
+        "Handle": "h214532ddg7410g4678g8127g601ee305423c",
+        "Stack": [],
+        "Text": "Lone Wolf Mode is recommended for players who want to play solo. It can be enabled on the Config tab, and it can be used in conjunction with Challenge Mode or Hell Mode. Remember to Reset Templates after enabling or disabling Lone Wolf Mode.",
+        "Version": 1
+    },
+    "Lone Wolf Mode;1": {
+        "Handle": "h21dd0d16g7488g4584gb12ege3e2530cc1c0",
+        "Stack": [],
+        "Text": "Lone Wolf Mode",
+        "Version": 1
+    },
+    "Loot;1": {
+        "Handle": "h31b71a1eg64e2g44f4gb028g4292d20a60b0",
+        "Stack": [],
+        "Text": "Loot",
+        "Version": 1
+    },
+    "Maps;1": {
+        "Handle": "h35341416g6061g4414gb060g727252425050",
+        "Stack": [],
+        "Text": "Maps",
+        "Version": 1
+    },
+    "Mod Item Blacklist;1": {
+        "Handle": "h230707dfg7652g4528ga103g434ec321616c",
+        "Stack": [],
+        "Text": "Mod Item Blacklist",
+        "Version": 1
+    },
+    "More info in the console and other debug features;1": {
+        "Handle": "h07417422g5214g4217gb347g247111650653",
+        "Stack": [],
+        "Text": "More info in the console and other debug features",
+        "Version": 1
+    },
+    "Multiplies the experience gained by killing enemies;1": {
+        "Handle": "hc2671d37g9732g4486gaf15g42e04d3760c2",
+        "Stack": [],
+        "Text": "Multiplies the experience gained by killing enemies",
+        "Version": 1
+    },
+    "Needs to be a Paladin.;1": {
+        "Handle": "had299379gf87cg4c62g89e1gaa04abc38826",
+        "Stack": [],
+        "Text": "Needs to be a Paladin.",
+        "Version": 1
+    },
+    "Needs to be run multiple times in some cases. May not work in all cases.;1": {
+        "Handle": "h8810864dgdd45g4d31g8bb2g3b57e9901975",
+        "Stack": [],
+        "Text": "Needs to be run multiple times in some cases. May not work in all cases.",
+        "Version": 1
+    },
+    "Next Round;1": {
+        "Handle": "h3097f93eg65c2g4ac6gb03ag4ca0d2186e82",
+        "Stack": [],
+        "Text": "Next Round",
+        "Version": 1
+    },
+    "One must remove all obstacles to follow one's destiny - Arabella's favour grants affected entities the benefits of Freedom of Movement.;1": {
+        "Handle": "h97709a29gc225g4cf7g8a44g3a91a86618b3",
+        "Stack": [],
+        "Text": "One must remove all obstacles to follow one's destiny - Arabella's favour grants affected entities the benefits of Freedom of Movement.",
+        "Version": 1
+    },
+    "Only Host Can Buy Unlocks;1": {
+        "Handle": "hfadaa9bfgaf8fg4fcegac9eg99a8cebcbb8a",
+        "Stack": [],
+        "Text": "Only Host Can Buy Unlocks",
+        "Version": 1
+    },
+    "Permanent;1": {
+        "Handle": "h255ed026g700bg4857gb166gde315344fc13",
+        "Stack": [],
+        "Text": "Permanent",
+        "Version": 1
+    },
+    "Persist Config;1": {
+        "Handle": "h28cd5020g7d98g4057g91bfge631339dc413",
+        "Stack": [],
+        "Text": "Persist Config",
+        "Version": 1
+    },
+    "Pickup All;1": {
+        "Handle": "h2dba28d2g78efg47d8gb1e8g91be13cab39c",
+        "Stack": [],
+        "Text": "Pickup All",
+        "Version": 1
+    },
+    "Pickup;1": {
+        "Handle": "h243c04feg7169g451agb170gf37cd352d15e",
+        "Stack": [],
+        "Text": "Pickup",
+        "Version": 1
+    },
+    "Ping Spawns;1": {
+        "Handle": "h315e322eg640bg4677gb026gd011d204f233",
+        "Stack": [],
+        "Text": "Ping Spawns",
+        "Version": 1
+    },
+    "Ping;1": {
+        "Handle": "h37333c06g6266g4695gb040g00f3526222d1",
+        "Stack": [],
+        "Text": "Ping",
+        "Version": 1
+    },
+    "Play Roguelike Mode;1": {
+        "Handle": "hac065c23gf953g4097ga9f3g56f10bd174d3",
+        "Stack": [],
+        "Text": "Play Roguelike Mode",
+        "Version": 1
+    },
+    "Play Roguelike mode?\nContinuously create new battles.\nYou will gain a higher score with every completed fight.\nDifficulty increases with the score.;1": {
+        "Handle": "hf44e063cga11bg4536g9c77gd350fe55f172",
+        "Stack": [],
+        "Text": "Play Roguelike mode?\nContinuously create new battles.\nYou will gain a higher score with every completed fight.\nDifficulty increases with the score.",
+        "Version": 1
+    },
+    "Play continuously harder random battles;1": {
+        "Handle": "hd27c8442g8729g4d11gbe14gfb771c36d955",
+        "Stack": [],
+        "Text": "Play continuously harder random battles",
+        "Version": 1
+    },
+    "Play;1": {
+        "Handle": "h307360eeg6526g435bgb034g053dd216271f",
+        "Stack": [],
+        "Text": "Play",
+        "Version": 1
+    },
+    "Pos;1": {
+        "Handle": "h31b2227eg64e7g4772gb028g1114d20a3336",
+        "Stack": [],
+        "Text": "Pos",
+        "Version": 1
+    },
+    "Quick Start: - %s RogueScore;1": {
+        "Handle": "hc60d0ebbg9358g45begaf53ge3d88d71c1fa",
+        "Stack": [],
+        "Text": "Quick Start: - %s RogueScore",
+        "Version": 1
+    },
+    "Quick Start: - Gain 2x RogueScore, doubling the rate difficulty increases;1": {
+        "Handle": "h4b49f453g1e1cg4a10ga787gac7605a58e54",
+        "Stack": [],
+        "Text": "Quick Start: - Gain 2x RogueScore, doubling the rate difficulty increases",
+        "Version": 1
+    },
+    "Quick Start: - Roll Loot %dx;1": {
+        "Handle": "hee9d3983gbbc8g46cdgaddage0ab0ff8c289",
+        "Stack": [],
+        "Text": "Quick Start: - Roll Loot %dx",
+        "Version": 1
+    },
+    "Quick Start: - Unlock Multipliers for Free;1": {
+        "Handle": "he27b6a7bgb72eg43f2gad14g85948f36a7b6",
+        "Stack": [],
+        "Text": "Quick Start: - Unlock Multipliers for Free",
+        "Version": 1
+    },
+    "Randomize Spawn Offset;1": {
+        "Handle": "hb823bf93ged76g4eacga8b1g08ca0a932ae8",
+        "Stack": [],
+        "Text": "Randomize Spawn Offset",
+        "Version": 1
+    },
+    "Randomize spawn position for more varied encounter placement. (High values can result in spawns inside walls or out of bounds);1": {
+        "Handle": "h004f93edg551ag4c6bg8337gca0de115e82f",
+        "Stack": [],
+        "Text": "Randomize spawn position for more varied encounter placement. (High values can result in spawns inside walls or out of bounds)",
+        "Version": 1
+    },
+    "Rare;1": {
+        "Handle": "h35313866g6064g46d3gb060g20b552420297",
+        "Stack": [],
+        "Text": "Rare",
+        "Version": 1
+    },
+    "Rarity;1": {
+        "Handle": "h211f8066g744ag4d53gb122gcb355300e917",
+        "Stack": [],
+        "Text": "Rarity",
+        "Version": 1
+    },
+    "Recruit Origins (Experimental);1": {
+        "Handle": "hfafd2f0cgafa8g47a5g9c9cge1c3febec3e1",
+        "Stack": [],
+        "Text": "Recruit Origins (Experimental)",
+        "Version": 1
+    },
+    "Regenerate enemy, item, and map tables?\nIf you've recently updated, this is recommended.\nOld data may need to be cleared, and new data may need to be pulled in;1": {
+        "Handle": "hff61ea30gaa34g4bf6g9cc5g2d903ee70fb2",
+        "Stack": [],
+        "Text": "Regenerate enemy, item, and map tables?\nIf you've recently updated, this is recommended.\nOld data may need to be cleared, and new data may need to be pulled in",
+        "Version": 1
+    },
+    "Reload;1": {
+        "Handle": "h27b40c36g72e1g4596gb148g73f0536a51d2",
+        "Stack": [],
+        "Text": "Reload",
+        "Version": 1
+    },
+    "Reruns the scripting that applies each time you press the Camp button, fixing Long Rest. Cannot be used during combat.;1": {
+        "Handle": "h87eefe1cgd2bbg4ab4g9b4dgdcd2f96ffef0",
+        "Stack": [],
+        "Text": "Reruns the scripting that applies each time you press the Camp button, fixing Long Rest. Cannot be used during combat.",
+        "Version": 1
+    },
+    "Reset Config;1": {
+        "Handle": "h3659a876g630cg4fd2gb056ga9b452748b96",
+        "Stack": [],
+        "Text": "Reset Config",
+        "Version": 1
+    },
+    "Reset Stock;1": {
+        "Handle": "h360818b2g635dg44degb053gb2b81271909a",
+        "Stack": [],
+        "Text": "Reset Stock",
+        "Version": 1
+    },
+    "Reset Templates;1": {
+        "Handle": "h32554192g6700g414cgb016g672a12344508",
+        "Stack": [],
+        "Text": "Reset Templates",
+        "Version": 1
+    },
+    "Reset;1": {
+        "Handle": "h367fb87eg632ag4ed2gb054gc8b4d276ea96",
+        "Stack": [],
+        "Text": "Reset",
+        "Version": 1
+    },
+    "Resets the faction all of current party members, in case scripting has caused someone to stop being considered an ally. Cannot be used during combat.;1": {
+        "Handle": "h0d1402fbg5841g457aga3e2g731c81c0513e",
+        "Stack": [],
+        "Text": "Resets the faction all of current party members, in case scripting has caused someone to stop being considered an ally. Cannot be used during combat.",
+        "Version": 1
+    },
+    "Resets the stock of purchased standard unlocks.;1": {
+        "Handle": "h6256c771g3703g4922g8516g5f4427347d66",
+        "Stack": [],
+        "Text": "Resets the stock of purchased standard unlocks.",
+        "Version": 1
+    },
+    "Resetting templates...;1": {
+        "Handle": "h8ccc2af7gd999g47fagabffgf19c49ddd3be",
+        "Stack": [],
+        "Text": "Resetting templates...",
+        "Version": 1
+    },
+    "Restrict other players in multiplayer from buying unlocks.;1": {
+        "Handle": "h7b7406d7g2e21g4538ga484g735e46a6517c",
+        "Stack": [],
+        "Text": "Restrict other players in multiplayer from buying unlocks.",
+        "Version": 1
+    },
+    "Roll Epic Loot %dx;1": {
+        "Handle": "h3f24d43fg6a71g4816ga0c1g7e70c2e35c52",
+        "Stack": [],
+        "Text": "Roll Epic Loot %dx",
+        "Version": 1
+    },
+    "Roll Legendary Loot %dx;1": {
+        "Handle": "hc2dd2983g9788g47cdgaf1ege1ab0d3cc389",
+        "Stack": [],
+        "Text": "Roll Legendary Loot %dx",
+        "Version": 1
+    },
+    "Roll Loot %dx;1": {
+        "Handle": "h3b8839f6g6eddg46cagb08bgb0ac52a9928e",
+        "Stack": [],
+        "Text": "Roll Loot %dx",
+        "Version": 1
+    },
+    "Roll Rare Loot %dx;1": {
+        "Handle": "h3d445f63g6811g40a3ga0e7g76c502c554e7",
+        "Stack": [],
+        "Text": "Roll Rare Loot %dx",
+        "Version": 1
+    },
+    "Scenarios;1": {
+        "Handle": "h2553979eg7006g4c2cgb166g0a4ad3442868",
+        "Stack": [],
+        "Text": "Scenarios",
+        "Version": 1
+    },
+    "Search;1": {
+        "Handle": "h243816eeg716dg443bgb170gb25dd352907f",
+        "Stack": [],
+        "Text": "Search",
+        "Version": 1
+    },
+    "Skip dialogues, combat and interactions that aren't related to Roguelike mode.;1": {
+        "Handle": "h908239a1gc5d7g46cfg8a3bg10a92819328b",
+        "Stack": [],
+        "Text": "Skip dialogues, combat and interactions that aren't related to Roguelike mode.",
+        "Version": 1
+    },
+    "Skip to Camp?;1": {
+        "Handle": "h2bb88d7eg7eedg4d82gb188gbbe4d3aa99c6",
+        "Stack": [],
+        "Text": "Skip to Camp?",
+        "Version": 1
+    },
+    "Spawn Items At Player;1": {
+        "Handle": "h868cae89gd3d9g4fbdg8b5bgf9dba979dbf9",
+        "Stack": [],
+        "Text": "Spawn Items At Player",
+        "Version": 1
+    },
+    "Spawn Mindflayer Companion;1": {
+        "Handle": "hc6c558ccg9390g40d9g9f5fg66bffd7d449d",
+        "Stack": [],
+        "Text": "Spawn Mindflayer Companion",
+        "Version": 1
+    },
+    "Spawns Dame Aylin as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
+        "Handle": "h3cd7cd32g6982g4986gb0feg4fe012dc6dc2",
+        "Stack": [],
+        "Text": "Spawns Dame Aylin as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.",
+        "Version": 1
+    },
+    "Spawns the Emperor as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
+        "Handle": "hd9746d3ag8c21g4386gbea4g75e09c8657c2",
+        "Stack": [],
+        "Text": "Spawns the Emperor as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.",
+        "Version": 1
+    },
+    "Start Ceremorphosis;1": {
+        "Handle": "h9f1540b5gca40g415eg8ac2g673868e0451a",
+        "Stack": [],
+        "Text": "Start Ceremorphosis",
+        "Version": 1
+    },
+    "Start Menu;1": {
+        "Handle": "h3166c60eg6433g4935gb025g5f53d2077d71",
+        "Stack": [],
+        "Text": "Start Menu",
+        "Version": 1
+    },
+    "Start;1": {
+        "Handle": "h323096eeg6765g4c3bgb010g3a5dd232187f",
+        "Stack": [],
+        "Text": "Start",
+        "Version": 1
+    },
+    "Starting items added. Hirelings unlocked.;1": {
+        "Handle": "hc1216d49g9474g4381g8f21g25e7ad0307c5",
+        "Stack": [],
+        "Text": "Starting items added. Hirelings unlocked.",
+        "Version": 1
+    },
+    "State;1": {
+        "Handle": "h32391aeeg676cg44fbgb010ga29dd23280bf",
+        "Stack": [],
+        "Text": "State",
+        "Version": 1
+    },
+    "Stock: %s;1": {
+        "Handle": "h3e9c6432g6bc9g4316gb0dagf57012f8d752",
+        "Stack": [],
+        "Text": "Stock: %s",
+        "Version": 1
+    },
+    "Stop;1": {
+        "Handle": "h327e121eg672bg4474gb014gd212d236f030",
+        "Stack": [],
+        "Text": "Stop",
+        "Version": 1
+    },
+    "Sword of the Silverlight;1": {
+        "Handle": "hcf08bac4g9a5dg4ef9g9fc3gb89f7de19abd",
+        "Stack": [],
+        "Text": "Sword of the Silverlight",
+        "Version": 1
+    },
+    "TP;1": {
+        "Handle": "h097e26aeg5c2bg473fgb3a4gd159d186f37b",
+        "Stack": [],
+        "Text": "TP",
+        "Version": 1
+    },
+    "Teleport;1": {
+        "Handle": "h25531a42g7006g44f1gb166g0297134420b5",
+        "Stack": [],
+        "Text": "Teleport",
+        "Version": 1
+    },
+    "Templates reset;1": {
+        "Handle": "h2771ca17g7224g49f4ga144g2f9243660db0",
+        "Stack": [],
+        "Text": "Templates reset",
+        "Version": 1
+    },
+    "Templates;1": {
+        "Handle": "h273d0172g7268g4542gb140ge3241362c106",
+        "Stack": [],
+        "Text": "Templates",
+        "Version": 1
+    },
+    "The encounter budget increases as your RogueScore increases and scales faster with higher difficulties.;1": {
+        "Handle": "h1a239f49g4f76g4ca1g8291g0ac7a0b328e5",
+        "Stack": [],
+        "Text": "The encounter budget increases as your RogueScore increases and scales faster with higher difficulties.",
+        "Version": 1
+    },
+    "The reunited soul Thaniel provides a +1 to all Ability Scores and an additional 2m movement speed.;1": {
+        "Handle": "h7e986d9bg2bcdg438cga4dagb5ea86f897c8",
+        "Stack": [],
+        "Text": "The reunited soul Thaniel provides a +1 to all Ability Scores and an additional 2m movement speed.",
+        "Version": 1
+    },
+    "This will reset all changes you've made to the templates.;1": {
+        "Handle": "h7c764b2dg2923g41e7g84f4g5781e6d675a3",
+        "Stack": [],
+        "Text": "This will reset all changes you've made to the templates.",
+        "Version": 1
+    },
+    "Tier;1": {
+        "Handle": "h373f16ceg626ag4439gb040gc25fd262e07d",
+        "Stack": [],
+        "Text": "Tier",
+        "Version": 1
+    },
+    "To Camp After n Seconds;1": {
+        "Handle": "he699ae7dgb3ccg4fb2g8d5aga9d4ef788bf6",
+        "Stack": [],
+        "Text": "To Camp After n Seconds",
+        "Version": 1
+    },
+    "Turn Off Notifications;1": {
+        "Handle": "h9dc524a2gc890g471fgbaefg617918cd435b",
+        "Stack": [],
+        "Text": "Turn Off Notifications",
+        "Version": 1
+    },
+    "Uncommon;1": {
+        "Handle": "h23579496g7602g4c1cgb106g4a7a53246858",
+        "Stack": [],
+        "Text": "Uncommon",
+        "Version": 1
+    },
+    "Unlock Multipliers;1": {
+        "Handle": "h2cd8cf00g798dg49a5g91fegbfc333dc9de1",
+        "Stack": [],
+        "Text": "Unlock Multipliers",
+        "Version": 1
+    },
+    "Unlock Quick Start;1": {
+        "Handle": "h2cc2c959g7997g49c0g81ffg1fa6a3dd3d84",
+        "Stack": [],
+        "Text": "Unlock Quick Start",
+        "Version": 1
+    },
+    "Unlock Tadpole Power;1": {
+        "Handle": "hb00c97b7ge559g4c2ega833gfa484a11d86a",
+        "Stack": [],
+        "Text": "Unlock Tadpole Power",
+        "Version": 1
+    },
+    "Unlock Waypoints;1": {
+        "Handle": "h2c5a29c3g790fg47c9ga1f6g91af03d4b38d",
+        "Stack": [],
+        "Text": "Unlock Waypoints",
+        "Version": 1
+    },
+    "Unlocks;1": {
+        "Handle": "h231a0e4eg764fg45b1gb102g93d7d320b1f5",
+        "Stack": [],
+        "Text": "Unlocks",
+        "Version": 1
+    },
+    "Updating config...;1": {
+        "Handle": "h2f0de7b4g7a58g4b2eg91c3ged4873e1cf6a",
+        "Stack": [],
+        "Text": "Updating config...",
+        "Version": 1
+    },
+    "Use all Illithid Powers with Bonus Actions.;1": {
+        "Handle": "he7764179gb223g4142g8d44g5724af667506",
+        "Stack": [],
+        "Text": "Use all Illithid Powers with Bonus Actions.",
+        "Version": 1
+    },
+    "Use when stuck in night time.;1": {
+        "Handle": "hf762a093ga237g4f5cgac45g193a0e673b18",
+        "Stack": [],
+        "Text": "Use when stuck in night time.",
+        "Version": 1
+    },
+    "VeryRare;1": {
+        "Handle": "h27607312g7235g4264gb145g340213671620",
+        "Stack": [],
+        "Text": "VeryRare",
+        "Version": 1
+    },
+    "Want even more bosses? New complex legendary mechanics? Install Spells of Exandria to add Critical Role monsters to the pool!;1": {
+        "Handle": "hb495ade9ge1c0g4f8bg887ag69edaa584bcf",
+        "Stack": [],
+        "Text": "Want even more bosses? New complex legendary mechanics? Install Spells of Exandria to add Critical Role monsters to the pool!",
+        "Version": 1
+    },
+    "Waypoints;1": {
+        "Handle": "h273eb1cag726bg4e49gb140gd82f9362fa0d",
+        "Stack": [],
+        "Text": "Waypoints",
+        "Version": 1
+    },
+    "Welcome to %s! Start playing?;1": {
+        "Handle": "hfd862893ga8d3g47dcgacebg51ba0ec97398",
+        "Stack": [],
+        "Text": "Welcome to %s! Start playing?",
+        "Version": 1
+    },
+    "Will remove all entities from the map automatically and fix most issues with unexpected story triggers. (Most likely required);1": {
+        "Handle": "hffb9fd3egaaecg4a86gbcc8gace0deea8ec2",
+        "Stack": [],
+        "Text": "Will remove all entities from the map automatically and fix most issues with unexpected story triggers. (Most likely required)",
+        "Version": 1
+    },
+    "Window Settings;1": {
+        "Handle": "h2d89694ag78dcg43c1gb1ebga5a793c98785",
+        "Stack": [],
+        "Text": "Window Settings",
+        "Version": 1
+    },
+    "Window toggle key;1": {
+        "Handle": "h28a9d2d8g7dfcg4878g91b9gae1eb39b8c3c",
+        "Stack": [],
+        "Text": "Window toggle key",
+        "Version": 1
+    },
+    "With steadfast application of knowledge from Volo's preeminent work, affected entities gain +2 to Attack Rolls, Saving Throws, and Ability Checks.;1": {
+        "Handle": "h0a776a90g5f22g43fcg9394g459a31b667b8",
+        "Stack": [],
+        "Text": "With steadfast application of knowledge from Volo's preeminent work, affected entities gain +2 to Attack Rolls, Saving Throws, and Ability Checks.",
+        "Version": 1
+    },
+    "With unyielding ambition, grasp the Crown of Karsus and make its might yours.;1": {
+        "Handle": "h806c6e82gd539g43bdgbb35gf5db1917d7f9",
+        "Stack": [],
+        "Text": "With unyielding ambition, grasp the Crown of Karsus and make its might yours.",
+        "Version": 1
+    },
+    "Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
+        "Handle": "hcff9583bg9aacg40d6gafccga6b08dee8492",
+        "Stack": [],
+        "Text": "Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.",
+        "Version": 1
+    }
+}
