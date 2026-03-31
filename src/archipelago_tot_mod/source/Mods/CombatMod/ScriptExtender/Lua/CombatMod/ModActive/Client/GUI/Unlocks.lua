@@ -1,5 +1,15 @@
 ClientUnlock = {}
 
+local function archipelago_shop_connected(state)
+    local current_state = state or State or {}
+    local ap_state = current_state.ArchipelagoClientState or {}
+    if ap_state.bridge_stale then
+        return false
+    end
+
+    return tostring(ap_state.connection_state or "") == "connected"
+end
+
 
 local function unlock_layout_signature(unlocks)
     local parts = {}
@@ -30,6 +40,7 @@ end
 function ClientUnlock.Main(tab)
     ---@type ExtuiTabItem
     local root = tab:AddTabItem(__("Unlocks"))
+    root.Visible = false
 
     Components.Computed(root:AddSeparatorText(__("Currency owned: %d   RogueScore: %d", 0, 0)), function(root, state)
         return __("Currency owned: %d   RogueScore: %d", state.Currency, state.RogueScore or 0)
@@ -38,6 +49,17 @@ function ClientUnlock.Main(tab)
     local layout
     local layout_signature = ""
     Event.On("StateChange", function(state)
+        local shop_connected = archipelago_shop_connected(state)
+        root.Visible = shop_connected
+        if not shop_connected then
+            layout_signature = ""
+            if layout and layout.Table then
+                layout.Table:Destroy()
+            end
+            layout = nil
+            return
+        end
+
         local unlocks = state.Unlocks or {}
         if table.size(unlocks) == 0 then
             return

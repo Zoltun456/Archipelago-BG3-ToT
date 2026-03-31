@@ -68,6 +68,7 @@ local runtime = {
     archipelago_client_last_heartbeat = nil,
     archipelago_client_last_seen_ms = 0,
     archipelago_client_command_counter = 0,
+    archipelago_backend_prompted = false,
 }
 
 local emit_threshold_tokens
@@ -234,7 +235,7 @@ local function archipelago_client_default_state()
         bridge_running = false,
         bridge_stale = true,
         connection_state = "offline",
-        status_text = "Archipelago bridge not detected.",
+        status_text = "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.",
         server_address = "",
         slot_name = "",
         seed_name = "",
@@ -244,6 +245,43 @@ local function archipelago_client_default_state()
         last_error = "",
         log_lines = {},
     }
+end
+
+
+local function archipelago_backend_launch_message()
+    return "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher, then connect from that client or from this in-game tab."
+end
+
+
+local function archipelago_backend_relaunch_message()
+    return "The Archipelago client stopped responding. Close it, launch Baldur's Gate 3 - ToT Client again from the Archipelago Launcher, then reconnect."
+end
+
+
+local function maybe_prompt_archipelago_backend(force)
+    local apState = runtime.archipelago_client_ui_state or archipelago_client_default_state()
+    local backend_ready = apState.bridge_running == true and apState.bridge_stale ~= true
+    if backend_ready then
+        runtime.archipelago_backend_prompted = false
+        return
+    end
+
+    if not force and runtime.archipelago_backend_prompted then
+        return
+    end
+
+    runtime.archipelago_backend_prompted = true
+    local message = archipelago_backend_launch_message()
+    if apState.bridge_running == true and apState.bridge_stale == true then
+        message = archipelago_backend_relaunch_message()
+    end
+
+    if Player and Player.Notify then
+        Player.Notify(__(message), true)
+        return
+    end
+
+    print("[ArchipelagoTrialsCompat] " .. tostring(message))
 end
 
 
@@ -283,7 +321,7 @@ local function archipelago_client_status_text(connection_state)
     if connection_state == "error" then
         return "Archipelago client error."
     end
-    return "Disconnected."
+    return "ToT Client open. Press Connect here or in the client window."
 end
 
 
@@ -356,12 +394,34 @@ local function refresh_archipelago_client_ui(force)
     local status_text = tostring(table_get(status, "status_text", "") or "")
     if not bridge_running then
         connection_state = "offline"
-        status_text = "Archipelago bridge not detected."
+        status_text = archipelago_backend_launch_message()
     elseif bridge_stale then
         connection_state = "offline"
-        status_text = "Archipelago bridge stopped responding."
+        status_text = archipelago_backend_relaunch_message()
     elseif status_text == "" then
         status_text = archipelago_client_status_text(connection_state)
+    end
+
+    local server_address = tostring(table_get(status, "server_address", "") or "")
+    local slot_name = tostring(table_get(status, "slot_name", "") or "")
+    local seed_name = tostring(table_get(status, "seed_name", "") or "")
+    local death_link_enabled = table_get(status, "death_link_enabled", false) == true
+    local items_received = tonumber(table_get(status, "items_received", 0) or 0) or 0
+    local locations_checked = tonumber(table_get(status, "locations_checked", 0) or 0) or 0
+    local log_lines = sanitize_archipelago_client_log_lines(load_json_array(AP_CLIENT_LOG_FILE))
+    local retain_connection_identity = connection_state == "connecting" or connection_state == "connected"
+    if not bridge_running or bridge_stale or not retain_connection_identity then
+        server_address = ""
+        slot_name = ""
+    end
+    if not bridge_running or bridge_stale or connection_state ~= "connected" then
+        seed_name = ""
+        death_link_enabled = false
+        items_received = 0
+        locations_checked = 0
+    end
+    if not bridge_running or bridge_stale then
+        log_lines = {}
     end
 
     local next_state = {
@@ -369,14 +429,14 @@ local function refresh_archipelago_client_ui(force)
         bridge_stale = bridge_stale,
         connection_state = connection_state,
         status_text = status_text,
-        server_address = tostring(table_get(status, "server_address", "") or ""),
-        slot_name = tostring(table_get(status, "slot_name", "") or ""),
-        seed_name = tostring(table_get(status, "seed_name", "") or ""),
-        death_link_enabled = table_get(status, "death_link_enabled", false) == true,
-        items_received = tonumber(table_get(status, "items_received", 0) or 0) or 0,
-        locations_checked = tonumber(table_get(status, "locations_checked", 0) or 0) or 0,
+        server_address = server_address,
+        slot_name = slot_name,
+        seed_name = seed_name,
+        death_link_enabled = death_link_enabled,
+        items_received = items_received,
+        locations_checked = locations_checked,
         last_error = tostring(table_get(status, "last_error", "") or ""),
-        log_lines = sanitize_archipelago_client_log_lines(load_json_array(AP_CLIENT_LOG_FILE)),
+        log_lines = log_lines,
     }
 
     local signature = Ext.Json.Stringify(next_state)
@@ -1568,37 +1628,45 @@ Net.On("ArchipelagoClientCommand", function(event)
             return
         end
 
+        refresh_archipelago_client_ui(true)
+        local backend_running = false
+        local backend_stale = true
+        if runtime.archipelago_client_ui_state then
+            backend_running = runtime.archipelago_client_ui_state.bridge_running == true
+            backend_stale = runtime.archipelago_client_ui_state.bridge_stale == true
+        end
+        if not backend_running or backend_stale then
+            local backend_message = archipelago_backend_launch_message()
+            if backend_running and backend_stale then
+                backend_message = archipelago_backend_relaunch_message()
+            end
+            maybe_prompt_archipelago_backend(true)
+            Net.Respond(event, {
+                false,
+                __(backend_message),
+            })
+            return
+        end
+
         enqueue_archipelago_client_command("connect", {
             server_address = server_address,
             slot_name = slot_name,
             password = password,
         })
         refresh_archipelago_client_ui(true)
-
-        local bridge_running = false
-        if runtime.archipelago_client_ui_state then
-            bridge_running = runtime.archipelago_client_ui_state.bridge_running == true
-        end
-        if bridge_running then
-            Net.Respond(event, { true, __("Queued Archipelago connect request.") })
-        else
-            Net.Respond(event, {
-                true,
-                __("Queued Archipelago connect request. Start the bridge client if it is not already running."),
-            })
-        end
+        Net.Respond(event, { true, __("Archipelago connect requested.") })
         return
     end
 
     if command == "disconnect" then
         enqueue_archipelago_client_command("disconnect", {})
-        Net.Respond(event, { true, __("Queued Archipelago disconnect request.") })
+        Net.Respond(event, { true, __("Archipelago disconnect requested.") })
         return
     end
 
     if command == "resync" then
         enqueue_archipelago_client_command("resync", {})
-        Net.Respond(event, { true, __("Queued Archipelago resync request.") })
+        Net.Respond(event, { true, __("Archipelago resync requested.") })
         return
     end
 
@@ -1876,6 +1944,7 @@ end
 local function initialize_archipelago_trials_compat()
     -- This is the single init path now that the standalone bridge mod is gone.
     refresh_archipelago_client_ui(true)
+    maybe_prompt_archipelago_backend(false)
     load_pending_received_replay()
     load_pending_shop_unlock_replay()
     reapply_pending_shop_unlocks()
@@ -1898,6 +1967,7 @@ Event.On("ModInit", initialize_archipelago_trials_compat, true)
 Ext.Events.SessionLoaded:Subscribe(function()
     get_state().deathlink_suppress_local = false
     refresh_archipelago_client_ui(true)
+    maybe_prompt_archipelago_backend(false)
     load_pending_received_replay()
     load_pending_shop_unlock_replay()
     reapply_pending_shop_unlocks()

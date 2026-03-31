@@ -21,20 +21,13 @@ Supported check groups:
 ## Install Guide:
 
 ### 0. BG3 Mod Manager
-
-If you have never modded BG3 please refer to the Git below on how BG3MM works and how to install *Norbyte'sScript Extender* using it.
-
-Download BG3 Mod Manager:
-- [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
+If you have never modded BG3 please refer to this Git on how [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager) works and how to install *Norbyte'sScript Extender* using it.
 ### 1. Mod Downloads
-
 Download apworld and mod zip:
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 - [bg3tot.apworld](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
-
 Download dependency mod from Nexus:
 - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
-
 Optional Mods:
 - Player Levels 13-20: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
   - Dependency: [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
@@ -42,33 +35,25 @@ Optional Mods:
   - Dependency: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
   - Dependency: [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
 ### 2. Install the AP world
-
 - Move `bg3tot.apworld` into your Archipelago `custom_worlds` folder. Or `Install APWorld` using the Archipelago client.
 ### 3. Install the BG3 mods
-
 - Move `.pak` files from mod downloads into your BG3 `Mods` folder usually located at: `%LocalAppData%\Larian Studios\Baldur's Gate 3\Mods`
+- In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order, skip optional mods if you didn't download them (BG3MM has a nice guide on GIT if you need help setting it up):
 
-In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order, skip optional mods if you didn't download them (BG3MM has a nice guide on GIT if you need help setting it up):
-1. `Mod Configuration Menu`
-2. `Expansion`
-3. `AdvancedTTSpells`
-4. `Spells of Exandria`
-5. `Archipelago - Trials of Tav`
+0. `Mod Configuration Menu`
+1. `Expansion`
+2. `AdvancedTTSpells`
+3. `Spells of Exandria`
+4. `Archipelago - Trials of Tav`
 
-<img width="800" height="226" alt="image" src="https://github.com/user-attachments/assets/df0cf2c9-35ab-4c61-a53b-51c091bc38cf" />
-
-Then:
-1. Save Load Order
-2. Export Order to Game
-3. Launch BG3 from BG3MM
+*Save Load Order* -> *Export Order to Game* -> *Launch BG3 from BG3MM*
 ### 4. Generate a seed
-
-Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launcher `Options Creator`.
-### 5. Connect in game
-
-With the mods active, create a new save and opt into all the in-game pop-ups for Trials of Tav to start the gamemode. In the Trials GUI, switch to the `Archipelago Client` tab. Use that tab to connect to the Archipelago room, watch logs, disconnect, and resync. 
-
-If everything is set up correctly, the shop items should be randomized apworld items.
+- Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launcher `Options Creator`.
+### 5. Launch the client and connect
+- In the Archipelago Launcher, open `Baldur's Gate 3 - ToT Client`.
+- With the mods active, create a new save and opt into all the in-game pop-ups for Trials of Tav to start the gamemode. 
+- In the Trials GUI (open with `u` by default), switch to the `Archipelago Client` tab. That tab mirrors the standalone client log and status, and it can also send `Connect`, `Disconnect`, and `Resync` to the standalone client while it is open.
+- If everything is set up correctly, the shop items should be randomized apworld items.
 ## Option Notes
 
 Key options that affect balance the most:

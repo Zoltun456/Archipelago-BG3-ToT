@@ -24,12 +24,16 @@ After setting the order, save and export it to the game before launching.
 
 ### Archipelago Connection
 
-Use the in-game `Archipelago Client` tab in the Trials GUI for:
+Start `Baldur's Gate 3 - ToT Client` from the Archipelago Launcher first.
+
+Then use the in-game `Archipelago Client` tab in the Trials GUI for:
 
 1. room connection
 2. disconnect
 3. resync
 4. log viewing
+
+The in-game tab mirrors the standalone client status/log and can send those actions to it while the client is open.
 
 ### Goals
 

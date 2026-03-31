@@ -9,23 +9,33 @@ local AP_STATUS_COLORS = {
     error = { 1.0, 0.4, 0.4, 1.0 },
 }
 
-ArchipelagoClient.Settings = UT.Proxy(
-    table.merge({ ServerAddress = DEFAULT_SERVER_ADDRESS, SlotName = "" }, IO.LoadJson("ArchipelagoClientConfig.json") or {}),
-    function(value, _, raw)
-        Schedule(function()
-            IO.SaveJson("ArchipelagoClientConfig.json", {
-                ServerAddress = raw.ServerAddress,
-                SlotName = raw.SlotName,
-            })
-        end)
+ArchipelagoClient.Settings = {
+    ServerAddress = DEFAULT_SERVER_ADDRESS,
+    SlotName = "",
+}
 
-        return value
-    end
-)
-
-if tostring(ArchipelagoClient.Settings.ServerAddress or "") == "" then
-    ArchipelagoClient.Settings.ServerAddress = DEFAULT_SERVER_ADDRESS
+local function clear_persisted_connection_settings()
+    Schedule(function()
+        IO.SaveJson("ArchipelagoClientConfig.json", {
+            ServerAddress = DEFAULT_SERVER_ADDRESS,
+            SlotName = "",
+        })
+    end)
 end
+
+local function reset_connection_form()
+    ArchipelagoClient.Settings.ServerAddress = DEFAULT_SERVER_ADDRESS
+    ArchipelagoClient.Settings.SlotName = ""
+    clear_persisted_connection_settings()
+    Event.Trigger("ArchipelagoClientFormReset", {
+        ServerAddress = DEFAULT_SERVER_ADDRESS,
+        SlotName = "",
+    })
+end
+
+reset_connection_form()
+GameState.OnLoad(reset_connection_form)
+GameState.OnUnload(reset_connection_form)
 
 local function current_state()
     local state = State or {}
@@ -49,7 +59,7 @@ local function build_status_label(apState)
     end
 
     if apState.bridge_stale then
-        return __("Archipelago runtime not detected. Start `Baldur's Gate 3 - ToT` from the Archipelago launcher.")
+        return __("Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.")
     end
 
     return __("Archipelago client idle.")
@@ -60,6 +70,12 @@ local function build_detail_lines(apState)
     local room = tostring(apState.server_address or "")
     local slotName = tostring(apState.slot_name or "")
     local seedName = tostring(apState.seed_name or "")
+    local connectionState = tostring(apState.connection_state or "offline")
+
+    if apState.bridge_stale or connectionState == "offline" then
+        table.insert(lines, __("Client: Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher."))
+        table.insert(lines, __("This tab mirrors that client and can send Connect, Disconnect, and Resync while it is open."))
+    end
 
     if room ~= "" then
         table.insert(lines, __("Room: %s", room))
@@ -141,13 +157,23 @@ function ArchipelagoClient.Main(tab)
     end
 
     local passwordInput = root:AddInputText(__("Password"))
+    pcall(function()
+        passwordInput.Password = true
+    end)
+    pcall(function()
+        passwordInput.NoUndoRedo = true
+    end)
+    pcall(function()
+        passwordInput.AutoSelectAll = false
+    end)
     local passwordDraft = ""
     passwordInput.OnChange = function(input)
         passwordDraft = input.Text
     end
 
-    root:AddText(__("Room and slot are stored locally on this client. Password is kept for this session only."))
-    root:AddText(__("The Archipelago launcher no longer opens a separate ToT client window. Start `Baldur's Gate 3 - ToT`, then connect here."))
+    root:AddText(__("Room and slot reset for each game load. Password is kept for this session only."))
+    root:AddText(__("Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher first. This tab mirrors that client and can control it while it is open."))
+    root:AddText(__("The room field defaults to `archipelago.gg:`. Enter the current port and slot name here, then connect in game."))
 
     local connectButton = root:AddButton(__("Connect"))
     connectButton.OnClick = function()
@@ -187,6 +213,14 @@ function ArchipelagoClient.Main(tab)
     local scrollable = root:AddChildWindow(U.RandomId())
     local logText = scrollable:AddText(__("No Archipelago log lines yet."))
 
+    local function refresh_form(formState)
+        local nextState = formState or {}
+        roomInput.Text = tostring(nextState.ServerAddress or DEFAULT_SERVER_ADDRESS)
+        slotInput.Text = tostring(nextState.SlotName or "")
+        passwordDraft = ""
+        passwordInput.Text = ""
+    end
+
     local function refresh(state)
         local apState = (state and state.ArchipelagoClientState) or current_state()
         statusText.Label = build_status_label(apState)
@@ -195,5 +229,7 @@ function ArchipelagoClient.Main(tab)
         logText.Label = build_log_text(apState)
     end
 
+    Event.On("ArchipelagoClientFormReset", refresh_form)
+    refresh_form(ArchipelagoClient.Settings)
     Event.On("StateChange", refresh):Exec(State)
 end

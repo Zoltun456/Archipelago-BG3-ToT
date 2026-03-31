@@ -86,10 +86,11 @@ class BG3Context(CommonContext):
         self.notification_counter = 0
         self.bridge_heartbeat = 0
         self.bridge_connection_state = "disconnected"
+        self._preserve_connection_target_once = False
         self.bridge_status_text = (
-            "Use the in-game Archipelago tab to connect."
+            "Client runtime running. Use the in-game Archipelago tab to connect."
             if bridge_mode
-            else "Disconnected."
+            else "ToT Client open. Press Connect here or in the client window."
         )
         self.bridge_last_error = ""
 
@@ -121,8 +122,16 @@ class BG3Context(CommonContext):
         self._ensure_json_file(BRIDGE_COMMAND_FILE)
         self._ensure_json_file(BRIDGE_LOG_FILE)
         self._ensure_json_file(BRIDGE_STATUS_FILE, {})
+        self._write_json(BRIDGE_COMMAND_FILE, [])
+        self._clear_bridge_log()
         self._deactivate_bridge_state(clear_files=True)
         self._write_bridge_status()
+        if self.bridge_mode:
+            self._append_bridge_log("Client runtime running. Use the in-game Archipelago tab to connect.")
+            self._append_bridge_log("Keep this runtime window open while you play BG3.")
+        else:
+            self._append_bridge_log("ToT Client open. Connect here or from the in-game Archipelago tab.")
+            self._append_bridge_log("Closing this client window stops the Archipelago client.")
 
     def _file_path(self, file_name: str) -> str:
         return os.path.join(self.se_bg3, file_name)
@@ -202,6 +211,13 @@ class BG3Context(CommonContext):
     def _clear_bridge_log(self) -> None:
         self._write_json(BRIDGE_LOG_FILE, [])
 
+    def _clear_bridge_connection_target(self) -> None:
+        self.server_address = None
+        self.server = None
+        self.password = None
+        self.auth = None
+        self.username = None
+
     def _deactivate_bridge_state(self, clear_files: bool = False) -> None:
         if clear_files:
             self._write_json(self.comm_file_sent_items, [])
@@ -219,9 +235,9 @@ class BG3Context(CommonContext):
         )
         self.bridge_connection_state = "disconnected"
         if self.bridge_mode:
-            self.bridge_status_text = "Use the in-game Archipelago tab to connect."
+            self.bridge_status_text = "Client runtime running. Use the in-game Archipelago tab to connect."
         else:
-            self.bridge_status_text = "Disconnected."
+            self.bridge_status_text = "ToT Client open. Press Connect here or in the client window."
         self.bridge_last_error = ""
 
     def _reset_for_new_seed_if_needed(self) -> None:
@@ -452,23 +468,36 @@ class BG3Context(CommonContext):
         return self.password
 
     async def connection_closed(self):
+        unexpected_disconnect = not self.disconnected_intentionally
+        had_active_connection = bool(self.server_address or self._bridge_slot_name() or getattr(self, "slot", None) is not None)
+        self.disconnected_intentionally = True
         await super().connection_closed()
         self._write_options_file(active_connection=False)
+        self._clear_bridge_connection_target()
         if self.bridge_connection_state != "error":
-            if self.server_address and self.username and not self.disconnected_intentionally:
-                self.bridge_connection_state = "connecting"
-                self.bridge_status_text = "Connection lost. Waiting to reconnect."
+            self.bridge_connection_state = "disconnected"
+            if unexpected_disconnect and had_active_connection:
+                self.bridge_status_text = "Connection closed. The ToT client is still open; press Connect to try again."
+                self.bridge_last_error = "Automatic reconnect is disabled. Press Connect to try again."
+                self._append_bridge_log(
+                    "Connection closed. Automatic reconnect is disabled; press Connect to try again.",
+                    level="warning",
+                )
             else:
-                self.bridge_connection_state = "disconnected"
-                self.bridge_status_text = "Disconnected."
+                self.bridge_status_text = "ToT Client open. Press Connect here or in the client window."
+                self.bridge_last_error = ""
         self._write_bridge_status()
 
     async def disconnect(self, allow_autoreconnect: bool = False):
-        await super().disconnect(allow_autoreconnect)
+        preserve_connection_target = self._preserve_connection_target_once
+        self._preserve_connection_target_once = False
+        await super().disconnect(False)
         self._write_options_file(active_connection=False)
-        if not allow_autoreconnect and self.bridge_connection_state != "error":
+        if not preserve_connection_target:
+            self._clear_bridge_connection_target()
+        if self.bridge_connection_state != "error":
             self.bridge_connection_state = "disconnected"
-            self.bridge_status_text = "Disconnected."
+            self.bridge_status_text = "ToT Client open. Press Connect here or in the client window."
             self.bridge_last_error = ""
         self._write_bridge_status()
 
@@ -842,6 +871,12 @@ async def _process_bridge_command(ctx: BG3Context, command: dict[str, Any]) -> N
             ctx._write_bridge_status()
             return
 
+        if getattr(ctx, "server", None) is not None or getattr(ctx, "slot", None) is not None:
+            await ctx.disconnect()
+        else:
+            ctx._clear_bridge_connection_target()
+
+        ctx.disconnected_intentionally = False
         ctx.server_address = server_address
         ctx.username = slot_name
         ctx.auth = slot_name
@@ -851,7 +886,18 @@ async def _process_bridge_command(ctx: BG3Context, command: dict[str, Any]) -> N
         ctx.bridge_last_error = ""
         ctx._append_bridge_log(f"Connecting to {server_address} as {slot_name}.")
         ctx._write_bridge_status()
-        await ctx.connect(server_address)
+        try:
+            ctx._preserve_connection_target_once = True
+            await ctx.connect(server_address)
+        except Exception as err:
+            ctx.bridge_connection_state = "error"
+            ctx.bridge_status_text = "Archipelago connection failed."
+            ctx.bridge_last_error = str(err)
+            ctx._append_bridge_log(f"Connection failed: {err}", level="error")
+            ctx._clear_bridge_connection_target()
+            ctx._write_bridge_status()
+        finally:
+            ctx._preserve_connection_target_once = False
         return
 
     if command_type == "disconnect":
@@ -894,9 +940,9 @@ async def bridge_watcher(ctx: BG3Context):
         except Exception as err:
             logger.error("Exception in BG3 bridge watcher: %s", err)
             ctx.bridge_connection_state = "error"
-            ctx.bridge_status_text = "Archipelago bridge command error."
+            ctx.bridge_status_text = "Archipelago client command error."
             ctx.bridge_last_error = str(err)
-            ctx._append_bridge_log(f"Bridge watcher error: {err}", level="error")
+            ctx._append_bridge_log(f"Client watcher error: {err}", level="error")
             ctx._write_bridge_status()
             await asyncio.sleep(BRIDGE_POLL_INTERVAL_SECONDS)
 
