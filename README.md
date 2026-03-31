@@ -18,78 +18,49 @@ Supported check groups:
 - RogueScore thresholds
 - Shop purchase checks
 
-## Install Guide
+## Install Guide:
 
-### 1. Download and extract the latest release
+### 1. Downloads
 
-Download both of these from the latest GitHub Release:
-
+Download apworld and mod zip:
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 - [bg3tot.apworld](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 
-Then extract the zip somewhere convenient.
+Download dependency mods from Nexus:
+- [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
+- [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
 
-The archive contains:
+`AdvancedTTSpells` is bundled into the generated `ArchipelagoToT.pak`, so it no longer needs a separate download for this repo's release build.
 
-- `ArchipelagoToT.pak`
-- `bg3_trials_test.yaml`
-- `INSTALL.txt`
-
-Nexus Downloads:
-
-The required BG3 mod dependencies:
-
-  - [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
-  - [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
-  - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
-
+Download BG3 Mod Manager:
+- [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager)
 ### 2. Install the AP world
 
-Copy:
+- Move `bg3tot.apworld` into your Archipelago `custom_worlds` folder. Or `Install APWorld` using the Archipelago client.
+### 3. Install the BG3 mods
 
-- `bg3tot.apworld`
+- Move `.pak` files from mod downloads into your BG3 `Mods` folder usually located at: `%LocalAppData%\Larian Studios\Baldur's Gate 3\Mods`
 
-into your Archipelago `custom_worlds` folder. Or `Install APWorld` using the Archipelago client.
-
-### 3. Install the BG3 mod
-
-Copy:
-
-- `ArchipelagoToT.pak`
-
-into your BG3 `Mods` folder.
-
-In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order:
-
+In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mods in order (BG3MM has a nice guide on GIT if you need help setting it up):
 1. `Mod Configuration Menu`
 2. `Expansion`
-3. `AdvancedTTSpells`
-4. `Archipelago - Trials of Tav`
+3. `Archipelago - Trials of Tav`
+
+If BG3MM exposes a bundled `AdvancedTTSpells` entry from the same `ArchipelagoToT.pak`, enable it too and keep it above `Archipelago - Trials of Tav`.
 
 Then:
-
 1. Save Load Order
 2. Export Order to Game
 3. Launch BG3 from BG3MM
-
 ### 4. Generate a seed
 
-Use the included sample YAML:
+Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launcher `Options Creator`.
+### 5. Connect Archipelago client
 
-- `bg3_trials_test.yaml`
+Open `Baldur's Gate 3 - ToT Client` from inside the Archipelago launcher and connect to the Archipelago room.
+### 6. Play
 
-or edit your own YAML with the BG3 Trials options.
-
-In Archipelago, this world appears in the game list as:
-
-- `Baldur's Gate 3 - ToT`
-
-### 5. Play and connect
-
-1. Launch BG3 with the mod active.
-2. Connect the BG3 Archipelago client.
-3. Start Trials and play normally to earn checks.
-
+With the mods active and the client connected, create a new save and opt into all the in-game pop-ups for Trials of Tav. If everything is set up correctly, the shop items should be randomized apworld items.
 ## Option Notes
 
 Key options that affect balance the most:
@@ -209,6 +180,8 @@ python scripts\build_release.py build --clean
 ```
 
 Set `config/build_config.json -> test_bundle -> trials_mod_source` to your local `CombatMod.pak` or unpacked Trials of Tav folder if the build script cannot find it automatically.
+
+Set `config/build_config.json -> test_bundle -> attspells_mod_source` to your local `AdvancedTTSpells*.pak` or unpacked ATTSpells folder if the build script cannot find it automatically.
 
 If you only changed config or source files and want to refresh outputs without clearing everything first:
 

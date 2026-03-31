@@ -9,3 +9,5 @@ AP world and client source that gets staged into `bg3tot.apworld`.
 Repo-owned BG3 mod overlay copied into the final `ArchipelagoToT.pak`.
 
 The inner folder is still `Mods/CombatMod/...` on purpose. The final packaged mod keeps the original Trials module folder and UUID for compatibility, even though the visible mod name and pak file are now `Archipelago - Trials of Tav` and `ArchipelagoToT.pak`.
+
+That preserved module identity also means BG3 Toolkit `Publish Local` exports may still be named like `CombatMod_<uuid>.pak`. That local filename is expected and does not mean the repo-built release asset name changed.

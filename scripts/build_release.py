@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import textwrap
+import uuid
 import zipfile
 from pathlib import Path
 from typing import Any
@@ -62,6 +63,20 @@ DEFAULT_FINAL_MOD = {
     "pak_name": "ArchipelagoToT.pak",
     "author": "Zoltun",
     "description": "Trials of Tav - Reloaded bundled with the Archipelago Trials integration.",
+    "publish_handle": "",
+}
+
+ADVANCED_TT_SPELLS_UUID = "fa49db03-caa7-49c8-7c76-e6c38b60267a"
+ADVANCED_TT_SPELLS_MODULE_FOLDER = f"AdvancedTTSpells_{ADVANCED_TT_SPELLS_UUID}"
+ADVANCED_TT_SPELLS_PAK_NAME = f"{ADVANCED_TT_SPELLS_MODULE_FOLDER}.pak"
+
+TOOLKIT_GUSTAVX_DEPENDENCY = {
+    "folder": "GustavX",
+    "md5": "ef3fcba3f3684b3088ad1f9874d4957c",
+    "name": "GustavX",
+    "publish_handle": "0",
+    "uuid": "cb555efe-2d9e-131f-8195-a89329d218ea",
+    "version64": "145241946983300916",
 }
 
 
@@ -150,6 +165,12 @@ def normalize_config(config: dict[str, Any]) -> bool:
     if "sync_method" in sample_player:
         del sample_player["sync_method"]
         changed = True
+
+    test_bundle = config.setdefault("test_bundle", {})
+    for key in ("divine_path", "trials_mod_source", "attspells_mod_source"):
+        if key not in test_bundle:
+            test_bundle[key] = ""
+            changed = True
 
     return changed
 
@@ -384,6 +405,76 @@ def iter_trials_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]
 
 def resolve_trials_mod_source(config: dict[str, Any]) -> dict[str, str | bool]:
     for source, candidate in iter_trials_mod_candidates(config):
+        if candidate.exists():
+            return {
+                "found": True,
+                "path": str(candidate.resolve()),
+                "source": source,
+            }
+
+    return {
+        "found": False,
+        "path": "",
+        "source": "",
+    }
+
+
+def iter_attspells_mod_candidates(config: dict[str, Any]) -> list[tuple[str, Path]]:
+    candidates: list[tuple[str, Path]] = []
+    seen: set[str] = set()
+
+    def add(label: str, raw_path: str | Path | None) -> None:
+        if not raw_path:
+            return
+        candidate = Path(raw_path).expanduser()
+        normalized = str(candidate).lower()
+        if normalized in seen:
+            return
+        seen.add(normalized)
+        candidates.append((label, candidate))
+
+    configured_source = config.get("test_bundle", {}).get("attspells_mod_source", "")
+    if configured_source:
+        add("config:test_bundle.attspells_mod_source", configured_source)
+
+    for env_var in ("BG3_ATTSPELLS_MOD_SOURCE", "ADVANCED_TT_SPELLS_SOURCE", "ATTSPELLS_SOURCE"):
+        if os.environ.get(env_var):
+            add(f"env:{env_var}", os.environ[env_var])
+
+    local_appdata = Path(os.environ.get("LOCALAPPDATA", ""))
+    user_profile = Path(os.environ.get("USERPROFILE", ""))
+    common_candidates = [
+        ROOT / ".cache" / "attspells_extract",
+        local_appdata / "Larian Studios" / "Baldur's Gate 3" / "Mods" / ADVANCED_TT_SPELLS_PAK_NAME,
+        ROOT / ADVANCED_TT_SPELLS_PAK_NAME,
+        ROOT / "third_party" / ADVANCED_TT_SPELLS_PAK_NAME,
+        user_profile / "Downloads" / ADVANCED_TT_SPELLS_PAK_NAME,
+    ]
+    for candidate in common_candidates:
+        add("common", candidate)
+
+    glob_roots = [
+        ROOT,
+        ROOT / "third_party",
+        user_profile / "Downloads",
+        local_appdata / "Larian Studios" / "Baldur's Gate 3" / "Mods",
+    ]
+    for glob_root in glob_roots:
+        if not glob_root.exists():
+            continue
+        for candidate in sorted(glob_root.glob("AdvancedTTSpells*.pak")):
+            add("common_glob", candidate)
+
+    vortex_root = user_profile / "AppData" / "Roaming" / "Vortex" / "baldursgate3" / "mods"
+    if vortex_root.exists():
+        for candidate in sorted(vortex_root.glob("**/AdvancedTTSpells*.pak")):
+            add("vortex_staging", candidate)
+
+    return candidates
+
+
+def resolve_attspells_mod_source(config: dict[str, Any]) -> dict[str, str | bool]:
+    for source, candidate in iter_attspells_mod_candidates(config):
         if candidate.exists():
             return {
                 "found": True,
@@ -646,11 +737,103 @@ def set_xml_attribute(node: ET.Element | None, attribute_id: str, value: str) ->
             return
 
 
-def patch_mod_meta(meta_path: Path, final_mod: dict[str, Any]) -> None:
+def upsert_xml_attribute(node: ET.Element | None, attribute_id: str, attr_type: str, value: str) -> None:
+    if node is None:
+        return
+    for attribute in node.findall("attribute"):
+        if attribute.attrib.get("id") == attribute_id:
+            attribute.set("type", attr_type)
+            attribute.set("value", value)
+            return
+    new_attribute = ET.Element("attribute", {"id": attribute_id, "type": attr_type, "value": value})
+    children = node.find("children")
+    if children is None:
+        node.append(new_attribute)
+        return
+
+    insert_at = list(node).index(children)
+    node.insert(insert_at, new_attribute)
+
+
+def get_xml_attribute(node: ET.Element | None, attribute_id: str, default: str = "") -> str:
+    if node is None:
+        return default
+    for attribute in node.findall("attribute"):
+        if attribute.attrib.get("id") == attribute_id:
+            return attribute.attrib.get("value", default)
+    return default
+
+
+def get_or_create_children(node: ET.Element) -> ET.Element:
+    children = node.find("children")
+    if children is None:
+        children = ET.SubElement(node, "children")
+    return children
+
+
+def ensure_child_node(parent_node: ET.Element, child_id: str) -> ET.Element:
+    children = get_or_create_children(parent_node)
+    for child in children.findall("node"):
+        if child.attrib.get("id") == child_id:
+            return child
+    return ET.SubElement(children, "node", {"id": child_id})
+
+
+def module_meta_to_dependency(mod_meta: dict[str, str]) -> dict[str, str]:
+    return {
+        "folder": mod_meta.get("folder", ""),
+        "md5": mod_meta.get("md5", ""),
+        "name": mod_meta.get("name", ""),
+        "publish_handle": mod_meta.get("publish_handle", "0"),
+        "uuid": mod_meta.get("uuid", ""),
+        "version64": mod_meta.get("version64", ""),
+    }
+
+
+def dedupe_dependencies(dependencies: list[dict[str, str]]) -> list[dict[str, str]]:
+    deduped: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for dependency in dependencies:
+        key = (dependency.get("uuid") or dependency.get("folder") or dependency.get("name") or "").strip().lower()
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        deduped.append(dependency)
+    return deduped
+
+
+def write_dependency_nodes(config_root: ET.Element, dependencies: list[dict[str, str]]) -> None:
+    dependency_entries = dedupe_dependencies(dependencies)
+    dependencies_node = ensure_child_node(config_root, "Dependencies")
+    dependency_children = get_or_create_children(dependencies_node)
+    for child in list(dependency_children):
+        dependency_children.remove(child)
+
+    for dependency in dependency_entries:
+        dependency_node = ET.SubElement(dependency_children, "node", {"id": "ModuleShortDesc"})
+        upsert_xml_attribute(dependency_node, "Folder", "LSString", dependency.get("folder", ""))
+        upsert_xml_attribute(dependency_node, "MD5", "LSString", dependency.get("md5", ""))
+        upsert_xml_attribute(dependency_node, "Name", "LSString", dependency.get("name", ""))
+        upsert_xml_attribute(
+            dependency_node,
+            "PublishHandle",
+            "uint64",
+            dependency.get("publish_handle", "0"),
+        )
+        upsert_xml_attribute(dependency_node, "UUID", "guid", dependency.get("uuid", ""))
+        upsert_xml_attribute(dependency_node, "Version64", "int64", dependency.get("version64", "0"))
+
+
+def patch_mod_meta(
+    meta_path: Path,
+    final_mod: dict[str, Any],
+    dependencies: list[dict[str, str]] | None = None,
+) -> None:
     tree = ET.parse(meta_path)
     root = tree.getroot()
     module_info = root.find(".//node[@id='ModuleInfo']")
     publish_version = root.find(".//node[@id='PublishVersion']")
+    config_root = root.find(".//region[@id='Config']/node[@id='root']")
 
     set_xml_attribute(module_info, "Author", str(final_mod.get("author", "")))
     set_xml_attribute(module_info, "Description", str(final_mod.get("description", "")))
@@ -658,13 +841,213 @@ def patch_mod_meta(meta_path: Path, final_mod: dict[str, Any]) -> None:
 
     version64 = str(final_mod.get("version64", ""))
     publish_version64 = str(final_mod.get("publish_version64", version64))
+    publish_handle = str(final_mod.get("publish_handle", "") or "").strip()
     if version64:
         set_xml_attribute(module_info, "Version64", version64)
     if publish_version64:
         set_xml_attribute(publish_version, "Version64", publish_version64)
+    if publish_handle:
+        upsert_xml_attribute(module_info, "PublishHandle", "uint64", publish_handle)
+    if dependencies is not None and config_root is not None:
+        write_dependency_nodes(config_root, dependencies)
 
     meta_path.parent.mkdir(parents=True, exist_ok=True)
     tree.write(meta_path, encoding="utf-8", xml_declaration=True)
+
+
+def read_mod_meta(meta_path: Path) -> dict[str, str]:
+    tree = ET.parse(meta_path)
+    root = tree.getroot()
+    module_info = root.find(".//node[@id='ModuleInfo']")
+    return {
+        "author": get_xml_attribute(module_info, "Author"),
+        "description": get_xml_attribute(module_info, "Description"),
+        "folder": get_xml_attribute(module_info, "Folder"),
+        "md5": get_xml_attribute(module_info, "MD5"),
+        "name": get_xml_attribute(module_info, "Name"),
+        "publish_handle": get_xml_attribute(module_info, "PublishHandle", "0"),
+        "uuid": get_xml_attribute(module_info, "UUID"),
+        "version64": get_xml_attribute(module_info, "Version64"),
+    }
+
+
+def read_additional_mod_metas(mods_root: Path, primary_module_folder: str) -> list[dict[str, str]]:
+    metas: list[dict[str, str]] = []
+    if not mods_root.exists():
+        return metas
+
+    for meta_path in sorted(mods_root.glob("*/meta.lsx")):
+        mod_meta = read_mod_meta(meta_path)
+        if mod_meta.get("folder") == primary_module_folder:
+            continue
+        metas.append(mod_meta)
+    return metas
+
+
+def patch_toolkit_mod_meta(
+    meta_path: Path,
+    mod_meta: dict[str, str],
+    dependencies: list[dict[str, str]] | None = None,
+) -> None:
+    tree = ET.parse(meta_path)
+    root = tree.getroot()
+    version = root.find("version")
+    if version is not None:
+        version.set("major", "4")
+        version.set("minor", "8")
+        version.set("revision", "0")
+        version.set("build", "500")
+
+    config_root = root.find(".//region[@id='Config']/node[@id='root']")
+    if config_root is None:
+        raise ValueError(f"Could not find Config/root in toolkit meta source: {meta_path}")
+
+    ensure_child_node(config_root, "Conflicts")
+    module_info = ensure_child_node(config_root, "ModuleInfo")
+    dependency_entries = [TOOLKIT_GUSTAVX_DEPENDENCY]
+    if dependencies:
+        dependency_entries.extend(module_meta_to_dependency(dependency) for dependency in dependencies)
+    write_dependency_nodes(config_root, dependency_entries)
+
+    upsert_xml_attribute(module_info, "Author", "LSString", mod_meta["author"])
+    upsert_xml_attribute(module_info, "Description", "LSString", mod_meta["description"])
+    upsert_xml_attribute(module_info, "FileSize", "uint64", "0")
+    upsert_xml_attribute(module_info, "Folder", "LSString", mod_meta["folder"])
+    upsert_xml_attribute(module_info, "MD5", "LSString", get_xml_attribute(module_info, "MD5", ""))
+    upsert_xml_attribute(module_info, "Name", "LSString", mod_meta["name"])
+    upsert_xml_attribute(module_info, "PublishHandle", "uint64", get_xml_attribute(module_info, "PublishHandle", "0"))
+    upsert_xml_attribute(module_info, "UUID", "FixedString", mod_meta["uuid"])
+    upsert_xml_attribute(module_info, "Version64", "int64", mod_meta["version64"])
+
+    tree.write(meta_path, encoding="utf-8", xml_declaration=True)
+
+
+def render_toolkit_project_meta(project_name: str, module_uuid: str, project_uuid: str) -> str:
+    return f"""<?xml version="1.0" encoding="UTF-8"?>
+<save>
+    <version major="4" minor="8" revision="0" build="500"/>
+    <region id="MetaData">
+        <node id="root">
+            <attribute id="GameProject" type="LSString" value=""/>
+            <attribute id="Module" type="LSString" value="{escape(module_uuid)}"/>
+            <attribute id="Name" type="LSString" value="{escape(project_name)}"/>
+            <attribute id="UUID" type="LSString" value="{escape(project_uuid)}"/>
+            <attribute id="UpdatedDependencies" type="bool" value="true"/>
+            <children>
+                <node id="Categories"/>
+            </children>
+        </node>
+    </region>
+</save>"""
+
+
+def render_toolkit_publish_readme(module_folder: str, display_name: str, pak_name: str) -> str:
+    return textwrap.dedent(
+        f"""
+        # Toolkit Publish Staging
+
+        This folder is generated from the fully working unpacked build so you can publish through the BG3 Toolkit
+        without importing `{pak_name}` back into the editor.
+
+        The Toolkit importer is lossy for existing `.pak` mods, so this staging folder is the safer publish path.
+
+        ## What Is Here
+
+        - `Data/Projects/{module_folder}/`
+          Toolkit project metadata and thumbnail so the project shows up in the Browser.
+        - `Data/Mods/{module_folder}/`
+          Runtime mod files such as `meta.lsx`, Script Extender Lua, and publish logo assets.
+        - `Data/Public/{module_folder}/`
+          Public resources that need to be packed into the published `.pak`.
+        - Additional bundled dependency modules
+          When the build inlines supported dependencies into the final `{pak_name}`, their `Mods/` and `Public/`
+          folders are copied here too so the Toolkit sees the same project layout as the runtime package.
+        - `Data/Localization/`
+          Localization files copied from the working build.
+        - `Data/Editor/` and `Data/Generated/`
+          Included only if this build produced matching Toolkit-side files.
+
+        ## Recommended Workflow
+
+        1. Close the BG3 Toolkit if it is open.
+        2. Back up any existing Toolkit project data for `{module_folder}` and any bundled dependency folders from
+           your BG3 `Data` folder.
+        3. Copy the contents of this folder's `Data/` directory into your BG3 install `Data/` directory.
+           Typical Steam path: `C:\\Program Files (x86)\\Steam\\steamapps\\common\\Baldurs Gate 3\\Data\\`
+        4. Launch the BG3 Toolkit and open the `{display_name}` project.
+        5. Open `Project > Project Settings`.
+        6. Use `Publish Local` to sanity-check the package, or `Publish` to upload to mod.io.
+        7. If the Toolkit prompts you to load a level, you can cancel it. Publishing does not require a level.
+
+        ## Important Notes
+
+        - Do not re-import `{pak_name}` into the Toolkit after copying these files.
+        - If you previously imported the mod, replacing the old `{module_folder}` project folders with these generated files is recommended.
+        - The normal runtime/test artifact is still `{pak_name}`. This staging folder only exists to feed the Toolkit a complete project layout.
+        - `Publish Local` in the Toolkit may still generate a file named like `{module_folder}_<uuid>.pak`. That is expected: the Toolkit names local exports from the preserved internal module identity, while the repo-built release asset remains `{pak_name}`.
+        """
+    ).strip()
+
+
+def copytree_if_exists(source_dir: Path, destination_dir: Path) -> bool:
+    if not source_dir.exists():
+        return False
+    shutil.copytree(source_dir, destination_dir, dirs_exist_ok=True)
+    return True
+
+
+def stage_toolkit_publish_layout(staged_mod_dir: Path, destination_dir: Path, final_mod: dict[str, Any]) -> str:
+    remove_path_if_exists(destination_dir)
+
+    module_folder = str(final_mod["module_folder"])
+    mods_root = staged_mod_dir / "Mods" / module_folder
+    public_root = staged_mod_dir / "Public" / module_folder
+    mod_meta = read_mod_meta(mods_root / "meta.lsx")
+    module_uuid = mod_meta["uuid"]
+    if module_uuid:
+        try:
+            project_uuid = str(uuid.uuid5(uuid.UUID(module_uuid), "bg3-toolkit-project"))
+        except ValueError:
+            project_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"bg3-toolkit-project:{module_uuid}"))
+    else:
+        project_uuid = str(uuid.uuid5(uuid.NAMESPACE_URL, f"bg3-toolkit-project:{module_folder}"))
+
+    data_root = destination_dir / "Data"
+    project_dir = data_root / "Projects" / module_folder
+    mods_dir = data_root / "Mods" / module_folder
+    bundled_dependency_metas = read_additional_mod_metas(staged_mod_dir / "Mods", module_folder)
+
+    write_text(
+        project_dir / "meta.lsx",
+        render_toolkit_project_meta(
+            project_name=mod_meta["name"] or str(final_mod.get("display_name", module_folder)),
+            module_uuid=module_uuid,
+            project_uuid=project_uuid,
+        ),
+    )
+
+    thumbnail_source = mods_root / "mod_publish_logo.png"
+    if thumbnail_source.exists():
+        project_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(thumbnail_source, project_dir / "thumbnail.png")
+
+    copytree_if_exists(staged_mod_dir / "Mods", data_root / "Mods")
+    patch_toolkit_mod_meta(mods_dir / "meta.lsx", mod_meta, bundled_dependency_metas)
+    copytree_if_exists(staged_mod_dir / "Public", data_root / "Public")
+    copytree_if_exists(staged_mod_dir / "Localization", data_root / "Localization")
+    copytree_if_exists(staged_mod_dir / "Editor", data_root / "Editor")
+    copytree_if_exists(staged_mod_dir / "Generated", data_root / "Generated")
+
+    write_text(
+        destination_dir / "README.md",
+        render_toolkit_publish_readme(
+            module_folder=module_folder,
+            display_name=mod_meta["name"] or str(final_mod.get("display_name", module_folder)),
+            pak_name=str(final_mod.get("pak_name", "")),
+        ),
+    )
+
+    return str(destination_dir.resolve())
 
 
 DEPENDENCY_VERSION_HELPER = """-- The upstream Trials scripts sometimes compare dependency versions as one exact tuple.
@@ -728,15 +1111,40 @@ def patch_dependency_version_checks(lua_root: Path) -> None:
         write_text(lua_path, contents)
 
 
-def stage_final_mod(source: Path, staged_mod_dir: Path, divine_path: str, final_mod: dict[str, Any]) -> None:
+def overlay_mod_source(source: Path, destination_dir: Path, divine_path: str, scratch_dir: Path) -> None:
+    remove_path_if_exists(scratch_dir)
+    if source.is_dir():
+        shutil.copytree(source, scratch_dir, dirs_exist_ok=True)
+    else:
+        extract_pak(divine_path, source, scratch_dir)
+    shutil.copytree(scratch_dir, destination_dir, dirs_exist_ok=True)
+    remove_path_if_exists(scratch_dir)
+
+
+def stage_final_mod(
+    source: Path,
+    staged_mod_dir: Path,
+    divine_path: str,
+    final_mod: dict[str, Any],
+    bundled_sources: list[Path] | None = None,
+) -> list[dict[str, str]]:
     module_folder = str(final_mod["module_folder"])
     if source.is_dir():
         shutil.copytree(source, staged_mod_dir, dirs_exist_ok=True)
     else:
         extract_pak(divine_path, source, staged_mod_dir)
 
+    for index, bundled_source in enumerate(bundled_sources or []):
+        overlay_mod_source(
+            bundled_source,
+            staged_mod_dir,
+            divine_path,
+            staged_mod_dir.parent / "_bundled_mod_extract" / f"dependency_{index}",
+        )
+
     public_root = staged_mod_dir / "Public" / module_folder
     mods_root = staged_mod_dir / "Mods" / module_folder
+    bundled_dependency_metas = read_additional_mod_metas(staged_mod_dir / "Mods", module_folder)
 
     remove_path_if_exists(mods_root / "ScriptExtender" / "VirtualTextures.json")
     remove_path_if_exists(public_root / "Assets" / "VirtualTextures")
@@ -759,13 +1167,18 @@ def stage_final_mod(source: Path, staged_mod_dir: Path, divine_path: str, final_
     )
 
     patch_dependency_version_checks(mods_root / "ScriptExtender" / "Lua")
-    patch_mod_meta(mods_root / "meta.lsx", final_mod)
+    patch_mod_meta(
+        mods_root / "meta.lsx",
+        final_mod,
+        [module_meta_to_dependency(mod_meta) for mod_meta in bundled_dependency_metas],
+    )
 
     publish_logo_path = mods_root / "mod_publish_logo.png"
     if (BRANDING_ASSET_DIR / "color-icon.png").exists():
         shutil.copy2(BRANDING_ASSET_DIR / "color-icon.png", publish_logo_path)
 
     patch_combatmod_custom_atlas_assets(staged_mod_dir, divine_path, module_folder)
+    return bundled_dependency_metas
 
 
 def build_pak(
@@ -799,6 +1212,7 @@ def build_pak(
 def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
     output_dir = ROOT / config["output_dir"]
     cache_dir = ROOT / config["cache_dir"]
+    staged_mod_dir: Path | None = None
 
     if args.clean and output_dir.exists():
         shutil.rmtree(output_dir)
@@ -808,6 +1222,7 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
 
     divine_info = resolve_divine_path(config)
     trials_mod_info = resolve_trials_mod_source(config)
+    attspells_mod_info = resolve_attspells_mod_source(config)
 
     staged_world_dir = output_dir / "staging" / APWORLD_PACKAGE_NAME
     stage_trials_apworld(staged_world_dir)
@@ -820,9 +1235,15 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
 
     final_mod = config["final_mod"]
     final_pak_path = output_dir / "bg3_mods" / str(final_mod["pak_name"])
-    if divine_info["found"] and trials_mod_info["found"]:
+    if divine_info["found"] and trials_mod_info["found"] and attspells_mod_info["found"]:
         staged_mod_dir = output_dir / "bg3_mods" / "ArchipelagoToT_unpacked"
-        stage_final_mod(Path(str(trials_mod_info["path"])), staged_mod_dir, str(divine_info["path"]), final_mod)
+        stage_final_mod(
+            Path(str(trials_mod_info["path"])),
+            staged_mod_dir,
+            str(divine_info["path"]),
+            final_mod,
+            bundled_sources=[Path(str(attspells_mod_info["path"]))],
+        )
         artifacts.append({"kind": "final_mod_unpacked", "path": str(staged_mod_dir.resolve())})
         built_final_pak, _ = build_pak(config, staged_mod_dir, final_pak_path)
         if built_final_pak:
@@ -848,8 +1269,10 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         Brief setup:
         1. Download {APWORLD_FILENAME} from the same release page and put it into your Archipelago custom_worlds folder.
         2. Extract this zip and put {final_mod['pak_name']} into your BG3 Mods folder.
-        3. In BG3 Mod Manager, enable "{final_mod['display_name']}" and export the load order.
-        4. Launch BG3 and start Trials of Tav as normal.
+        3. {final_mod['pak_name']} bundles the required AdvancedTTSpells module.
+        4. In BG3 Mod Manager, enable "{final_mod['display_name']}" and export the load order.
+           If BG3MM also exposes a bundled "AdvancedTTSpells" entry from the same pak, enable it too and keep it before "{final_mod['display_name']}".
+        5. Launch BG3 and start Trials of Tav as normal.
 
         For full instructions, troubleshooting, and current notes, read the repository README on GitHub.
         """
@@ -882,11 +1305,17 @@ def build_test_bundle(config: dict[str, Any], args: argparse.Namespace) -> dict[
         release_bundle_archive = build_release_archive(config, release_bundle_path, release_bundle_candidates)
         artifacts.append({"kind": "release_zip", "path": release_bundle_archive})
 
+    if staged_mod_dir and staged_mod_dir.exists():
+        toolkit_publish_dir = release_dir / "toolkit_publish"
+        toolkit_publish_path = stage_toolkit_publish_layout(staged_mod_dir, toolkit_publish_dir, final_mod)
+        artifacts.append({"kind": "release_toolkit_publish", "path": toolkit_publish_path})
+
     manifest = {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
         "project": config["project_name"],
         "divine": divine_info,
         "trials_mod_source": trials_mod_info,
+        "attspells_mod_source": attspells_mod_info,
         "artifacts": artifacts,
         "release_bundle": {
             "created": release_bundle_archive is not None,
