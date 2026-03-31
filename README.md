@@ -52,6 +52,8 @@ In [BG3 Mod Manager](https://github.com/LaughingLeader/BG3ModManager), enable mo
 4. `Spells of Exandria`
 5. `Archipelago - Trials of Tav`
 
+<img width="800" height="226" alt="image" src="https://github.com/user-attachments/assets/df0cf2c9-35ab-4c61-a53b-51c091bc38cf" />
+
 Then:
 1. Save Load Order
 2. Export Order to Game
@@ -62,6 +64,7 @@ Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launc
 ### 5. Connect Archipelago client
 
 Open `Baldur's Gate 3 - ToT Client` from inside the Archipelago launcher and connect to the Archipelago room.
+
 ### 6. Play
 
 With the mods active and the client connected, create a new save and opt into all the in-game pop-ups for Trials of Tav. If everything is set up correctly, the shop items should be randomized apworld items.
