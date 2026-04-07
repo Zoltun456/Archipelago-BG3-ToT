@@ -49,10 +49,10 @@ Optional Mods:
 *Save Load Order* -> *Export Order to Game* -> *Launch BG3 from BG3MM*
 ### 4. Generate a seed
 - Make your YAML with the `Baldur's Gate 3 - ToT` options in the Archipelago launcher `Options Creator`.
-### 5. Launch the client and connect
-- In the Archipelago Launcher, open `Baldur's Gate 3 - ToT Client`.
+### 5. Connect in game
 - With the mods active, create a new save and opt into all the in-game pop-ups for Trials of Tav to start the gamemode. 
-- In the Trials GUI (open with `u` by default), switch to the `Archipelago Client` tab. That tab mirrors the standalone client log and status, and it can also send `Connect`, `Disconnect`, and `Resync` to the standalone client while it is open.
+- Open `Baldur's Gate 3 - ToT Client` from the Archipelago Launcher.
+- Connect to room with the client or use in the Trials GUI `Archipelago Client` tab (open with`u` by default).
 - If everything is set up correctly, the shop items should be randomized apworld items.
 ## Option Notes
 
