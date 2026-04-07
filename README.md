@@ -76,6 +76,7 @@ Key options that affect balance the most:
 - `enabled_traps`
 
 Shop prices are seeded per player and rounded to multiples of `10`.
+`shop_check_count` is a minimum target now: the world will auto-expand the shop list as needed so every configured non-filler unlock copy still enters the randomized item pool.
 Pixie Blessing can optionally stay as its vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
 Character-bound useful AP unlocks can target the receiving player, a random party member, or the whole party.
 Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore that setting.

@@ -7,11 +7,11 @@ from BaseClasses import Location
 from . import items
 from .trials_data import (
     LOCATION_NAME_TO_ID,
+    MAX_SHOP_CHECKS,
     MAX_CLEAR_CHECKS,
     MAX_KILL_CHECKS,
     MAX_PERFECT_CHECKS,
     MAX_ROGUESCORE_CHECKS,
-    UNLOCK_SLOT_CATALOG,
     clear_location_id,
     clear_location_name,
     kill_location_id,
@@ -38,7 +38,7 @@ LOCATION_NAME_GROUPS = {
     "Kills": {kill_location_name(index) for index in range(1, MAX_KILL_CHECKS + 1)},
     "Perfect Clears": {perfect_location_name(index) for index in range(1, MAX_PERFECT_CHECKS + 1)},
     "RogueScore": {roguescore_location_name(index) for index in range(1, MAX_ROGUESCORE_CHECKS + 1)},
-    "Shop": {shop_location_name(index) for index in range(1, len(UNLOCK_SLOT_CATALOG) + 1)},
+    "Shop": {shop_location_name(index) for index in range(1, MAX_SHOP_CHECKS + 1)},
 }
 
 
@@ -81,6 +81,7 @@ def create_all_locations(world: BG3World) -> None:
                 selected_shop_unlock_ids(
                     int(world.options.shop_check_count),
                     randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+                    option_values=world.options,
                 )
             ),
             shop_location_name,

@@ -51,8 +51,7 @@ def _randomized_shop_costs(
 
 def _zero_trap_shop_costs(world: "BG3World", costs: list[int]) -> list[int]:
     adjusted_costs = list(costs)
-    shop_check_count = int(world.options.shop_check_count)
-    for index in range(1, min(shop_check_count, len(adjusted_costs)) + 1):
+    for index in range(1, len(adjusted_costs) + 1):
         location = world.multiworld.get_location(shop_location_name(index), world.player)
         if location.item and location.item.classification & ItemClassification.trap:
             adjusted_costs[index - 1] = 0
@@ -94,6 +93,7 @@ class BG3World(World):
         chosen_shop_unlock_ids = selected_shop_unlock_ids(
             int(self.options.shop_check_count),
             randomize_pixie_blessing=not bool(self.options.vanilla_pixie_blessing_in_shop),
+            option_values=self.options,
         )
         seed_basis = getattr(self.multiworld, "seed_name", None) or getattr(self.multiworld, "seed", None) or "BG3Trials"
         selected_shop_costs = _randomized_shop_costs(

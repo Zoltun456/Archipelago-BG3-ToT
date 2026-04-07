@@ -9,9 +9,9 @@
     "author": "Zoltun",
     "description": "Trials of Tav - Reloaded bundled with Archipelago integration.",
     "publish_handle": "5932588",
-    "release_version": "1.1.4",
-    "version64": "36169543097253888",
-    "publish_version64": "36169543097253888"
+    "release_version": "1.1.5",
+    "version64": "36169545244737536",
+    "publish_version64": "36169545244737536"
   },
   "upstream": {
     "archipelago_bg3_repo": "https://github.com/zane31415/ArchipelagoBG3",

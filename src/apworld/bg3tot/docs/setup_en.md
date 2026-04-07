@@ -55,7 +55,7 @@ The in-game tab mirrors the standalone client status/log and can send those acti
 - `*_check_interval`
   How often each activity awards a check.
 - `shop_check_count`
-  How many catalog entries are turned into AP shop checks.
+  Minimum number of catalog entries turned into AP shop checks. The world auto-expands this upward when needed so every configured non-filler unlock copy still appears in the randomized item pool.
 - `shop_price_minimum`, `shop_price_maximum`
   Seeded random price range for AP shop entries, rounded to multiples of `10`.
 - `vanilla_pixie_blessing_in_shop`

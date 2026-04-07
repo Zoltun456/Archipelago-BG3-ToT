@@ -91,6 +91,36 @@ def write_text(path: Path, contents: str) -> None:
     path.write_text(contents.rstrip() + "\n", encoding="utf-8")
 
 
+def snake_case_identifier(value: str) -> str:
+    normalized = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", str(value))
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", normalized)
+    normalized = re.sub(r"_+", "_", normalized).strip("_")
+    return normalized.lower()
+
+
+def unlock_copies_option_name(unlock_id: str) -> str:
+    return f"{snake_case_identifier(unlock_id)}_copies"
+
+
+def iter_sample_unlock_option_lines(sample_player: dict[str, Any]) -> list[str]:
+    unlock_lines: list[str] = []
+    unlock_catalog = load_json(UNLOCK_CATALOG_PATH)
+
+    for unlock in unlock_catalog:
+        unlock_id = str(unlock["id"])
+        copies = max(1, int(unlock.get("copies", 1)))
+        if copies <= 1:
+            continue
+        option_name = unlock_copies_option_name(unlock_id)
+        value = int(sample_player.get(option_name, copies))
+        unlock_lines.append(f"  {option_name}: {value}")
+
+    unlock_lines.append(
+        f"  include_equipment_fillers: {str(bool(sample_player.get('include_equipment_fillers', True))).lower()}"
+    )
+    return unlock_lines
+
+
 def patch_once(contents: str, needle: str, replacement: str, file_label: str) -> str:
     if needle not in contents:
         raise ValueError(f"Could not find expected patch anchor in {file_label}")
@@ -211,6 +241,7 @@ def write_packaged_apworld_manifest(staged_world_dir: Path) -> None:
 def render_sample_yaml(config: dict[str, Any]) -> str:
     sample = config["sample_player"]
     trap_lines = "\n".join(f"    - {trap}" for trap in sample["enabled_traps"])
+    unlock_option_lines = "\n".join(iter_sample_unlock_option_lines(sample))
     return f"""name: {sample['name']}
 description: {sample['description']}
 game: {sample['game']}
@@ -234,6 +265,7 @@ game: {sample['game']}
   shop_price_maximum: {sample['shop_price_maximum']}
   vanilla_pixie_blessing_in_shop: {str(bool(sample.get('vanilla_pixie_blessing_in_shop', False))).lower()}
   permanent_buff_target: {sample.get('permanent_buff_target', 'random_party_member')}
+{unlock_option_lines}
   traps_percentage: {sample['traps_percentage']}
   enabled_traps:
 {trap_lines}

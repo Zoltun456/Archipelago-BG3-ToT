@@ -1,15 +1,18 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import make_dataclass
 
 from Options import Choice, DeathLink, OptionGroup, OptionSet, PerGameCommonOptions, Range, Toggle
 
 from .trials_data import (
     MAX_CLEAR_CHECKS,
+    MAX_CONFIGURABLE_UNLOCK_COPIES,
     MAX_KILL_CHECKS,
     MAX_PERFECT_CHECKS,
     MAX_ROGUESCORE_CHECKS,
-    UNLOCK_ID_ORDER,
+    MAX_SHOP_CHECKS,
+    UNLOCK_CATALOG,
+    unlock_copies_option_name,
 )
 
 
@@ -30,6 +33,62 @@ DEFAULT_ENABLED_TRAPS = {
     "Silence",
     "Grease",
 }
+
+
+def _pascal_case_identifier(value: str) -> str:
+    return "".join(part.capitalize() for part in str(value).split("_"))
+
+
+def _build_unlock_pool_options() -> tuple[dict[str, type[Range]], list[type[Range]], dict[str, object]]:
+    option_types: dict[str, type[Range]] = {}
+    option_group: list[type[Range]] = []
+    preset_defaults: dict[str, object] = {}
+
+    for unlock in UNLOCK_CATALOG:
+        unlock_id = str(unlock["id"])
+        unlock_name = str(unlock["name"])
+        copies = int(unlock["copies"])
+
+        if copies <= 1:
+            continue
+
+        option_name = unlock_copies_option_name(unlock_id)
+        option_class = type(
+            _pascal_case_identifier(option_name),
+            (Range,),
+            {
+                "__module__": __name__,
+                "__doc__": (
+                    f"How many copies of {unlock_name} are included in the randomized AP unlock pool.\n\n"
+                    "Set this to 0 to remove that unlock from the multiworld."
+                ),
+                "display_name": unlock_name,
+                "range_start": 0,
+                "range_end": MAX_CONFIGURABLE_UNLOCK_COPIES,
+                "default": copies,
+            },
+        )
+        preset_defaults[option_name] = copies
+
+        globals()[option_class.__name__] = option_class
+        option_types[option_name] = option_class
+        option_group.append(option_class)
+
+    return option_types, option_group, preset_defaults
+
+
+UNLOCK_POOL_OPTIONS, UNLOCK_POOL_OPTION_GROUP, UNLOCK_POOL_PRESET_DEFAULTS = _build_unlock_pool_options()
+
+
+class IncludeEquipmentFillers(Toggle):
+    """
+    Whether one-off equipment filler items from the upstream BG3 equipment pool stay in the AP filler pool.
+
+    Disable this to remove those equipment filler items from the multiworld entirely.
+    """
+
+    display_name = "Include Equipment Fillers"
+    default = 1
 
 
 class Goal(Choice):
@@ -162,16 +221,19 @@ class RogueScoreCheckInterval(Range):
 
 class ShopCheckCount(Range):
     """
-    Converts the first N unlock entries from ``trials_unlock_catalog.json`` into AP shop checks.
+    Targets at least N randomized AP shop checks from ``trials_unlock_catalog.json``.
 
     Buying one of these entries sends a location check instead of granting the reward immediately.
     The original reward becomes an AP item that must be received from the multiworld.
+
+    The world will automatically expand above this value when needed so every configured
+    non-filler unlock copy still appears somewhere in the randomized item pool.
     """
 
     display_name = "Shop Check Count"
     range_start = 0
-    range_end = len(UNLOCK_ID_ORDER)
-    default = min(50, len(UNLOCK_ID_ORDER))
+    range_end = MAX_SHOP_CHECKS
+    default = min(50, MAX_SHOP_CHECKS)
 
 
 class ShopPriceMinimum(Range):
@@ -315,6 +377,10 @@ bg3_option_groups = [
         VanillaPixieBlessingInShop,
         PermanentBuffTarget,
     ]),
+    OptionGroup("Unlock Pool", [
+        *UNLOCK_POOL_OPTION_GROUP,
+        IncludeEquipmentFillers,
+    ], True),
     OptionGroup("Client & Traps", [
         TrapsPercentage,
         EnabledTraps,
@@ -322,8 +388,16 @@ bg3_option_groups = [
 ]
 
 
+def _preset_with_unlock_defaults(values: dict[str, object]) -> dict[str, object]:
+    return {
+        **UNLOCK_POOL_PRESET_DEFAULTS,
+        "include_equipment_fillers": True,
+        **values,
+    }
+
+
 BG3_OPTION_PRESETS = {
-    "Release Defaults": {
+    "Release Defaults": _preset_with_unlock_defaults({
         "death_link": False,
         "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
         "goal": Goal.option_clear_stages,
@@ -344,8 +418,8 @@ BG3_OPTION_PRESETS = {
         "permanent_buff_target": PermanentBuffTarget.option_random_party_member,
         "traps_percentage": 15,
         "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
-    },
-    "Quick Trial": {
+    }),
+    "Quick Trial": _preset_with_unlock_defaults({
         "death_link": False,
         "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
         "goal": Goal.option_clear_stages,
@@ -366,29 +440,39 @@ BG3_OPTION_PRESETS = {
         "permanent_buff_target": PermanentBuffTarget.option_random_party_member,
         "traps_percentage": 10,
         "enabled_traps": sorted(DEFAULT_ENABLED_TRAPS),
-    },
+    }),
 }
 
 
-@dataclass
-class BG3Options(PerGameCommonOptions):
-    death_link: DeathLink
-    death_link_trigger: DeathLinkTrigger
-    goal: Goal
-    goal_clear_target: GoalClearTarget
-    goal_rogue_score_target: GoalRogueScoreTarget
-    clear_check_count: ClearCheckCount
-    clear_check_interval: ClearCheckInterval
-    kill_check_count: KillCheckCount
-    kill_check_interval: KillCheckInterval
-    perfect_check_count: PerfectCheckCount
-    perfect_check_interval: PerfectCheckInterval
-    roguescore_check_count: RogueScoreCheckCount
-    roguescore_check_interval: RogueScoreCheckInterval
-    shop_check_count: ShopCheckCount
-    shop_price_minimum: ShopPriceMinimum
-    shop_price_maximum: ShopPriceMaximum
-    vanilla_pixie_blessing_in_shop: VanillaPixieBlessingInShop
-    permanent_buff_target: PermanentBuffTarget
-    traps_percentage: TrapsPercentage
-    enabled_traps: EnabledTraps
+BG3_OPTION_FIELDS: dict[str, type] = {
+    "death_link": DeathLink,
+    "death_link_trigger": DeathLinkTrigger,
+    "goal": Goal,
+    "goal_clear_target": GoalClearTarget,
+    "goal_rogue_score_target": GoalRogueScoreTarget,
+    "clear_check_count": ClearCheckCount,
+    "clear_check_interval": ClearCheckInterval,
+    "kill_check_count": KillCheckCount,
+    "kill_check_interval": KillCheckInterval,
+    "perfect_check_count": PerfectCheckCount,
+    "perfect_check_interval": PerfectCheckInterval,
+    "roguescore_check_count": RogueScoreCheckCount,
+    "roguescore_check_interval": RogueScoreCheckInterval,
+    "shop_check_count": ShopCheckCount,
+    "shop_price_minimum": ShopPriceMinimum,
+    "shop_price_maximum": ShopPriceMaximum,
+    "vanilla_pixie_blessing_in_shop": VanillaPixieBlessingInShop,
+    "permanent_buff_target": PermanentBuffTarget,
+    **UNLOCK_POOL_OPTIONS,
+    "include_equipment_fillers": IncludeEquipmentFillers,
+    "traps_percentage": TrapsPercentage,
+    "enabled_traps": EnabledTraps,
+}
+
+
+BG3Options = make_dataclass(
+    "BG3Options",
+    [(name, option) for name, option in BG3_OPTION_FIELDS.items()],
+    bases=(PerGameCommonOptions,),
+    namespace={"__module__": __name__},
+)

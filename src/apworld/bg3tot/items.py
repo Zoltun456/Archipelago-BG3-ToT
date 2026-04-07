@@ -128,7 +128,9 @@ def _extend_item_tuples(
 
 
 EQUIPMENT_FILLERS = _build_equipment_fillers()
-FILLER_ITEM_NAMES = [item[0] for item in CUSTOM_FILLERS + DUPLICATE_ITEM_FILLERS + EQUIPMENT_FILLERS]
+BASE_FILLER_ITEM_NAMES = [item[0] for item in CUSTOM_FILLERS + DUPLICATE_ITEM_FILLERS]
+EQUIPMENT_FILLER_ITEM_NAMES = [item[0] for item in EQUIPMENT_FILLERS]
+FILLER_ITEM_NAMES = BASE_FILLER_ITEM_NAMES + EQUIPMENT_FILLER_ITEM_NAMES
 ITEM_NAME_GROUPS = {
     "Unlocks": UNLOCK_ITEM_NAMES,
     "Progression Unlocks": PROGRESSION_UNLOCK_ITEM_NAMES,
@@ -167,6 +169,13 @@ class BG3Item(Item):
     game = "Baldur's Gate 3 - ToT"
 
 
+def get_enabled_filler_item_names(world: BG3World) -> list[str]:
+    filler_item_names = list(BASE_FILLER_ITEM_NAMES)
+    if bool(getattr(world.options, "include_equipment_fillers", True)):
+        filler_item_names.extend(EQUIPMENT_FILLER_ITEM_NAMES)
+    return filler_item_names
+
+
 def get_random_filler_item_name(world: BG3World) -> str:
     if world.random.randint(0, 100) < world.options.traps_percentage:
         enabled = list(world.options.enabled_traps)
@@ -176,7 +185,7 @@ def get_random_filler_item_name(world: BG3World) -> str:
             if trap_item_name:
                 return trap_item_name
 
-    return world.random.choice(FILLER_ITEM_NAMES)
+    return world.random.choice(get_enabled_filler_item_names(world))
 
 
 def create_item_with_correct_classification(world: BG3World, name: str) -> BG3Item:
@@ -189,6 +198,7 @@ def create_all_items(world: BG3World) -> None:
         for unlock_id in selected_shop_unlock_ids(
             int(world.options.shop_check_count),
             randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+            option_values=world.options,
         )
     ]
 
