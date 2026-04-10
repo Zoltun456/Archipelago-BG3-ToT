@@ -2,10 +2,12 @@ from .bases import BG3TrialsTestBase
 from ..options import BG3Options, PermanentBuffTarget
 from ..trials_data import (
     PIXIE_BLESSING_UNLOCK_ID,
+    SHOP_FRAGMENT_ITEM_NAME,
     UNLOCK_CATALOG,
     UNLOCK_CLASSIFICATION_BY_ID,
     UNLOCK_ID_ORDER,
     MAX_CONFIGURABLE_UNLOCK_COPIES,
+    build_shop_layout,
     selected_shop_unlock_ids,
     unlock_copies_option_name,
 )
@@ -26,6 +28,15 @@ class TestDefaultGeneration(BG3TrialsTestBase):
         self.assertEqual(len(slot_data["roguescore_thresholds"]), int(self.world.options.roguescore_check_count))
         self.assertEqual(slot_data["shop_check_unlock_ids"], expected_shop_unlock_ids)
         self.assertEqual(len(slot_data["shop_check_costs"]), len(expected_shop_unlock_ids))
+        self.assertTrue(slot_data["progressive_shop"])
+        self.assertEqual(slot_data["death_link_punishment"], 0)
+        self.assertEqual(slot_data["progressive_shop_unlock_rate"], 10)
+        self.assertEqual(slot_data["shop_fragment_count"], 10)
+        self.assertEqual(slot_data["goal_ng_plus_fragment_gate_percent"], 0)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_percent"], 0)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_fragments"], 0)
+        self.assertEqual(slot_data["goal_unlock_cost"], 3000)
+        self.assertEqual(len(slot_data["shop_section_indices"]), len(expected_shop_unlock_ids))
         self.assertEqual(slot_data["vanilla_pixie_blessing_in_shop"], bool(self.world.options.vanilla_pixie_blessing_in_shop))
         self.assertEqual(slot_data["permanent_buff_target"], int(self.world.options.permanent_buff_target))
         self.assertEqual(slot_data["unlock_classifications_by_id"], UNLOCK_CLASSIFICATION_BY_ID)
@@ -84,6 +95,19 @@ class TestPermanentBuffTargetGeneration(BG3TrialsTestBase):
         )
 
 
+class TestDeathLinkPunishmentGeneration(BG3TrialsTestBase):
+    options = {
+        "death_link": True,
+        "death_link_punishment": "remove_all_resources_one_party_member",
+    }
+
+    def test_slot_data_keeps_selected_deathlink_punishment(self) -> None:
+        slot_data = self.world.fill_slot_data()
+
+        self.assertTrue(slot_data["death_link"])
+        self.assertEqual(slot_data["death_link_punishment"], 4)
+
+
 class TestVanillaPixieBlessingInShopGeneration(BG3TrialsTestBase):
     options = {
         "shop_check_count": 4,
@@ -138,3 +162,60 @@ class TestUsefulUnlockCopiesExpandShopChecks(BG3TrialsTestBase):
 
         self.assertGreater(len(slot_data["shop_check_unlock_ids"]), int(self.world.options.shop_check_count))
         self.assertEqual(slot_data["shop_check_unlock_ids"].count("BuyLootRare"), 12)
+
+
+class TestProgressiveShopGeneration(BG3TrialsTestBase):
+    options = {
+        "progressive_shop": True,
+        "progressive_shop_unlock_rate": 20,
+    }
+
+    def test_shop_fragments_are_added_and_sections_cover_the_shop(self) -> None:
+        slot_data = self.world.fill_slot_data()
+        shop_layout = build_shop_layout(
+            int(self.world.options.shop_check_count),
+            randomize_pixie_blessing=not bool(self.world.options.vanilla_pixie_blessing_in_shop),
+            option_values=self.world.options,
+        )
+        local_item_names = [item.name for item in self.multiworld.itempool if item.player == self.world.player]
+
+        self.assertEqual(slot_data["shop_fragment_count"], 5)
+        self.assertEqual(slot_data["shop_fragment_count"], int(shop_layout["fragment_count"]))
+        self.assertEqual(slot_data["shop_section_indices"], list(shop_layout["section_indices"]))
+        self.assertEqual(local_item_names.count(SHOP_FRAGMENT_ITEM_NAME), 5)
+        self.assertEqual(min(slot_data["shop_section_indices"]), 1)
+        self.assertEqual(max(slot_data["shop_section_indices"]), 5)
+
+
+class TestNgPlusGateGeneration(BG3TrialsTestBase):
+    options = {
+        "progressive_shop": True,
+        "progressive_shop_unlock_rate": 10,
+        "goal_ng_plus_fragment_gate_percent": 50,
+        "goal_ng_plus_price": 4500,
+    }
+
+    def test_ng_plus_gate_uses_effective_fragment_count_and_custom_price(self) -> None:
+        slot_data = self.world.fill_slot_data()
+
+        self.assertEqual(slot_data["shop_fragment_count"], 10)
+        self.assertEqual(slot_data["goal_ng_plus_fragment_gate_percent"], 50)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_percent"], 50)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_fragments"], 5)
+        self.assertEqual(slot_data["goal_unlock_cost"], 4500)
+
+
+class TestNgPlusGateDisablesWithoutProgressiveShop(BG3TrialsTestBase):
+    options = {
+        "progressive_shop": False,
+        "goal_ng_plus_fragment_gate_percent": 100,
+    }
+
+    def test_ng_plus_gate_turns_off_when_progressive_shop_is_disabled(self) -> None:
+        slot_data = self.world.fill_slot_data()
+
+        self.assertFalse(slot_data["progressive_shop"])
+        self.assertEqual(slot_data["shop_fragment_count"], 0)
+        self.assertEqual(slot_data["goal_ng_plus_fragment_gate_percent"], 100)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_percent"], 0)
+        self.assertEqual(slot_data["effective_goal_ng_plus_fragment_gate_fragments"], 0)

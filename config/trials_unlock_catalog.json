@@ -16,7 +16,7 @@
   { "id": "BuyLootRare", "name": "Roll Rare Loot x5", "classification": "useful", "copies": 10 },
   { "id": "BuyLootEpic", "name": "Roll Epic Loot x3", "classification": "useful", "copies": 10 },
   { "id": "BuyLootLegendary", "name": "Roll Legendary Loot x1", "classification": "useful", "copies": 10 },
-  { "id": "BuySupplies", "name": "40 Camp Supplies", "classification": "filler", "copies": 20 },
+  { "id": "BuySupplies", "name": "40 Camp Supplies", "classification": "filler", "copies": 10 },
   { "id": "ShortRestRecovery", "name": "Short Rest Recovery", "classification": "useful", "copies": 1 },
   { "id": "Moonshield", "name": "Pixie Blessing", "classification": "progression", "copies": 1 },
   { "id": "BreakOath", "name": "Break or Restore Oath", "classification": "useful", "copies": 1 },

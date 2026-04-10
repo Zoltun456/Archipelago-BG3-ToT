@@ -6,6 +6,8 @@ local original_get_stock = nil
 
 local GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
+local AP_LOCAL_SHOP_SECTION_NAME = "Local Unlocks"
+local SHOP_SECTION_UNLOCK_PREFIX = "APSHOP::SECTION::"
 local AP_ATLAS_TEXTURE_UUID = "aa417c69-e69a-f1ef-5a8d-65b7b5d4e195"
 local AP_CLIENT_DEBUG_SHOP_FILE = "ap_debug_shop_client.json"
 local AP_ICON_UVS = {
@@ -338,38 +340,53 @@ local function make_signature(unlocks)
             tostring(unlock.Amount or ""),
             tostring(unlock.HideStock and 1 or 0),
             tostring(unlock.Cost or 0),
+            tostring(unlock.SectionName or ""),
+            tostring(unlock.SortSectionIndex or ""),
+            tostring(unlock.SortSectionOrder or ""),
+            tostring(unlock.RequiredShopFragments or ""),
+            tostring(unlock.TotalShopFragments or ""),
         }, "|")
     end), "\n")
 end
 
 
 local function shop_unlock_sort_key(unlock)
+    local section_index = tonumber(unlock and unlock.SortSectionIndex or 9999) or 9999
+    local section_order = tonumber(unlock and unlock.SortSectionOrder or 0) or 0
     if unlock and unlock.Id == GOAL_UNLOCK_ID then
-        return 0, "", 0, tostring(unlock.Name or ""), 0
+        return 0, section_index, section_order, "", 0, tostring(unlock.Name or ""), 0
     end
 
     if unlock and unlock.Id == PIXIE_BLESSING_UNLOCK_ID then
-        return 1, "", tonumber(unlock.Cost or 0) or 0, tostring(unlock.Name or ""), 0
+        return 0, section_index, section_order, "", tonumber(unlock.Cost or 0) or 0, tostring(unlock.Name or ""), 0
     end
 
     if unlock and unlock.Id and string.match(tostring(unlock.Id), "^APCHECK::") then
-        return 2,
+        return 1,
+            section_index,
+            section_order,
             tostring(unlock.SortPlayerName or ""):lower(),
             tonumber(unlock.SortPrice or unlock.Cost or 0) or 0,
             tostring(unlock.SortItemName or unlock.Name or ""),
             tonumber(unlock.SortTokenIndex or 0) or 0
     end
 
-    return 3, "", 0, tostring(unlock.Name or ""), 0
+    return 2, section_index, section_order, "", 0, tostring(unlock.Name or ""), 0
 end
 
 
 local function sort_unlocks(unlocks)
     table.sort(unlocks, function(a, b)
-        local ag, ap, apr, an, at = shop_unlock_sort_key(a)
-        local bg, bp, bpr, bn, bt = shop_unlock_sort_key(b)
+        local ag, asection, aorder, ap, apr, an, at = shop_unlock_sort_key(a)
+        local bg, bsection, border, bp, bpr, bn, bt = shop_unlock_sort_key(b)
         if ag ~= bg then
             return ag < bg
+        end
+        if asection ~= bsection then
+            return asection < bsection
+        end
+        if aorder ~= border then
+            return aorder < border
         end
         if ap ~= bp then
             return ap < bp
@@ -399,11 +416,123 @@ local function is_visible_ap_unlock(unlock)
         return false
     end
 
+    if string.match(unlock_id, "^APCHECK::") ~= nil and unlock.Unlocked ~= true then
+        return false
+    end
+
     if unlock.Amount ~= nil and tonumber(unlock.Bought or 0) >= tonumber(unlock.Amount or 0) then
         return false
     end
 
     return true
+end
+
+
+local function unlock_section_name(unlock)
+    local section_name = tostring(unlock and unlock.SectionName or "")
+    if section_name ~= "" then
+        return section_name
+    end
+
+    local unlock_id = tostring(unlock and unlock.Id or "")
+    if unlock_id == GOAL_UNLOCK_ID or unlock_id == PIXIE_BLESSING_UNLOCK_ID then
+        return AP_LOCAL_SHOP_SECTION_NAME
+    end
+
+    return "Shop Checks"
+end
+
+
+local function parse_shop_section_unlock_id(unlock_id)
+    local index = string.match(stringify(unlock_id), "^APSHOP::SECTION::(%d+)$")
+    if not index then
+        return nil
+    end
+
+    return tonumber(index)
+end
+
+
+local function shop_fragment_progress(state)
+    local collected = 0
+    local total = 0
+    for _, candidate in pairs((state and state.Unlocks) or {}) do
+        local section_index = parse_shop_section_unlock_id(candidate and candidate.Id)
+        if section_index then
+            total = math.max(total, section_index)
+            if tonumber(candidate.Bought or 0) > 0 then
+                collected = collected + 1
+            end
+        end
+    end
+
+    return collected, total
+end
+
+
+local function shop_fragment_requirement_counts(unlock, state)
+    local required = tonumber(unlock and unlock.RequiredShopFragments or 0) or 0
+    local total = tonumber(unlock and unlock.TotalShopFragments or 0) or 0
+    if required <= 0 then
+        local requirement = unlock and unlock.Requirement
+        if type(requirement) ~= "table" then
+            requirement = { requirement }
+        end
+
+        for _, entry in pairs(requirement or {}) do
+            local section_index = parse_shop_section_unlock_id(entry)
+            if section_index and section_index > required then
+                required = section_index
+            end
+        end
+    end
+
+    if required <= 0 then
+        return nil
+    end
+
+    local collected, inferred_total = shop_fragment_progress(state)
+    if total <= 0 then
+        total = inferred_total
+    end
+    if total < required then
+        total = required
+    end
+
+    return collected, required, total
+end
+
+
+local function build_requirement_label(unlock, state)
+    local lines = {}
+    local collected, required, total = shop_fragment_requirement_counts(unlock, state)
+    if required and required > 0 then
+        table.insert(
+            lines,
+            __("Shop Fragments: %d/%d collected", collected, required)
+                .. string.format(" (%d/%d total)", required, total)
+        )
+    end
+
+    local requirement = unlock and unlock.Requirement
+    if type(requirement) ~= "table" then
+        requirement = { requirement }
+    end
+
+    for _, entry in pairs(requirement or {}) do
+        if type(entry) == "number" then
+            table.insert(lines, __("%d RogueScore required", entry))
+        elseif type(entry) == "string" and not parse_shop_section_unlock_id(entry) then
+            local needed_unlock = table.find((state and state.Unlocks) or {}, function(candidate)
+                return candidate.Id == entry
+            end)
+            if needed_unlock then
+                table.insert(lines, __("%s required", needed_unlock.Name))
+            end
+        end
+    end
+
+    return table.concat(lines, "\n")
 end
 
 
@@ -556,34 +685,14 @@ local function patch_unlock_ui()
         local tile_unlock = unlock
         local requirement_text = grp:AddText("")
 
-        local function update_requirement_visibility()
-            requirement_text.Visible = not tile_unlock.Unlocked and tile_unlock.Bought < 1
+        local function update_requirement_text(state)
+            requirement_text.Label = build_requirement_label(tile_unlock, state or State)
+            requirement_text.Visible = requirement_text.Label ~= ""
+                and not tile_unlock.Unlocked
+                and tile_unlock.Bought < 1
         end
 
-        if tile_unlock.Requirement then
-            if type(tile_unlock.Requirement) ~= "table" then
-                tile_unlock.Requirement = { tile_unlock.Requirement }
-            end
-
-            for _, requirement in pairs(tile_unlock.Requirement) do
-                if type(requirement) == "number" then
-                    requirement_text.Label = requirement_text.Label
-                        .. __("%d RogueScore required", requirement)
-                        .. "\n"
-                elseif type(requirement) == "string" then
-                    local needed_unlock = table.find(State.Unlocks, function(candidate)
-                        return candidate.Id == requirement
-                    end)
-                    if needed_unlock then
-                        requirement_text.Label = requirement_text.Label
-                            .. __("%s required", needed_unlock.Name)
-                            .. "\n"
-                    end
-                end
-            end
-        end
-
-        update_requirement_visibility()
+        update_requirement_text(State)
         grp:AddDummy(1, 2)
 
         local purchase_widget = Components.Conditional(grp, function()
@@ -600,7 +709,7 @@ local function patch_unlock_ui()
                 if candidate.Id == tile_unlock.Id then
                     tile_unlock = candidate
                     purchase_widget.Update(tile_unlock.Unlocked)
-                    update_requirement_visibility()
+                    update_requirement_text(state)
                 end
             end
         end):Exec(State)
@@ -638,19 +747,41 @@ local function patch_unlock_ui()
                 content = nil
             end
 
-            local columns = 3
-            local rows = math.max(1, math.ceil(table.size(unlocks) / columns))
             content = root:AddGroup(U.RandomId())
-            Components.Layout(content, columns, rows, function(layout)
-                layout.Table.Borders = true
-                layout.Table.ScrollY = true
-                for index, visible_unlock in ipairs(unlocks) do
-                    local column = (index - 1) % columns
-                    local row = math.ceil(index / columns)
-                    local cell = layout.Cells[row][column + 1]
-                    ClientUnlock.Tile(cell, visible_unlock)
+
+            local sections = {}
+            for _, visible_unlock in ipairs(unlocks) do
+                local section_name = unlock_section_name(visible_unlock)
+                if table.size(sections) == 0 or sections[#sections].name ~= section_name then
+                    table.insert(sections, {
+                        name = section_name,
+                        unlocks = {},
+                    })
                 end
-            end)
+                table.insert(sections[#sections].unlocks, visible_unlock)
+            end
+
+            for section_number, section in ipairs(sections) do
+                content:AddSeparatorText(section.name)
+
+                local section_root = content:AddGroup(U.RandomId())
+                local columns = 3
+                local rows = math.max(1, math.ceil(table.size(section.unlocks) / columns))
+                Components.Layout(section_root, columns, rows, function(layout)
+                    layout.Table.Borders = true
+                    layout.Table.ScrollY = false
+                    for index, visible_unlock in ipairs(section.unlocks) do
+                        local column = (index - 1) % columns
+                        local row = math.ceil(index / columns)
+                        local cell = layout.Cells[row][column + 1]
+                        ClientUnlock.Tile(cell, visible_unlock)
+                    end
+                end)
+
+                if section_number < #sections then
+                    content:AddDummy(1, 8)
+                end
+            end
         end
 
         Event.On("StateChange", rebuild):Exec(State)

@@ -50,10 +50,20 @@ The in-game tab mirrors the standalone client status/log and can send those acti
   Enables Archipelago DeathLink for this slot.
 - `death_link_trigger`
   Choose whether local DeathLinks send on a full party wipe, any party member death, or any party member down.
+- `death_link_punishment`
+  Choose what happens when a DeathLink is received: wipe everyone, down or kill one party member, drain resources from the whole party or one high-mental-stat companion, or do nothing.
+- `goal_ng_plus_fragment_gate_percent`
+  Hides `NG+` until the chosen percentage of Shop Fragments has been collected. If Progressive Shop is disabled, this gate turns itself off.
+- `goal_ng_plus_price`
+  Local shop price for `NG+`.
 - `clear_check_count`, `kill_check_count`, `perfect_check_count`, `roguescore_check_count`
   Total number of checks available from each activity group.
 - `*_check_interval`
   How often each activity awards a check.
+- `progressive_shop`
+  Locks randomized AP shop checks behind progressive `Shop Fragment` items from the multiworld.
+- `progressive_shop_unlock_rate`
+  How much of the randomized AP shop each received `Shop Fragment` unlocks. Lower values create more fragments and more sections.
 - `shop_check_count`
   Minimum number of catalog entries turned into AP shop checks. The world auto-expands this upward when needed so every configured non-filler unlock copy still appears in the randomized item pool.
 - `shop_price_minimum`, `shop_price_maximum`
@@ -78,6 +88,12 @@ Instead:
 2. The original reward exists in the Archipelago item pool.
 3. The reward is granted only when that AP item is received.
 
+If `progressive_shop` is enabled:
+
+1. The randomized AP shop is split into visible sections.
+2. Each received `Shop Fragment` unlocks the next section.
+3. Locked future sections stay hidden until their fragment is received.
+
 `NG+ / Quick Start` remains a normal local shop unlock.
 If `vanilla_pixie_blessing_in_shop` is enabled, `Pixie Blessing` also stays as its normal local shop unlock.
 
@@ -86,8 +102,8 @@ If `vanilla_pixie_blessing_in_shop` is enabled, `Pixie Blessing` also stays as i
 If DeathLink is enabled:
 
 1. Local Trials deaths send a DeathLink based on the selected trigger mode.
-2. Received DeathLinks wipe the active party.
-3. The player then reloads their most recent save as normal.
+2. Received DeathLinks apply the configured punishment.
+3. The default punishment wipes the active party, companions, and summons so the player reloads their most recent save.
 
 ### World Name
 

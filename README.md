@@ -60,13 +60,18 @@ Key options that affect balance the most:
 
 - `death_link`
 - `death_link_trigger`
+- `death_link_punishment`
 - `goal`
 - `goal_clear_target`
 - `goal_rogue_score_target`
+- `goal_ng_plus_fragment_gate_percent`
+- `goal_ng_plus_price`
 - `clear_check_count`
 - `kill_check_count`
 - `perfect_check_count`
 - `roguescore_check_count`
+- `progressive_shop`
+- `progressive_shop_unlock_rate`
 - `shop_check_count`
 - `shop_price_minimum`
 - `shop_price_maximum`
@@ -77,15 +82,30 @@ Key options that affect balance the most:
 
 Shop prices are seeded per player and rounded to multiples of `10`.
 `shop_check_count` is a minimum target now: the world will auto-expand the shop list as needed so every configured non-filler unlock copy still enters the randomized item pool.
+Progressive Shop is on by default. It adds progressive `Shop Fragment` items to the multiworld and each fragment unlocks the next section of randomized AP shop checks.
+Lower `progressive_shop_unlock_rate` values create more fragments and finer-grained shop progression.
+`goal_ng_plus_fragment_gate_percent` can hide `NG+` until a chosen percentage of Shop Fragments has been collected, and automatically disables itself when Progressive Shop is off.
+`goal_ng_plus_price` sets the local shop price for `NG+`.
 Pixie Blessing can optionally stay as its vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
 Character-bound useful AP unlocks can target the receiving player, a random party member, or the whole party.
 Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore that setting.
 
-DeathLink is optional and off by default. When enabled, received DeathLinks wipe the active party so the player has to reload, and the trigger mode can be set to:
+DeathLink is optional and off by default. When enabled, the trigger mode can be set to:
 
 - full party wipe
 - any party member fully killed
 - any party member downed
+
+`death_link_punishment` controls what happens when a DeathLink is received:
+
+- kill all party members
+- down a random party member
+- kill a random party member
+- remove all resources from all party members
+- remove all resources from one party member
+- nothing
+
+The default punishment still wipes the active party, companions, and summons so the player has to reload.
 
 ## Validation / Troubleshooting
 

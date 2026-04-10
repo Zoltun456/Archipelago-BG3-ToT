@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from collections.abc import Mapping
 from importlib import resources
@@ -19,6 +20,10 @@ PERFECT_LOCATION_BASE_ID = 20200
 ROGUESCORE_LOCATION_BASE_ID = 20300
 SHOP_LOCATION_BASE_ID = 20400
 PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
+DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE = 10
+PROGRESSIVE_SHOP_UNLOCK_RATES = (5, 10, 20, 25, 50, 100)
+GOAL_NG_PLUS_FRAGMENT_GATE_PERCENTS = (0, 25, 50, 75, 100)
+SHOP_FRAGMENT_ITEM_NAME = "Shop Fragment"
 
 
 def _normalized_copies(value: Any) -> int:
@@ -102,6 +107,50 @@ def _option_value(option_values: Any, option_name: str, default: Any) -> Any:
     return getattr(option_values, option_name, default)
 
 
+def _option_enabled(option_values: Any, option_name: str, default: bool) -> bool:
+    raw_value = _option_value(option_values, option_name, default)
+    if isinstance(raw_value, bool):
+        return raw_value
+    try:
+        return int(raw_value) != 0
+    except (TypeError, ValueError):
+        return bool(raw_value)
+
+
+def progressive_shop_enabled(option_values: Any = None) -> bool:
+    return _option_enabled(option_values, "progressive_shop", True)
+
+
+def progressive_shop_unlock_rate(option_values: Any = None) -> int:
+    raw_value = _option_value(
+        option_values,
+        "progressive_shop_unlock_rate",
+        DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE,
+    )
+    try:
+        normalized = int(raw_value)
+    except (TypeError, ValueError):
+        return DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE
+    if normalized in PROGRESSIVE_SHOP_UNLOCK_RATES:
+        return normalized
+    return DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE
+
+
+def goal_ng_plus_fragment_gate_percent(option_values: Any = None) -> int:
+    raw_value = _option_value(
+        option_values,
+        "goal_ng_plus_fragment_gate_percent",
+        0,
+    )
+    try:
+        normalized = int(raw_value)
+    except (TypeError, ValueError):
+        return 0
+    if normalized in GOAL_NG_PLUS_FRAGMENT_GATE_PERCENTS:
+        return normalized
+    return 0
+
+
 def configured_unlock_copy_count(unlock: dict[str, Any], option_values: Any = None) -> int:
     base_copies = int(unlock["copies"])
     if base_copies > 1:
@@ -168,6 +217,67 @@ def selected_shop_unlock_ids(
     required_count = sum(1 for entry in slot_catalog if entry["classification"] != "filler")
     selected_count = min(len(slot_catalog), max(requested_count, required_count))
     return [entry["id"] for entry in slot_catalog[:selected_count]]
+
+
+def progressive_shop_fragment_count(
+    total_shop_unlocks: int,
+    *,
+    option_values: Any = None,
+) -> int:
+    if total_shop_unlocks <= 0 or not progressive_shop_enabled(option_values):
+        return 0
+    unlock_rate = progressive_shop_unlock_rate(option_values)
+    return min(total_shop_unlocks, max(1, math.ceil(100 / unlock_rate)))
+
+
+def progressive_shop_section_indices(total_shop_unlocks: int, fragment_count: int) -> list[int]:
+    if total_shop_unlocks <= 0:
+        return []
+    if fragment_count <= 0:
+        return [0 for _index in range(total_shop_unlocks)]
+    return [
+        min(fragment_count, ((index - 1) * fragment_count // total_shop_unlocks) + 1)
+        for index in range(1, total_shop_unlocks + 1)
+    ]
+
+
+def progressive_shop_section_name(section_index: int, section_count: int) -> str:
+    if section_index <= 0 or section_count <= 0:
+        return ""
+    return f"Shop Fragment {section_index}/{section_count}"
+
+
+def build_shop_layout(
+    shop_check_count: int,
+    *,
+    randomize_pixie_blessing: bool = True,
+    option_values: Any = None,
+) -> dict[str, Any]:
+    unlock_ids = selected_shop_unlock_ids(
+        shop_check_count,
+        randomize_pixie_blessing=randomize_pixie_blessing,
+        option_values=option_values,
+    )
+    fragment_count = progressive_shop_fragment_count(len(unlock_ids), option_values=option_values)
+    section_indices = progressive_shop_section_indices(len(unlock_ids), fragment_count)
+    goal_gate_percent = goal_ng_plus_fragment_gate_percent(option_values)
+    effective_goal_gate_percent = goal_gate_percent if fragment_count > 0 else 0
+    effective_goal_gate_fragments = 0
+    if effective_goal_gate_percent > 0 and fragment_count > 0:
+        effective_goal_gate_fragments = min(
+            fragment_count,
+            max(1, math.ceil(fragment_count * effective_goal_gate_percent / 100)),
+        )
+    return {
+        "unlock_ids": unlock_ids,
+        "progressive_shop": progressive_shop_enabled(option_values),
+        "progressive_shop_unlock_rate": progressive_shop_unlock_rate(option_values),
+        "fragment_count": fragment_count,
+        "section_indices": section_indices,
+        "goal_ng_plus_fragment_gate_percent": goal_gate_percent,
+        "effective_goal_ng_plus_fragment_gate_percent": effective_goal_gate_percent,
+        "effective_goal_ng_plus_fragment_gate_fragments": effective_goal_gate_fragments,
+    }
 
 
 def clear_location_id(index: int) -> int:

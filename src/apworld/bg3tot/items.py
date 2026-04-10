@@ -3,23 +3,25 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from BaseClasses import Item, ItemClassification
+from Options import OptionError
 
 if TYPE_CHECKING:
     from .world import BG3World
 
 from .equipment import EQUIPMENT
 from .trials_data import (
+    SHOP_FRAGMENT_ITEM_NAME,
+    build_shop_layout,
     UNLOCK_CATALOG,
     UNLOCK_CLASSIFICATION_BY_ID,
     UNLOCK_NAME_BY_ID,
-    selected_shop_unlock_ids,
 )
 
 
 DUPLICATE_ITEM_FILLERS = [
-    ["Potion of Healing", "d47006e9-8a51-453d-b200-9e0d42e9bbab"],
-    ["Supply Pack", "a24a2ca2-a213-424c-833d-47c79934c0ce"],
-    ["Lockpick", "e32a200c-5b63-414d-ae57-00e7b38f125b"],
+    #["Potion of Healing", "d47006e9-8a51-453d-b200-9e0d42e9bbab"],
+    #["Supply Pack", "a24a2ca2-a213-424c-833d-47c79934c0ce"],
+    #["Lockpick", "e32a200c-5b63-414d-ae57-00e7b38f125b"],
 ]
 
 CUSTOM_FILLERS = [
@@ -134,6 +136,7 @@ FILLER_ITEM_NAMES = BASE_FILLER_ITEM_NAMES + EQUIPMENT_FILLER_ITEM_NAMES
 ITEM_NAME_GROUPS = {
     "Unlocks": UNLOCK_ITEM_NAMES,
     "Progression Unlocks": PROGRESSION_UNLOCK_ITEM_NAMES,
+    "Shop Progression": {SHOP_FRAGMENT_ITEM_NAME},
     "Useful Unlocks": USEFUL_UNLOCK_ITEM_NAMES,
     "Filler Unlocks": FILLER_UNLOCK_ITEM_NAMES,
     "Fillers": set(FILLER_ITEM_NAMES),
@@ -141,6 +144,14 @@ ITEM_NAME_GROUPS = {
 }
 
 ITEM_TUPLES: list[list[str | int | ItemClassification]] = []
+ITEM_TUPLES.append(
+    [
+        SHOP_FRAGMENT_ITEM_NAME,
+        "ToTUnlock:ShopFragment",
+        900,
+        ItemClassification.progression,
+    ]
+)
 for index, unlock in enumerate(UNLOCK_CATALOG, start=1):
     ITEM_TUPLES.append(
         [
@@ -193,16 +204,26 @@ def create_item_with_correct_classification(world: BG3World, name: str) -> BG3It
 
 
 def create_all_items(world: BG3World) -> None:
+    shop_layout = build_shop_layout(
+        int(world.options.shop_check_count),
+        randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+        option_values=world.options,
+    )
     itempool = [
         world.create_item(UNLOCK_ITEM_NAME_BY_ID[unlock_id])
-        for unlock_id in selected_shop_unlock_ids(
-            int(world.options.shop_check_count),
-            randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
-            option_values=world.options,
-        )
+        for unlock_id in shop_layout["unlock_ids"]
     ]
+    itempool.extend(
+        world.create_item(SHOP_FRAGMENT_ITEM_NAME)
+        for _index in range(int(shop_layout["fragment_count"]))
+    )
 
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
+    if len(itempool) > number_of_unfilled_locations:
+        raise OptionError(
+            "This slot generates more local progression items than it has locations available. "
+            "Reduce the Progressive Shop fragment count or add more non-shop checks."
+        )
     needed_number_of_filler_items = max(0, number_of_unfilled_locations - len(itempool))
     itempool.extend(world.create_filler() for _ in range(needed_number_of_filler_items))
 

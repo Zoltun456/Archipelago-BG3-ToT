@@ -333,9 +333,10 @@ class BG3Context(CommonContext):
                 return name_factory(index, total)
         return None
 
-    def _shop_display_sort_key(self, entry: dict[str, Any]) -> tuple[int, str, int, str, int]:
+    def _shop_display_sort_key(self, entry: dict[str, Any]) -> tuple[int, int, str, int, str, int]:
         display = entry.get("display", {})
         return (
+            int(display.get("section_index", 0) or 0),
             0 if entry.get("has_info") else 1,
             str(display.get("player_name", "")).lower(),
             int(entry.get("cost", 0) or 0),
@@ -355,6 +356,8 @@ class BG3Context(CommonContext):
         display_entries: list[dict[str, Any]] = []
         unlock_ids = list(self.slot_data_cache.get("shop_check_unlock_ids", []))
         costs = list(self.slot_data_cache.get("shop_check_costs", []))
+        section_indices = list(self.slot_data_cache.get("shop_section_indices", []))
+        section_names = list(self.slot_data_cache.get("shop_section_names", []))
 
         # Keep the AP token order intact here. The Lua shop UI can sort the visible cards,
         # but the hidden token index still needs to line up with the seed's location ids.
@@ -362,6 +365,8 @@ class BG3Context(CommonContext):
             info = self.locations_info.get(location_id)
             unlock_id = unlock_ids[token_index - 1] if token_index - 1 < len(unlock_ids) else ""
             cost = costs[token_index - 1] if token_index - 1 < len(costs) else 0
+            section_index = section_indices[token_index - 1] if token_index - 1 < len(section_indices) else 0
+            section_name = section_names[token_index - 1] if token_index - 1 < len(section_names) else ""
             if not info:
                 display_entries.append(
                     {
@@ -369,7 +374,11 @@ class BG3Context(CommonContext):
                         "location_id": location_id,
                         "unlock_id": unlock_id,
                         "cost": cost,
-                        "display": {},
+                        "display": {
+                            "token_index": token_index,
+                            "section_index": int(section_index or 0),
+                            "section_name": str(section_name or ""),
+                        },
                         "has_info": False,
                     }
                 )
@@ -394,6 +403,8 @@ class BG3Context(CommonContext):
                     "has_info": True,
                     "display": {
                         "token_index": token_index,
+                        "section_index": int(section_index or 0),
+                        "section_name": str(section_name or ""),
                         "item_name": item_name,
                         "player_name": player_name,
                         "is_local_item": is_local_item,

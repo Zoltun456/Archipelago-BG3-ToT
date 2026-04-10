@@ -22,15 +22,23 @@ local GOAL_REACH_ROGUESCORE = 2
 local DEATHLINK_TRIGGER_FULL_PARTY_WIPE = 0
 local DEATHLINK_TRIGGER_ANY_PARTY_KILL = 1
 local DEATHLINK_TRIGGER_ANY_PARTY_DOWNED = 2
+local DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS = 0
+local DEATHLINK_PUNISHMENT_DOWN_RANDOM_PARTY_MEMBER = 1
+local DEATHLINK_PUNISHMENT_KILL_RANDOM_PARTY_MEMBER = 2
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL_PARTY_MEMBERS = 3
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ONE_PARTY_MEMBER = 4
+local DEATHLINK_PUNISHMENT_NOTHING = 5
 local PERMANENT_BUFF_TARGET_USER_CHARACTER = 0
 local PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER = 1
 local PERMANENT_BUFF_TARGET_ALL_PARTY_MEMBERS = 2
 local AP_GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local DEFAULT_GOAL_UNLOCK_TEMPLATE_ID = "QUICKSTART"
-local DEFAULT_GOAL_UNLOCK_COST = 2000
+local DEFAULT_GOAL_UNLOCK_COST = 3000
 local AP_NOTIFICATION_DURATION = 6
 local AP_NOTIFICATION_REORDER_GRACE_MS = 2500
 local AP_PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
+local AP_SHOP_SECTION_UNLOCK_PREFIX = "APSHOP::SECTION::"
+local AP_LOCAL_SHOP_SECTION_NAME = "Local Unlocks"
 local PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
 
 Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat or {
@@ -40,6 +48,7 @@ Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.
     received_items = {},
     granted_unlocks = {},
     shop_unlocks = {},
+    shop_fragments_received = 0,
     progressive_tadpole_unlock_entry = "",
     goal_completed = false,
     deathlink_out_counter = 0,
@@ -702,6 +711,7 @@ local function get_state()
     state.kills = tonumber(state.kills or 0)
     state.deathlink_out_counter = tonumber(state.deathlink_out_counter or 0)
     state.deathlink_suppress_local = state.deathlink_suppress_local == true
+    state.shop_fragments_received = tonumber(state.shop_fragments_received or 0) or 0
     state.seed_name = tostring(state.seed_name or "")
     return state
 end
@@ -716,12 +726,25 @@ local function get_options()
     options.shop_check_unlock_ids = options.shop_check_unlock_ids or {}
     options.shop_check_costs = options.shop_check_costs or {}
     options.shop_display = options.shop_display or {}
+    options.shop_section_indices = options.shop_section_indices or {}
+    options.shop_section_names = options.shop_section_names or {}
     options.active_connection = options.active_connection == true
+    options.progressive_shop = options.progressive_shop == true or tonumber(options.progressive_shop or 0) == 1
+    options.progressive_shop_unlock_rate = tonumber(options.progressive_shop_unlock_rate or 0) or 0
+    options.shop_fragment_count = tonumber(options.shop_fragment_count or 0) or 0
     options.death_link = options.death_link == true or tonumber(options.death_link or 0) == 1
     options.death_link_trigger = tonumber(options.death_link_trigger or DEATHLINK_TRIGGER_FULL_PARTY_WIPE)
+    options.death_link_punishment =
+        tonumber(options.death_link_punishment or DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS)
+            or DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS
     options.goal = tonumber(options.goal or GOAL_BUY_NG_PLUS)
     options.goal_clear_target = tonumber(options.goal_clear_target or 0)
     options.goal_rogue_score_target = tonumber(options.goal_rogue_score_target or 0)
+    options.goal_ng_plus_fragment_gate_percent = tonumber(options.goal_ng_plus_fragment_gate_percent or 0) or 0
+    options.effective_goal_ng_plus_fragment_gate_percent =
+        tonumber(options.effective_goal_ng_plus_fragment_gate_percent or 0) or 0
+    options.effective_goal_ng_plus_fragment_gate_fragments =
+        tonumber(options.effective_goal_ng_plus_fragment_gate_fragments or 0) or 0
     options.vanilla_pixie_blessing_in_shop = options.vanilla_pixie_blessing_in_shop == true
         or tonumber(options.vanilla_pixie_blessing_in_shop or 0) == 1
     options.permanent_buff_target = tonumber(options.permanent_buff_target or PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER)
@@ -747,6 +770,7 @@ local function is_ap_runtime_unlock_id(unlock_id)
     unlock_id = tostring(unlock_id or "")
     return unlock_id == AP_GOAL_UNLOCK_ID
         or unlock_id == AP_PIXIE_BLESSING_UNLOCK_ID
+        or string.match(unlock_id, "^APSHOP::SECTION::") ~= nil
         or string.match(unlock_id, "^APCHECK::") ~= nil
 end
 
@@ -786,6 +810,7 @@ local function refresh_seed_state()
     state.received_items = {}
     state.granted_unlocks = {}
     state.shop_unlocks = {}
+    state.shop_fragments_received = 0
     state.progressive_tadpole_unlock_entry = ""
     state.goal_completed = false
     state.deathlink_out_counter = 0
@@ -860,6 +885,32 @@ local function find_unlock_by_id(unlock_id, unlocks)
             return unlock
         end
     end
+end
+
+
+local function shop_section_unlock_id(section_index)
+    return string.format("%s%03d", AP_SHOP_SECTION_UNLOCK_PREFIX, tonumber(section_index or 0) or 0)
+end
+
+
+local function shop_section_name(section_index, section_count)
+    return string.format("Shop Fragment %d/%d", tonumber(section_index or 0) or 0, tonumber(section_count or 0) or 0)
+end
+
+
+local function current_shop_fragments_received()
+    refresh_seed_state()
+    local state = get_state()
+    local options = get_options()
+    local max_fragments = tonumber(options.shop_fragment_count or 0) or 0
+    local received = tonumber(state.shop_fragments_received or 0) or 0
+    if max_fragments > 0 then
+        received = math.max(0, math.min(received, max_fragments))
+    else
+        received = 0
+    end
+    state.shop_fragments_received = received
+    return received
 end
 
 
@@ -1006,25 +1057,329 @@ local function maybe_queue_party_wipe_deathlink()
 end
 
 
-local function kill_party_for_deathlink(event)
-    local state = get_state()
-    state.deathlink_suppress_local = true
-
-    local source = tostring(event and event.source or "")
-    local party_members = get_active_party_members()
-    for _, character in ipairs(party_members) do
-        if Osi.IsDead(character) ~= 1 then
-            Osi.Die(character, 0, C.NullGuid, 0, 0)
+local function get_deathlink_wipe_targets()
+    if trap_rewards and type(trap_rewards.collect_targets) == "function" then
+        local ok, targets = pcall(trap_rewards.collect_targets, nil, {
+            get_active_party_members = get_active_party_members,
+        })
+        if ok and type(targets) == "table" and #targets > 0 then
+            return targets
+        end
+        if not ok then
+            L.Error("ArchipelagoTrialsCompat/DeathLinkTargets", targets)
         end
     end
 
-    runtime.deathlink_party_wipe_active = true
+    return get_active_party_members()
+end
 
-    if source ~= "" then
-        Player.Notify(__("DeathLink received from %s. Reload your latest save.", source), true)
-    else
-        Player.Notify(__("DeathLink received. Reload your latest save."), true)
+
+local function entity_handle_uuid(entity_handle)
+    if not Ext or not Ext.Entity or entity_handle == nil then
+        return ""
     end
+
+    local entity = Ext.Entity.Get(entity_handle)
+    if not entity or not entity.Uuid or not entity.Uuid.EntityUuid then
+        return ""
+    end
+
+    return tostring(entity.Uuid.EntityUuid or "")
+end
+
+
+local function append_unique_deathlink_target(targets, seen, character)
+    character = tostring(character or "")
+    if character == "" or seen[character] then
+        return
+    end
+    if Osi.IsCharacter(character) ~= 1 then
+        return
+    end
+    if Osi.CanJoinCombat(character) ~= 1 then
+        return
+    end
+
+    seen[character] = true
+    table.insert(targets, character)
+end
+
+
+local function get_deathlink_party_targets()
+    local targets = {}
+    local seen = {}
+    local owner_lookup = {}
+
+    for _, character in ipairs(get_active_party_members()) do
+        append_unique_deathlink_target(targets, seen, character)
+        owner_lookup[character] = true
+    end
+
+    if Ext and Ext.Entity then
+        for _, follower_handle in ipairs(Ext.Entity.GetAllEntitiesWithComponent("PartyFollower") or {}) do
+            local follower_entity = Ext.Entity.Get(follower_handle)
+            local party_follower = follower_entity and follower_entity.PartyFollower
+            local followed_uuid = entity_handle_uuid(party_follower and party_follower.Following)
+            if followed_uuid ~= "" and owner_lookup[followed_uuid] then
+                append_unique_deathlink_target(targets, seen, entity_handle_uuid(follower_handle))
+            end
+        end
+    end
+
+    return targets
+end
+
+
+local function deathlink_notify(event, text)
+    local source = tostring(event and event.source or "")
+    if source ~= "" then
+        Player.Notify(__("DeathLink received from %s. %s", source, tostring(text or "")), true)
+    else
+        Player.Notify(__("DeathLink received. %s", tostring(text or "")), true)
+    end
+end
+
+
+local function deathlink_character_name(character)
+    if type(Player) == "table" and type(Player.DisplayName) == "function" then
+        local ok, name = pcall(Player.DisplayName, character)
+        if ok and type(name) == "string" and name ~= "" then
+            return name
+        end
+    end
+
+    return __("A party member")
+end
+
+
+local function temporarily_suppress_outgoing_deathlink(reset_delay_ms)
+    local state = get_state()
+    state.deathlink_suppress_local = true
+    Defer(tonumber(reset_delay_ms or 1500) or 1500, function()
+        local refreshed_state = get_state()
+        refreshed_state.deathlink_suppress_local = false
+        update_party_wipe_state()
+    end)
+end
+
+
+local function choose_random_character(characters)
+    if type(characters) ~= "table" or #characters == 0 then
+        return ""
+    end
+
+    return tostring(characters[math.random(#characters)] or "")
+end
+
+
+local function filter_deathlink_targets(characters, predicate)
+    local filtered = {}
+    for _, character in ipairs(characters or {}) do
+        if predicate(character) then
+            table.insert(filtered, character)
+        end
+    end
+    return filtered
+end
+
+
+local function kill_character_for_deathlink(character)
+    character = tostring(character or "")
+    if character == "" or Osi.IsDead(character) == 1 then
+        return false
+    end
+
+    Osi.Die(character, 0, C.NullGuid, 0, 0)
+    return true
+end
+
+
+local function down_character_for_deathlink(character)
+    character = tostring(character or "")
+    if character == "" or Osi.IsDead(character) == 1 or is_character_downed(character) then
+        return false
+    end
+
+    local entity = Ext.Entity.Get(character)
+    if entity and entity.Health then
+        entity.Health.Hp = 0
+        entity:Replicate("Health")
+    end
+
+    pcall(function()
+        Osi.ApplyStatus(character, "DOWNED", -1, 1)
+    end)
+
+    if not is_character_downed(character) and Osi.SetHitpointsPercentage then
+        pcall(function()
+            Osi.SetHitpointsPercentage(character, 0)
+        end)
+    end
+
+    return is_character_downed(character) or Osi.IsDead(character) == 1
+end
+
+
+local function clear_character_action_resources(character)
+    character = tostring(character or "")
+    if character == "" or Osi.IsCharacter(character) ~= 1 or Osi.IsDead(character) == 1 then
+        return false
+    end
+
+    local entity = Ext.Entity.Get(character)
+    local action_resources = entity and entity.ActionResources
+    local resources = action_resources and action_resources.Resources
+    if not resources then
+        return false
+    end
+
+    local changed = false
+    for _resource_uuid, list in pairs(resources) do
+        for _, resource in pairs(list or {}) do
+            local amount = tonumber(resource and resource.Amount or 0) or 0
+            if amount ~= 0 then
+                resource.Amount = 0
+                changed = true
+            end
+        end
+    end
+
+    if changed then
+        entity:Replicate("ActionResources")
+    end
+
+    return changed
+end
+
+
+local function character_mental_score(character)
+    local entity = Ext.Entity.Get(character)
+    local abilities = entity and entity.Stats and entity.Stats.Abilities
+    if not abilities then
+        return -math.huge
+    end
+
+    return (tonumber(abilities[5] or 0) or 0)
+        + (tonumber(abilities[6] or 0) or 0)
+        + (tonumber(abilities[7] or 0) or 0)
+end
+
+
+local function choose_highest_mental_character(characters)
+    local selected = ""
+    local best_score = -math.huge
+    for _, character in ipairs(characters or {}) do
+        local score = character_mental_score(character)
+        if selected == "" or score > best_score then
+            best_score = score
+            selected = character
+        end
+    end
+
+    return tostring(selected or "")
+end
+
+
+local function apply_deathlink_punishment(event)
+    local options = get_options()
+    local punishment = tonumber(options.death_link_punishment or DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS)
+        or DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS
+
+    if punishment == DEATHLINK_PUNISHMENT_NOTHING then
+        deathlink_notify(event, "No punishment was applied.")
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS then
+        local state = get_state()
+        state.deathlink_suppress_local = true
+
+        local wipe_targets = get_deathlink_wipe_targets()
+        for _, character in ipairs(wipe_targets) do
+            kill_character_for_deathlink(character)
+        end
+
+        runtime.deathlink_party_wipe_active = true
+        deathlink_notify(event, "Reload your latest save.")
+        return
+    end
+
+    local party_targets = get_deathlink_party_targets()
+    if punishment == DEATHLINK_PUNISHMENT_DOWN_RANDOM_PARTY_MEMBER then
+        local eligible_targets = filter_deathlink_targets(party_targets, function(character)
+            return Osi.IsDead(character) ~= 1 and not is_character_downed(character)
+        end)
+        local target = choose_random_character(eligible_targets)
+        if target == "" then
+            deathlink_notify(event, "No valid party member could be downed.")
+            return
+        end
+
+        temporarily_suppress_outgoing_deathlink(1500)
+        if down_character_for_deathlink(target) then
+            deathlink_notify(event, __("%s was downed.", deathlink_character_name(target)))
+        else
+            deathlink_notify(event, "No valid party member could be downed.")
+        end
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_KILL_RANDOM_PARTY_MEMBER then
+        local eligible_targets = filter_deathlink_targets(party_targets, function(character)
+            return Osi.IsDead(character) ~= 1
+        end)
+        local target = choose_random_character(eligible_targets)
+        if target == "" then
+            deathlink_notify(event, "No valid party member could be killed.")
+            return
+        end
+
+        temporarily_suppress_outgoing_deathlink(1500)
+        if kill_character_for_deathlink(target) then
+            deathlink_notify(event, __("%s was killed.", deathlink_character_name(target)))
+        else
+            deathlink_notify(event, "No valid party member could be killed.")
+        end
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL_PARTY_MEMBERS then
+        local drained_any = false
+        for _, character in ipairs(filter_deathlink_targets(party_targets, function(target)
+            return Osi.IsDead(target) ~= 1
+        end)) do
+            if clear_character_action_resources(character) then
+                drained_any = true
+            end
+        end
+
+        if drained_any then
+            deathlink_notify(event, "All party resources were drained.")
+        else
+            deathlink_notify(event, "No party resources could be drained.")
+        end
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ONE_PARTY_MEMBER then
+        local eligible_targets = filter_deathlink_targets(party_targets, function(character)
+            return Osi.IsDead(character) ~= 1
+        end)
+        local target = choose_highest_mental_character(eligible_targets)
+        if target == "" then
+            deathlink_notify(event, "No valid party member could be drained.")
+            return
+        end
+
+        if clear_character_action_resources(target) then
+            deathlink_notify(event, __("%s's resources were drained.", deathlink_character_name(target)))
+        else
+            deathlink_notify(event, "No party resources could be drained.")
+        end
+        return
+    end
+
+    deathlink_notify(event, "No punishment was applied.")
 end
 
 
@@ -1039,7 +1394,7 @@ local function process_incoming_deathlinks()
         return
     end
 
-    kill_party_for_deathlink(queue[#queue])
+    apply_deathlink_punishment(queue[#queue])
     save_json_array(AP_DEATHLINK_IN_FILE, {})
 end
 
@@ -1545,6 +1900,27 @@ local function grant_progressive_tadpole_reward(entry, preferred_character)
 end
 
 
+local function grant_shop_fragment_reward()
+    local options = get_options()
+    local max_fragments = tonumber(options.shop_fragment_count or 0) or 0
+    if max_fragments <= 0 then
+        return true
+    end
+
+    refresh_seed_state()
+    local state = get_state()
+    local received = tonumber(state.shop_fragments_received or 0) or 0
+    if received >= max_fragments then
+        return true
+    end
+
+    state.shop_fragments_received = received + 1
+    Unlock.Sync()
+    write_shop_debug_snapshot("grant_shop_fragment_reward", Unlock.Get())
+    return true
+end
+
+
 -- This used to be split across the old Archipelago mod and the separate ToT bridge.
 -- Now it is the single inbox processor for Trials rewards, filler payouts, and the "replay after reload" safety net.
 local function process_trials_inbox(preferred_character)
@@ -1570,6 +1946,8 @@ local function process_trials_inbox(preferred_character)
                             and not unlock_requires_regrant_on_replay(unlock_id)
                         then
                             granted = true
+                        elseif unlock_id == "ShopFragment" then
+                            granted = state.received_items[entry] == true or grant_shop_fragment_reward()
                         elseif unlock_id == "Tadpole" and grant_progressive_tadpole_reward(entry, preferred_character) then
                             granted = true
                         elseif grant_unlock_reward(unlock_id, preferred_character) then
@@ -1689,12 +2067,20 @@ end
 local function build_refresh_signature(options)
     return Ext.Json.Stringify({
         active_connection = options.active_connection == true,
+        progressive_shop = options.progressive_shop == true,
+        progressive_shop_unlock_rate = options.progressive_shop_unlock_rate or 0,
+        shop_fragment_count = options.shop_fragment_count or 0,
+        goal_ng_plus_fragment_gate_percent = options.goal_ng_plus_fragment_gate_percent or 0,
+        effective_goal_ng_plus_fragment_gate_percent = options.effective_goal_ng_plus_fragment_gate_percent or 0,
+        effective_goal_ng_plus_fragment_gate_fragments = options.effective_goal_ng_plus_fragment_gate_fragments or 0,
         goal_unlock_id = options.goal_unlock_id or "",
         goal_unlock_template_id = options.goal_unlock_template_id or "",
         goal_unlock_cost = options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST,
         vanilla_pixie_blessing_in_shop = options.vanilla_pixie_blessing_in_shop == true,
         shop_check_unlock_ids = options.shop_check_unlock_ids or {},
         shop_check_costs = options.shop_check_costs or {},
+        shop_section_indices = options.shop_section_indices or {},
+        shop_section_names = options.shop_section_names or {},
         shop_display = options.shop_display or {},
     })
 end
@@ -1712,9 +2098,33 @@ local function sync_connection_state(force)
 end
 
 
+local function make_shop_section_unlock(section_index, options)
+    local total_sections = tonumber(options.shop_fragment_count or 0) or 0
+    local unlocked_sections = current_shop_fragments_received()
+    return {
+        Id = shop_section_unlock_id(section_index),
+        Name = shop_section_name(section_index, total_sections),
+        Icon = "ap_trials_icon_color_001",
+        Cost = 0,
+        Amount = 1,
+        Character = false,
+        Persistent = false,
+        Requirement = nil,
+        Bought = unlocked_sections >= section_index and 1 or 0,
+        BoughtBy = {},
+        HideStock = true,
+        OnInit = function() end,
+        OnReapply = function() end,
+        OnBuy = function() end,
+    }
+end
+
+
 local function make_shop_check_unlock(template, index, options)
     local shop_preview = table_get(options.shop_display, index, {})
     local token_index = tonumber(table_get(shop_preview, "token_index", index)) or index
+    local section_index = tonumber(table_get(shop_preview, "section_index", 0)) or 0
+    local section_name = tostring(table_get(shop_preview, "section_name", ""))
     local unlock = shallow_copy(template)
     unlock.Id = shop_check_id(template.Id, token_index)
     unlock.Name = table_get(shop_preview, "display_name", "AP Check: " .. tostring(template.Name or template.Id))
@@ -1747,6 +2157,12 @@ local function make_shop_check_unlock(template, index, options)
     unlock.BoughtBy = shallow_copy(saved_record.BoughtBy or {})
     unlock.HideStock = true
     unlock.Requirement = nil
+    if options.progressive_shop == true and section_index > 0 then
+        unlock.Requirement = shop_section_unlock_id(section_index)
+    end
+    unlock.SectionName = section_name
+    unlock.SortSectionIndex = section_index
+    unlock.SortSectionOrder = 0
     unlock.SortPlayerName = tostring(table_get(shop_preview, "player_name", ""))
     unlock.SortPrice = tonumber(unlock.Cost or 0) or 0
     unlock.SortItemName = tostring(table_get(shop_preview, "item_name", unlock.Name or ""))
@@ -1775,8 +2191,16 @@ local function make_goal_unlock(template, options)
     unlock.Persistent = false
     unlock.Bought = 0
     unlock.BoughtBy = {}
+    unlock.RequiredShopFragments = tonumber(options.effective_goal_ng_plus_fragment_gate_fragments or 0) or 0
+    unlock.TotalShopFragments = tonumber(options.shop_fragment_count or 0) or 0
     unlock.Requirement = nil
+    if unlock.RequiredShopFragments > 0 then
+        unlock.Requirement = shop_section_unlock_id(unlock.RequiredShopFragments)
+    end
     unlock.HideStock = true
+    unlock.SectionName = AP_LOCAL_SHOP_SECTION_NAME
+    unlock.SortSectionIndex = 0
+    unlock.SortSectionOrder = 0
     local original_on_buy = unlock.OnBuy
     unlock.OnBuy = function(self, character)
         if original_on_buy then
@@ -1796,6 +2220,9 @@ local function make_pixie_blessing_unlock(template)
     unlock.Requirement = nil
     unlock.HideStock = true
     unlock.Icon = tostring(unlock.Icon or "statIcons_Moonshield")
+    unlock.SectionName = AP_LOCAL_SHOP_SECTION_NAME
+    unlock.SortSectionIndex = 0
+    unlock.SortSectionOrder = 1
     return unlock
 end
 
@@ -1820,6 +2247,12 @@ local function register_shop_patch()
             local pixie_blessing_template = runtime.original_templates_by_id[PIXIE_BLESSING_UNLOCK_ID]
             if pixie_blessing_template then
                 table.insert(transformed, make_pixie_blessing_unlock(pixie_blessing_template))
+            end
+        end
+
+        if options.progressive_shop == true and tonumber(options.shop_fragment_count or 0) > 0 then
+            for section_index = 1, tonumber(options.shop_fragment_count or 0) or 0 do
+                table.insert(transformed, make_shop_section_unlock(section_index, options))
             end
         end
 

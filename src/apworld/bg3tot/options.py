@@ -5,12 +5,15 @@ from dataclasses import make_dataclass
 from Options import Choice, DeathLink, OptionGroup, OptionSet, PerGameCommonOptions, Range, Toggle
 
 from .trials_data import (
+    DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE,
+    GOAL_NG_PLUS_FRAGMENT_GATE_PERCENTS,
     MAX_CLEAR_CHECKS,
     MAX_CONFIGURABLE_UNLOCK_COPIES,
     MAX_KILL_CHECKS,
     MAX_PERFECT_CHECKS,
     MAX_ROGUESCORE_CHECKS,
     MAX_SHOP_CHECKS,
+    PROGRESSIVE_SHOP_UNLOCK_RATES,
     UNLOCK_CATALOG,
     unlock_copies_option_name,
 )
@@ -131,6 +134,41 @@ class GoalRogueScoreTarget(Range):
     default = 300
 
 
+class GoalNgPlusFragmentGatePercent(Choice):
+    """
+    How much of the Progressive Shop must be unlocked before `NG+` appears in the shop.
+
+    If Progressive Shop is disabled, this gate is ignored and `NG+` appears normally.
+    """
+
+    display_name = "NG+ Fragment Gate"
+
+    option_percent_0 = 0
+    option_percent_25 = 25
+    option_percent_50 = 50
+    option_percent_75 = 75
+    option_percent_100 = 100
+
+    default = 0
+
+    @classmethod
+    def get_option_name(cls, value: int) -> str:
+        if int(value) in GOAL_NG_PLUS_FRAGMENT_GATE_PERCENTS:
+            return f"{int(value)}%"
+        return super().get_option_name(value)
+
+
+class GoalNgPlusPrice(Range):
+    """
+    Local shop price for `NG+`.
+    """
+
+    display_name = "NG+ Price"
+    range_start = 1000
+    range_end = 10000
+    default = 3000
+
+
 class ClearCheckCount(Range):
     """
     How many Archipelago checks can be earned from successful scenario clears.
@@ -236,6 +274,44 @@ class ShopCheckCount(Range):
     default = min(50, MAX_SHOP_CHECKS)
 
 
+class ProgressiveShop(Toggle):
+    """
+    Locks randomized AP shop checks behind progressive ``Shop Fragment`` items.
+
+    Each received Shop Fragment unlocks the next visible section of the tav shop until the
+    whole randomized shop is available.
+    """
+
+    display_name = "Progressive Shop"
+    default = 1
+
+
+class ProgressiveShopUnlockRate(Choice):
+    """
+    How much of the randomized AP shop each received Shop Fragment unlocks.
+
+    Lower values create more Shop Fragments and finer-grained shop progression.
+    This option only affects generation when Progressive Shop is enabled.
+    """
+
+    display_name = "Progressive Shop Unlock Rate"
+
+    option_percent_5 = 5
+    option_percent_10 = 10
+    option_percent_20 = 20
+    option_percent_25 = 25
+    option_percent_50 = 50
+    option_percent_100 = 100
+
+    default = DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE
+
+    @classmethod
+    def get_option_name(cls, value: int) -> str:
+        if int(value) in PROGRESSIVE_SHOP_UNLOCK_RATES:
+            return f"{int(value)}%"
+        return super().get_option_name(value)
+
+
 class ShopPriceMinimum(Range):
     """
     Minimum seeded random price for AP shop entries.
@@ -310,6 +386,31 @@ class DeathLinkTrigger(Choice):
     default = option_full_party_wipe
 
 
+class DeathLinkPunishment(Choice):
+    """
+    Chooses what happens locally when this slot receives a DeathLink.
+
+    Kill All Party Members: Wipes the active party, companions, and summons to force a reload.
+    Down Random Party Member: Downs one random active party member or companion.
+    Kill Random Party Member: Fully kills one random active party member or companion.
+    Remove All Resources From All Party Members: Drains action resources from the whole active party and companions.
+    Remove All Resources From One Party Member: Drains action resources from the active party or companion
+    with the highest combined Intelligence, Wisdom, and Charisma.
+    Nothing: Receives the DeathLink notification but applies no local punishment.
+    """
+
+    display_name = "DeathLink Punishment"
+
+    option_kill_all_party_members = 0
+    option_down_random_party_member = 1
+    option_kill_random_party_member = 2
+    option_remove_all_resources_all_party_members = 3
+    option_remove_all_resources_one_party_member = 4
+    option_nothing = 5
+
+    default = option_kill_all_party_members
+
+
 class TrapsPercentage(Range):
     """
     Percent chance that filler slots become traps instead of helpful filler rewards.
@@ -354,11 +455,14 @@ bg3_option_groups = [
     OptionGroup("Game Options", [
         DeathLink,
         DeathLinkTrigger,
+        DeathLinkPunishment,
     ]),
     OptionGroup("Goals", [
         Goal,
         GoalClearTarget,
         GoalRogueScoreTarget,
+        GoalNgPlusFragmentGatePercent,
+        GoalNgPlusPrice,
     ]),
     OptionGroup("Check Thresholds", [
         ClearCheckCount,
@@ -371,6 +475,8 @@ bg3_option_groups = [
         RogueScoreCheckInterval,
     ]),
     OptionGroup("Shop", [
+        ProgressiveShop,
+        ProgressiveShopUnlockRate,
         ShopCheckCount,
         ShopPriceMinimum,
         ShopPriceMaximum,
@@ -400,9 +506,12 @@ BG3_OPTION_PRESETS = {
     "Release Defaults": _preset_with_unlock_defaults({
         "death_link": False,
         "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
+        "death_link_punishment": DeathLinkPunishment.option_kill_all_party_members,
         "goal": Goal.option_clear_stages,
         "goal_clear_target": 20,
         "goal_rogue_score_target": 300,
+        "goal_ng_plus_fragment_gate_percent": 0,
+        "goal_ng_plus_price": 3000,
         "clear_check_count": 10,
         "clear_check_interval": 1,
         "kill_check_count": 10,
@@ -411,6 +520,8 @@ BG3_OPTION_PRESETS = {
         "perfect_check_interval": 1,
         "roguescore_check_count": 10,
         "roguescore_check_interval": 25,
+        "progressive_shop": True,
+        "progressive_shop_unlock_rate": DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE,
         "shop_check_count": 50,
         "shop_price_minimum": 50,
         "shop_price_maximum": 300,
@@ -422,9 +533,12 @@ BG3_OPTION_PRESETS = {
     "Quick Trial": _preset_with_unlock_defaults({
         "death_link": False,
         "death_link_trigger": DeathLinkTrigger.option_full_party_wipe,
+        "death_link_punishment": DeathLinkPunishment.option_kill_all_party_members,
         "goal": Goal.option_clear_stages,
         "goal_clear_target": 10,
         "goal_rogue_score_target": 150,
+        "goal_ng_plus_fragment_gate_percent": 0,
+        "goal_ng_plus_price": 3000,
         "clear_check_count": 6,
         "clear_check_interval": 1,
         "kill_check_count": 6,
@@ -433,6 +547,8 @@ BG3_OPTION_PRESETS = {
         "perfect_check_interval": 1,
         "roguescore_check_count": 4,
         "roguescore_check_interval": 50,
+        "progressive_shop": True,
+        "progressive_shop_unlock_rate": DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE,
         "shop_check_count": 25,
         "shop_price_minimum": 30,
         "shop_price_maximum": 150,
@@ -447,9 +563,12 @@ BG3_OPTION_PRESETS = {
 BG3_OPTION_FIELDS: dict[str, type] = {
     "death_link": DeathLink,
     "death_link_trigger": DeathLinkTrigger,
+    "death_link_punishment": DeathLinkPunishment,
     "goal": Goal,
     "goal_clear_target": GoalClearTarget,
     "goal_rogue_score_target": GoalRogueScoreTarget,
+    "goal_ng_plus_fragment_gate_percent": GoalNgPlusFragmentGatePercent,
+    "goal_ng_plus_price": GoalNgPlusPrice,
     "clear_check_count": ClearCheckCount,
     "clear_check_interval": ClearCheckInterval,
     "kill_check_count": KillCheckCount,
@@ -458,6 +577,8 @@ BG3_OPTION_FIELDS: dict[str, type] = {
     "perfect_check_interval": PerfectCheckInterval,
     "roguescore_check_count": RogueScoreCheckCount,
     "roguescore_check_interval": RogueScoreCheckInterval,
+    "progressive_shop": ProgressiveShop,
+    "progressive_shop_unlock_rate": ProgressiveShopUnlockRate,
     "shop_check_count": ShopCheckCount,
     "shop_price_minimum": ShopPriceMinimum,
     "shop_price_maximum": ShopPriceMaximum,

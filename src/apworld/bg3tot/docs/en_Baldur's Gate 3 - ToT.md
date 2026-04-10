@@ -41,15 +41,17 @@ Most traps affect the full party, companions, and summons.
 
 - This is a Trials of Tav focused world, not the standard Baldur's Gate 3 campaign Archipelago experience.
 - You need the packaged BG3 mod alongside the AP world for checks, items, and notifications to function.
-- DeathLink is optional and can be configured to send on full wipes, any party death, or any party down.
+- DeathLink is optional and can be configured to send on full wipes, any party death, or any party down. Received DeathLinks then apply the chosen punishment, with the default still wiping the active party, companions, and summons.
+- Progressive Shop is on by default. `Shop Fragment` progression items unlock the randomized AP shop in visible sections.
+- `NG+` can be hidden until a chosen percentage of Shop Fragments has been collected, and its local shop price is configurable.
 - Pixie Blessing can optionally stay as the vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
 - Character-bound useful AP unlocks can be aimed at the receiving player, a random party member, or the whole party.
   Progression rewards keep their whole-party or global behavior, and the Roll Loot rewards ignore that option.
 
 ## What can appear in other players' worlds?
 
-Trials unlocks, duplicated consumables, equipment fillers, currency-style fillers, RogueScore fillers, XP fillers,
-and trap items can all be part of the Archipelago item pool.
+Trials unlocks, `Shop Fragment` progression items, duplicated consumables, equipment fillers, currency-style fillers,
+RogueScore fillers, XP fillers, and trap items can all be part of the Archipelago item pool.
 
 ## Is there anything else I should know?
 

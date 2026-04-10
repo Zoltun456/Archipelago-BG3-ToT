@@ -249,9 +249,12 @@ game: {sample['game']}
 {sample['game']}:
   death_link: {str(bool(sample.get('death_link', False))).lower()}
   death_link_trigger: {sample.get('death_link_trigger', 'full_party_wipe')}
+  death_link_punishment: {sample.get('death_link_punishment', 'kill_all_party_members')}
   goal: {sample['goal']}
   goal_clear_target: {sample['goal_clear_target']}
   goal_rogue_score_target: {sample['goal_rogue_score_target']}
+  goal_ng_plus_fragment_gate_percent: {sample.get('goal_ng_plus_fragment_gate_percent', 0)}
+  goal_ng_plus_price: {sample.get('goal_ng_plus_price', 3000)}
   clear_check_count: {sample['clear_check_count']}
   clear_check_interval: {sample['clear_check_interval']}
   kill_check_count: {sample['kill_check_count']}
@@ -260,6 +263,8 @@ game: {sample['game']}
   perfect_check_interval: {sample['perfect_check_interval']}
   roguescore_check_count: {sample['roguescore_check_count']}
   roguescore_check_interval: {sample['roguescore_check_interval']}
+  progressive_shop: {str(bool(sample.get('progressive_shop', True))).lower()}
+  progressive_shop_unlock_rate: {sample.get('progressive_shop_unlock_rate', 10)}
   shop_check_count: {sample['shop_check_count']}
   shop_price_minimum: {sample['shop_price_minimum']}
   shop_price_maximum: {sample['shop_price_maximum']}
