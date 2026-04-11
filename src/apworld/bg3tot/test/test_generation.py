@@ -1,4 +1,5 @@
 from .bases import BG3TrialsTestBase
+from BaseClasses import LocationProgressType
 from ..options import BG3Options, PermanentBuffTarget
 from ..trials_data import (
     PIXIE_BLESSING_UNLOCK_ID,
@@ -9,6 +10,7 @@ from ..trials_data import (
     MAX_CONFIGURABLE_UNLOCK_COPIES,
     build_shop_layout,
     selected_shop_unlock_ids,
+    shop_location_name,
     unlock_copies_option_name,
 )
 
@@ -98,10 +100,36 @@ class TestPermanentBuffTargetGeneration(BG3TrialsTestBase):
 class TestDeathLinkPunishmentGeneration(BG3TrialsTestBase):
     options = {
         "death_link": True,
-        "death_link_punishment": "remove_all_resources_one_party_member",
+        "death_link_punishment": "remove_all_resources_random",
     }
 
     def test_slot_data_keeps_selected_deathlink_punishment(self) -> None:
+        slot_data = self.world.fill_slot_data()
+
+        self.assertTrue(slot_data["death_link"])
+        self.assertEqual(slot_data["death_link_punishment"], 4)
+
+
+class TestDeathLinkActionPunishmentGeneration(BG3TrialsTestBase):
+    options = {
+        "death_link": True,
+        "death_link_punishment": "remove_all_actions_random",
+    }
+
+    def test_slot_data_keeps_selected_action_only_punishment(self) -> None:
+        slot_data = self.world.fill_slot_data()
+
+        self.assertTrue(slot_data["death_link"])
+        self.assertEqual(slot_data["death_link_punishment"], 7)
+
+
+class TestDeathLinkPunishmentAliasGeneration(BG3TrialsTestBase):
+    options = {
+        "death_link": True,
+        "death_link_punishment": "remove_all_resources_one_party_member",
+    }
+
+    def test_legacy_resource_drain_name_still_maps_to_random(self) -> None:
         slot_data = self.world.fill_slot_data()
 
         self.assertTrue(slot_data["death_link"])
@@ -178,6 +206,16 @@ class TestProgressiveShopGeneration(BG3TrialsTestBase):
             option_values=self.world.options,
         )
         local_item_names = [item.name for item in self.multiworld.itempool if item.player == self.world.player]
+        expected_priority_locations: set[str] = set()
+        prioritized_per_section: dict[int, int] = {}
+        for index, section_index in enumerate(slot_data["shop_section_indices"], start=1):
+            section_index = int(section_index)
+            if section_index <= 0:
+                continue
+            prioritized_count = prioritized_per_section.get(section_index, 0)
+            if prioritized_count < 2:
+                expected_priority_locations.add(shop_location_name(index))
+                prioritized_per_section[section_index] = prioritized_count + 1
 
         self.assertEqual(slot_data["shop_fragment_count"], 5)
         self.assertEqual(slot_data["shop_fragment_count"], int(shop_layout["fragment_count"]))
@@ -185,6 +223,13 @@ class TestProgressiveShopGeneration(BG3TrialsTestBase):
         self.assertEqual(local_item_names.count(SHOP_FRAGMENT_ITEM_NAME), 5)
         self.assertEqual(min(slot_data["shop_section_indices"]), 1)
         self.assertEqual(max(slot_data["shop_section_indices"]), 5)
+        self.assertEqual(self.multiworld.local_early_items[self.world.player].get(SHOP_FRAGMENT_ITEM_NAME), 1)
+        self.assertEqual(self.multiworld.early_items[self.world.player].get(SHOP_FRAGMENT_ITEM_NAME), 1)
+        for location in self.world.get_locations():
+            if location.name in expected_priority_locations:
+                self.assertEqual(location.progress_type, LocationProgressType.PRIORITY)
+            elif location.name.startswith("Shop Check"):
+                self.assertEqual(location.progress_type, LocationProgressType.DEFAULT)
 
 
 class TestNgPlusGateGeneration(BG3TrialsTestBase):

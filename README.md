@@ -84,6 +84,7 @@ Shop prices are seeded per player and rounded to multiples of `10`.
 `shop_check_count` is a minimum target now: the world will auto-expand the shop list as needed so every configured non-filler unlock copy still enters the randomized item pool.
 Progressive Shop is on by default. It adds progressive `Shop Fragment` items to the multiworld and each fragment unlocks the next section of randomized AP shop checks.
 Lower `progressive_shop_unlock_rate` values create more fragments and finer-grained shop progression.
+The first `Shop Fragment` is forced into BG3's own early checks, and the first two shop checks in each section are treated as priority progression spots.
 `goal_ng_plus_fragment_gate_percent` can hide `NG+` until a chosen percentage of Shop Fragments has been collected, and automatically disables itself when Progressive Shop is off.
 `goal_ng_plus_price` sets the local shop price for `NG+`.
 Pixie Blessing can optionally stay as its vanilla local 30-cost shop unlock instead of being randomized into the AP pool.
@@ -101,11 +102,15 @@ DeathLink is optional and off by default. When enabled, the trigger mode can be 
 - kill all party members
 - down a random party member
 - kill a random party member
-- remove all resources from all party members
-- remove all resources from one party member
+- remove all resources - all
+- remove all resources - random
+- remove all actions - all
+- remove all actions - random
 - nothing
 
 The default punishment still wipes the active party, companions, and summons so the player has to reload.
+The resource-drain punishments remove everything from the target, including spell slots, actions, bonus actions,
+movement, and class charges. The action-only punishments remove only actions, bonus actions, and movement.
 
 ## Validation / Troubleshooting
 

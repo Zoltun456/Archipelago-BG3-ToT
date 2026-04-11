@@ -25,9 +25,11 @@ local DEATHLINK_TRIGGER_ANY_PARTY_DOWNED = 2
 local DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS = 0
 local DEATHLINK_PUNISHMENT_DOWN_RANDOM_PARTY_MEMBER = 1
 local DEATHLINK_PUNISHMENT_KILL_RANDOM_PARTY_MEMBER = 2
-local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL_PARTY_MEMBERS = 3
-local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ONE_PARTY_MEMBER = 4
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL = 3
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_RANDOM = 4
 local DEATHLINK_PUNISHMENT_NOTHING = 5
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_ACTIONS_ALL = 6
+local DEATHLINK_PUNISHMENT_REMOVE_ALL_ACTIONS_RANDOM = 7
 local PERMANENT_BUFF_TARGET_USER_CHARACTER = 0
 local PERMANENT_BUFF_TARGET_RANDOM_PARTY_MEMBER = 1
 local PERMANENT_BUFF_TARGET_ALL_PARTY_MEMBERS = 2
@@ -1220,7 +1222,65 @@ local function down_character_for_deathlink(character)
 end
 
 
-local function clear_character_action_resources(character)
+local function action_resource_static_name(resource)
+    if not Ext or not Ext.StaticData or resource == nil then
+        return ""
+    end
+
+    local resource_uuid = tostring(resource.ResourceUUID or "")
+    if resource_uuid == "" then
+        return ""
+    end
+
+    local ok, definition = pcall(Ext.StaticData.Get, resource_uuid, "ActionResource")
+    if not ok or definition == nil then
+        return ""
+    end
+
+    return tostring(definition.Name or "")
+end
+
+
+local function normalized_action_resource_name(resource)
+    local name = action_resource_static_name(resource)
+    if name == "" then
+        return ""
+    end
+
+    return string.lower((tostring(name):gsub("[%s_%-]", "")))
+end
+
+
+local function should_clear_turn_action_resource(resource)
+    local normalized_name = normalized_action_resource_name(resource)
+    if normalized_name == "" then
+        return false
+    end
+
+    if string.find(normalized_name, "reaction", 1, true) then
+        return false
+    end
+
+    if normalized_name == "actionpoint" then
+        return true
+    end
+    if string.find(normalized_name, "bonusaction", 1, true) then
+        return true
+    end
+    if string.find(normalized_name, "movement", 1, true) then
+        return true
+    end
+    if string.find(normalized_name, "actionpoint", 1, true)
+        and not string.find(normalized_name, "spellslot", 1, true)
+    then
+        return true
+    end
+
+    return false
+end
+
+
+local function clear_character_resources(character, should_clear_resource)
     character = tostring(character or "")
     if character == "" or Osi.IsCharacter(character) ~= 1 or Osi.IsDead(character) == 1 then
         return false
@@ -1236,10 +1296,12 @@ local function clear_character_action_resources(character)
     local changed = false
     for _resource_uuid, list in pairs(resources) do
         for _, resource in pairs(list or {}) do
-            local amount = tonumber(resource and resource.Amount or 0) or 0
-            if amount ~= 0 then
-                resource.Amount = 0
-                changed = true
+            if should_clear_resource == nil or should_clear_resource(resource) then
+                local amount = tonumber(resource and resource.Amount or 0) or 0
+                if amount ~= 0 then
+                    resource.Amount = 0
+                    changed = true
+                end
             end
         end
     end
@@ -1252,31 +1314,24 @@ local function clear_character_action_resources(character)
 end
 
 
-local function character_mental_score(character)
-    local entity = Ext.Entity.Get(character)
-    local abilities = entity and entity.Stats and entity.Stats.Abilities
-    if not abilities then
-        return -math.huge
-    end
-
-    return (tonumber(abilities[5] or 0) or 0)
-        + (tonumber(abilities[6] or 0) or 0)
-        + (tonumber(abilities[7] or 0) or 0)
+local function clear_character_all_resources(character)
+    return clear_character_resources(character, nil)
 end
 
 
-local function choose_highest_mental_character(characters)
-    local selected = ""
-    local best_score = -math.huge
+local function clear_character_turn_actions(character)
+    return clear_character_resources(character, should_clear_turn_action_resource)
+end
+
+
+local function clear_party_targets(characters, clear_character_fn)
+    local changed_any = false
     for _, character in ipairs(characters or {}) do
-        local score = character_mental_score(character)
-        if selected == "" or score > best_score then
-            best_score = score
-            selected = character
+        if clear_character_fn(character) then
+            changed_any = true
         end
     end
-
-    return tostring(selected or "")
+    return changed_any
 end
 
 
@@ -1343,38 +1398,82 @@ local function apply_deathlink_punishment(event)
         return
     end
 
-    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL_PARTY_MEMBERS then
-        local drained_any = false
-        for _, character in ipairs(filter_deathlink_targets(party_targets, function(target)
-            return Osi.IsDead(target) ~= 1
-        end)) do
-            if clear_character_action_resources(character) then
-                drained_any = true
-            end
-        end
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ALL then
+        local drained_any = clear_party_targets(
+            filter_deathlink_targets(party_targets, function(target)
+                return Osi.IsDead(target) ~= 1
+            end),
+            clear_character_all_resources
+        )
 
         if drained_any then
-            deathlink_notify(event, "All party resources were drained.")
+            deathlink_notify(
+                event,
+                "All party resources were drained, including spell slots, actions, bonus actions, movement, and class charges."
+            )
         else
             deathlink_notify(event, "No party resources could be drained.")
         end
         return
     end
 
-    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_ONE_PARTY_MEMBER then
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_RESOURCES_RANDOM then
         local eligible_targets = filter_deathlink_targets(party_targets, function(character)
             return Osi.IsDead(character) ~= 1
         end)
-        local target = choose_highest_mental_character(eligible_targets)
+        local target = choose_random_character(eligible_targets)
         if target == "" then
             deathlink_notify(event, "No valid party member could be drained.")
             return
         end
 
-        if clear_character_action_resources(target) then
-            deathlink_notify(event, __("%s's resources were drained.", deathlink_character_name(target)))
+        if clear_character_all_resources(target) then
+            deathlink_notify(
+                event,
+                __(
+                    "%s's resources were drained, including spell slots, actions, bonus actions, movement, and class charges.",
+                    deathlink_character_name(target)
+                )
+            )
         else
             deathlink_notify(event, "No party resources could be drained.")
+        end
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_ACTIONS_ALL then
+        local removed_any = clear_party_targets(
+            filter_deathlink_targets(party_targets, function(target)
+                return Osi.IsDead(target) ~= 1
+            end),
+            clear_character_turn_actions
+        )
+
+        if removed_any then
+            deathlink_notify(event, "All party actions, bonus actions, and movement were removed.")
+        else
+            deathlink_notify(event, "No party actions, bonus actions, or movement could be removed.")
+        end
+        return
+    end
+
+    if punishment == DEATHLINK_PUNISHMENT_REMOVE_ALL_ACTIONS_RANDOM then
+        local eligible_targets = filter_deathlink_targets(party_targets, function(character)
+            return Osi.IsDead(character) ~= 1
+        end)
+        local target = choose_random_character(eligible_targets)
+        if target == "" then
+            deathlink_notify(event, "No valid party member could lose their actions.")
+            return
+        end
+
+        if clear_character_turn_actions(target) then
+            deathlink_notify(
+                event,
+                __("%s lost all actions, bonus actions, and movement.", deathlink_character_name(target))
+            )
+        else
+            deathlink_notify(event, "No party actions, bonus actions, or movement could be removed.")
         end
         return
     end

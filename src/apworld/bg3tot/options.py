@@ -393,9 +393,15 @@ class DeathLinkPunishment(Choice):
     Kill All Party Members: Wipes the active party, companions, and summons to force a reload.
     Down Random Party Member: Downs one random active party member or companion.
     Kill Random Party Member: Fully kills one random active party member or companion.
-    Remove All Resources From All Party Members: Drains action resources from the whole active party and companions.
-    Remove All Resources From One Party Member: Drains action resources from the active party or companion
-    with the highest combined Intelligence, Wisdom, and Charisma.
+    Remove All Resources - All: Drains every tracked resource from the whole active party and companions,
+    including spell slots, actions, bonus actions, movement, rage charges, Channel Divinity, sorcery points,
+    and similar class resources.
+    Remove All Resources - Random: Drains every tracked resource from one random active party member or companion,
+    including spell slots, actions, bonus actions, movement, rage charges, Channel Divinity, sorcery points,
+    and similar class resources.
+    Remove All Actions - All: Removes only actions, bonus actions, and movement from the whole active party and companions.
+    Remove All Actions - Random: Removes only actions, bonus actions, and movement from one random active
+    party member or companion.
     Nothing: Receives the DeathLink notification but applies no local punishment.
     """
 
@@ -404,11 +410,30 @@ class DeathLinkPunishment(Choice):
     option_kill_all_party_members = 0
     option_down_random_party_member = 1
     option_kill_random_party_member = 2
-    option_remove_all_resources_all_party_members = 3
-    option_remove_all_resources_one_party_member = 4
+    option_remove_all_resources_all = 3
+    option_remove_all_resources_random = 4
+    option_remove_all_actions_all = 6
+    option_remove_all_actions_random = 7
     option_nothing = 5
 
+    alias_remove_all_resources_all_party_members = option_remove_all_resources_all
+    alias_remove_all_resources_one_party_member = option_remove_all_resources_random
+
     default = option_kill_all_party_members
+
+    @classmethod
+    def get_option_name(cls, value: int) -> str:
+        option_names = {
+            cls.option_kill_all_party_members: "Kill All Party Members",
+            cls.option_down_random_party_member: "Down Random Party Member",
+            cls.option_kill_random_party_member: "Kill Random Party Member",
+            cls.option_remove_all_resources_all: "Remove All Resources - All",
+            cls.option_remove_all_resources_random: "Remove All Resources - Random",
+            cls.option_remove_all_actions_all: "Remove All Actions - All",
+            cls.option_remove_all_actions_random: "Remove All Actions - Random",
+            cls.option_nothing: "Nothing",
+        }
+        return option_names.get(int(value), super().get_option_name(value))
 
 
 class TrapsPercentage(Range):

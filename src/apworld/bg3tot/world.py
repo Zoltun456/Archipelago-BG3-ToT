@@ -73,6 +73,12 @@ def _suggested_early_shop_fragments(fragment_count: int) -> int:
     return min(fragment_count, max(1, math.ceil(fragment_count * 0.25)))
 
 
+def _guaranteed_local_early_shop_fragments(fragment_count: int) -> int:
+    if fragment_count <= 0:
+        return 0
+    return 1
+
+
 class BG3World(World):
     game = "Baldur's Gate 3 - ToT"
     web = web_world.BG3WebWorld()
@@ -117,13 +123,24 @@ class BG3World(World):
                 "unlock rate, or disable Progressive Shop."
             )
 
+        local_early_items = getattr(self.multiworld, "local_early_items", None)
+        guaranteed_local_count = _guaranteed_local_early_shop_fragments(fragment_count)
+        if local_early_items is not None and guaranteed_local_count > 0:
+            try:
+                player_local_early_items = local_early_items[self.player]
+                current_local_count = int(player_local_early_items.get(SHOP_FRAGMENT_ITEM_NAME, 0) or 0)
+                player_local_early_items[SHOP_FRAGMENT_ITEM_NAME] = max(current_local_count, guaranteed_local_count)
+            except Exception:
+                pass
+
         early_items = getattr(self.multiworld, "early_items", None)
-        if early_items is not None:
-            suggested_count = _suggested_early_shop_fragments(fragment_count)
+        suggested_count = _suggested_early_shop_fragments(fragment_count)
+        additional_global_count = max(0, suggested_count - guaranteed_local_count)
+        if early_items is not None and additional_global_count > 0:
             try:
                 player_early_items = early_items[self.player]
                 current_count = int(player_early_items.get(SHOP_FRAGMENT_ITEM_NAME, 0) or 0)
-                player_early_items[SHOP_FRAGMENT_ITEM_NAME] = max(current_count, suggested_count)
+                player_early_items[SHOP_FRAGMENT_ITEM_NAME] = max(current_count, additional_global_count)
             except Exception:
                 pass
 

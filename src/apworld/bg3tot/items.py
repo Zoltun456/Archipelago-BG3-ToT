@@ -32,7 +32,7 @@ CUSTOM_FILLERS = [
     #["RogueScore +10", "ToTFiller:RogueScore:10"],
     #["RogueScore +25", "ToTFiller:RogueScore:25"],
     ["XP +1000", "ToTFiller:Experience:1000"],
-    ["XP +3000", "ToTFiller:Experience:3000"],
+    #["XP +3000", "ToTFiller:Experience:3000"],
 ]
 
 TRAP_OPTIONS = [

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from BaseClasses import Location
+from BaseClasses import Location, LocationProgressType
 
 from . import items
 from .trials_data import (
@@ -60,6 +60,11 @@ def _build_location_group(
 def create_all_locations(world: BG3World) -> None:
     trials_region = world.get_region("Trials of Tav")
     location_name_to_id: dict[str, int] = {}
+    shop_layout = build_shop_layout(
+        int(world.options.shop_check_count),
+        randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
+        option_values=world.options,
+    )
 
     # This mirrors the token families the Lua bridge emits in BG3:
     # clear, kill, perfect, RogueScore, then shop.
@@ -77,17 +82,25 @@ def create_all_locations(world: BG3World) -> None:
     )
     location_name_to_id.update(
         _build_location_group(
-            len(
-                build_shop_layout(
-                    int(world.options.shop_check_count),
-                    randomize_pixie_blessing=not bool(world.options.vanilla_pixie_blessing_in_shop),
-                    option_values=world.options,
-                )["unlock_ids"]
-            ),
+            len(shop_layout["unlock_ids"]),
             shop_location_name,
             shop_location_id,
         )
     )
 
     trials_region.add_locations(location_name_to_id, BG3Location)
+    if int(shop_layout["fragment_count"]) > 0:
+        priority_slots_per_section = 2
+        prioritized_per_section: dict[int, int] = {}
+        for index, section_index in enumerate(shop_layout["section_indices"], start=1):
+            section_index = int(section_index)
+            if section_index <= 0:
+                continue
+            prioritized_count = int(prioritized_per_section.get(section_index, 0) or 0)
+            if prioritized_count >= priority_slots_per_section:
+                continue
+            world.multiworld.get_location(shop_location_name(index), world.player).progress_type = (
+                LocationProgressType.PRIORITY
+            )
+            prioritized_per_section[section_index] = prioritized_count + 1
     trials_region.add_event("Victory", "Victory", location_type=BG3Location, item_type=items.BG3Item)
