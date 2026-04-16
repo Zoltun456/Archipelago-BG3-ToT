@@ -128,7 +128,7 @@ function Unlock.UpdateCurrency(currency)
     Event.Trigger("CurrencyChanged", prev, currency)
 
     Defer(1000, function()
-        Player.Notify(__("Your Currency changed: %d -> %d!", prev, currency))
+        Player.Notify(TL("h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2", prev, currency))
     end)
 end
 
@@ -233,34 +233,34 @@ function Unlock.Buy(unlockId, buyer, target)
 
     if Config.MulitplayerRestrictUnlocks and not GU.Character.IsHost(buyer) then
         soundFail()
-        return false, __("Host has restricted buying unlocks.")
+        return false, TL("he8dbdedegbd8eg48b8gbdbeg8ededf9cacfc")
     end
 
     if Osi.IsInCombat(buyer) == 1 or Scenario.HasStarted() then
         soundFail()
-        return false, __("Cannot buy while in combat.")
+        return false, TL("hc1ee9e0bg94bbg4cb5gaf2dgdad38d0ff8f1")
     end
 
     if unlock == nil then
         soundFail()
-        return false, __("Unlock not found.")
+        return false, TL("h2c37ca25g7962g49f7g81f0g4f9163d26db3")
     end
 
     Schedule(Unlock.UpdateUnlocked)
 
     if not unlock:Buyable() then
         soundFail()
-        return false, __("Unlock out of stock.")
+        return false, TL("h8bfedf62gdeabg48a3gbb8cgdec519aefce7")
     end
 
     if unlock.Character and not target then
         soundFail()
-        return false, __("Unlock needs a character.")
+        return false, TL("hd490c7efg81c5g492bgae7ag3f4dcc581d6f")
     end
 
     if unlock.Cost > PersistentVars.Currency then
         soundFail()
-        return false, __("Not enough currency.")
+        return false, TL("h9cec8225gc9b9g4d77g8afdgfb1168dfd933")
     end
 
     local character = target or buyer

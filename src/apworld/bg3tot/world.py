@@ -10,7 +10,10 @@ from Options import OptionError
 from worlds.AutoWorld import World
 
 from . import items, locations, options, regions, rules, settings, web_world
+from .i18n import canonical_text
 from .trials_data import (
+    GAME_NAME,
+    REGION_NAME,
     SHOP_FRAGMENT_ITEM_NAME,
     UNLOCK_CLASSIFICATION_BY_ID,
     build_shop_layout,
@@ -80,7 +83,7 @@ def _guaranteed_local_early_shop_fragments(fragment_count: int) -> int:
 
 
 class BG3World(World):
-    game = "Baldur's Gate 3 - ToT"
+    game = GAME_NAME
     web = web_world.BG3WebWorld()
 
     options_dataclass = options.BG3Options
@@ -92,7 +95,7 @@ class BG3World(World):
     location_name_groups = locations.LOCATION_NAME_GROUPS
     item_name_to_id = items.ITEM_NAME_TO_ID
     item_name_groups = items.ITEM_NAME_GROUPS
-    origin_region_name = "Trials of Tav"
+    origin_region_name = REGION_NAME
 
     def create_regions(self) -> None:
         regions.create_and_connect_regions(self)
@@ -116,11 +119,12 @@ class BG3World(World):
         )
         if fragment_count > non_shop_location_count:
             raise OptionError(
-                "Progressive Shop adds "
-                f"{fragment_count} {SHOP_FRAGMENT_ITEM_NAME} items, but this slot only has "
-                f"{non_shop_location_count} non-shop check locations available to hold them. "
-                "Increase the clear/kill/perfect/RogueScore check counts, choose a larger Progressive Shop "
-                "unlock rate, or disable Progressive Shop."
+                canonical_text(
+                    "errors.progressive_shop_overflow",
+                    fragment_count=fragment_count,
+                    shop_fragment_item_name=SHOP_FRAGMENT_ITEM_NAME,
+                    non_shop_location_count=non_shop_location_count,
+                )
             )
 
         local_early_items = getattr(self.multiworld, "local_early_items", None)

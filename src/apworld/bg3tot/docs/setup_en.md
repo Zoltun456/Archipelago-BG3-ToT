@@ -49,7 +49,7 @@ The in-game tab mirrors the standalone client status/log and can send those acti
 - `death_link`
   Enables Archipelago DeathLink for this slot.
 - `death_link_trigger`
-  Choose whether local DeathLinks send on a full party wipe, any party member death, or any party member down.
+  Choose whether local DeathLinks send on a full party wipe, any active party member death, or any active party member down.
 - `death_link_punishment`
   Choose what happens when a DeathLink is received: wipe everyone, down or kill one party member, drain all resources from everyone or one random party member, remove only actions/bonus actions/movement from everyone or one random party member, or do nothing.
 - `goal_ng_plus_fragment_gate_percent`

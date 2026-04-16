@@ -94,8 +94,8 @@ Progression rewards keep their whole-party or global behavior, and the Roll Loot
 DeathLink is optional and off by default. When enabled, the trigger mode can be set to:
 
 - full party wipe
-- any party member fully killed
-- any party member downed
+- any active party member fully killed
+- any active party member downed
 
 `death_link_punishment` controls what happens when a DeathLink is received:
 

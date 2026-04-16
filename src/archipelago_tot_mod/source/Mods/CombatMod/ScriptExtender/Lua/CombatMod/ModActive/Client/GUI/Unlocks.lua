@@ -39,11 +39,11 @@ end
 ---@param tab ExtuiTabBar
 function ClientUnlock.Main(tab)
     ---@type ExtuiTabItem
-    local root = tab:AddTabItem(__("Unlocks"))
+    local root = tab:AddTabItem(TL("h231a0e4eg764fg45b1gb102g93d7d320b1f5"))
     root.Visible = false
 
-    Components.Computed(root:AddSeparatorText(__("Currency owned: %d   RogueScore: %d", 0, 0)), function(root, state)
-        return __("Currency owned: %d   RogueScore: %d", state.Currency, state.RogueScore or 0)
+    Components.Computed(root:AddSeparatorText(TL("h16af0aafg43fag45ffga259gc399c07be1bb", 0, 0)), function(root, state)
+        return TL("h16af0aafg43fag45ffga259gc399c07be1bb", state.Currency, state.RogueScore or 0)
     end, "StateChange")
 
     local layout
@@ -82,18 +82,18 @@ end
 function ClientUnlock.GetStock(unlock)
     local stock = unlock.Amount - unlock.Bought
     if stock > 0 then
-        local text = __("Stock: %s", unlock.Amount - unlock.Bought .. "/" .. unlock.Amount)
+        local text = TL("h3e9c6432g6bc9g4316gb0dagf57012f8d752", unlock.Amount - unlock.Bought .. "/" .. unlock.Amount)
 
         if unlock.Persistent then
-            text = string.format("%s (%s)", text, __("Permanent"))
+            text = string.format("%s (%s)", text, TL("h255ed026g700bg4857gb166gde315344fc13"))
         end
 
         return text
     end
     if unlock.Persistent then
-        return __("Active")
+        return TL("h270f8076g725ag4d52gb143gcb345361e916")
     end
-    return __("Out of stock")
+    return TL("h298720feg7cd2g475agb1abg413cd389631e")
 end
 
 
@@ -110,7 +110,7 @@ function ClientUnlock.Tile(root, unlock)
 
     local col2 = grp:AddGroup(unlock.Id)
     col2.SameLine = true
-    local cost = col2:AddText(__("Cost: %s", unlock.Cost))
+    local cost = col2:AddText(TL("h38df043eg6d8ag4516gb0begc370d29ce152", unlock.Cost))
 
     local buyLabel = col2:AddText("")
 
@@ -155,13 +155,13 @@ function ClientUnlock.Tile(root, unlock)
 
             for _, req in pairs(unlock.Requirement) do
                 if type(req) == "number" then
-                    bottomText.Label = bottomText.Label .. __("%d RogueScore required", req) .. "\n"
+                    bottomText.Label = bottomText.Label .. TL("h8c0d708fgd958g425dgabf3ge43bc9d1c619", req) .. "\n"
                 elseif type(req) == "string" then
                     local u = table.find(State.Unlocks, function(u)
                         return u.Id == req
                     end)
                     if u then
-                        bottomText.Label = bottomText.Label .. __("%s required", u.Name) .. "\n"
+                        bottomText.Label = bottomText.Label .. TL("h28bc4630g7de9g4136g91b8gf750339ad572", u.Name) .. "\n"
                     end
                 end
             end
@@ -195,9 +195,9 @@ function ClientUnlock.Buy(root, unlock)
     local grp = root:AddGroup(U.RandomId())
 
     ---@type ExtuiButton
-    local btn = grp:AddButton(__("Buy"))
+    local btn = grp:AddButton(TL("h322023aeg6775g476fgb011g3109d233132b"))
     btn.IDContext = U.RandomId()
-    btn.Label = string.format("    %s    ", __("Buy"))
+    btn.Label = string.format("    %s    ", TL("h322023aeg6775g476fgb011g3109d233132b"))
 
     if unlock.Amount ~= nil then
         Event.On("StateChange", function(state)
@@ -218,7 +218,7 @@ function ClientUnlock.Buy(root, unlock)
             if not ok then
                 Event.Trigger("Error", res)
             else
-                Event.Trigger("Success", __("Unlock %s bought.", unlock.Name))
+                Event.Trigger("Success", TL("h2308c823g765dg49d7ga103gbfb103219d93", unlock.Name))
             end
             btn:SetStyle("Alpha", 1)
         end)
@@ -247,14 +247,14 @@ function ClientUnlock.BuyChar(root, unlock)
     local grp = root:AddGroup(U.RandomId())
 
     ---@type ExtuiButton
-    local btn = grp:AddButton(__("Buy"))
+    local btn = grp:AddButton(TL("h322023aeg6775g476fgb011g3109d233132b"))
     btn.IDContext = U.RandomId()
-    btn.Label = string.format("    %s    ", __("Buy"))
+    btn.Label = string.format("    %s    ", TL("h322023aeg6775g476fgb011g3109d233132b"))
 
     ---@type ExtuiPopup
     local popup = grp:AddPopup("")
     popup.IDContext = U.RandomId()
-    popup:AddSeparatorText(__("Buy for character"))
+    popup:AddSeparatorText(TL("h2cb33b1dg79e6g46e4g81f8g0082e3da22a0"))
 
     local list = {}
     local function createPopup(unlock)
@@ -282,7 +282,7 @@ function ClientUnlock.BuyChar(root, unlock)
 
             local ping = popup:AddButton("")
             ping.IDContext = U.RandomId()
-            ping.Label = __("Ping")
+            ping.Label = TL("h37333c06g6266g4695gb040g00f3526222d1")
             ping.OnClick = function()
                 Net.Send("Ping", { Target = uuid })
             end
@@ -290,7 +290,7 @@ function ClientUnlock.BuyChar(root, unlock)
             table.insert(list, ping)
 
             if unlock.BoughtBy[uuid] then
-                b.Label = string.format("%s (%s)", name, __("bought"))
+                b.Label = string.format("%s (%s)", name, TL("h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5"))
 
                 -- b:SetStyle("Alpha", 0.5)
             end
@@ -305,7 +305,7 @@ function ClientUnlock.BuyChar(root, unlock)
                     if not ok then
                         Event.Trigger("Error", res)
                     else
-                        Event.Trigger("Success", __("Unlock %s bought for %s.", unlock.Name, name))
+                        Event.Trigger("Success", TL("hd0c773c3g8592g4269gae3fg440f0c1d662d", unlock.Name, name))
                     end
 
                     -- might not exist anymore

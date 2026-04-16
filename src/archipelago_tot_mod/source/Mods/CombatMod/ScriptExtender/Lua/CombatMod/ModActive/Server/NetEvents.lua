@@ -146,7 +146,7 @@ Net.On("Start", function(event)
 		PersistentVars.SuperHardMode = true
 		Event.Trigger("difficultyModeChanged", true)
 	else
-	    Net.Respond(event, { false, "Scenario error" })
+	    Net.Respond(event, { false, TL("h296c87dcg7c39g4d28g91a5gfb4ef387d96c") })
 	end
 
     local template = table.find(Scenario.GetTemplates(), function(v)
@@ -158,33 +158,33 @@ Net.On("Start", function(event)
     end)
 
     if template == nil then
-        Net.Respond(event, { false, "Scenario error" })
+        Net.Respond(event, { false, TL("h296c87dcg7c39g4d28g91a5gfb4ef387d96c") })
         return
     end
     if mapName and map == nil then
-        Net.Respond(event, { false, "Map error" })
+        Net.Respond(event, { false, TL("h26d5eb62g7380g4be3gb15eg6d85137c4fa7") })
         return
     end
     Scenario.Start(template, map)
 
-    Net.Respond(event, { true, __("Scenario %s started.", template.Name) })
+    Net.Respond(event, { true, TL("hbc1acb0ege94fg49e5gb8f2g9f83dad0bda1", template.Name) })
 end)
 
 Net.On("Stop", function(event)
     local s = Scenario.Current()
 
     if not s then
-        Net.Respond(event, { false, __("Scenario not started.") })
+        Net.Respond(event, { false, TL("hb72bdac5ge27eg48f9g8841g8e9f6a63acbd") })
         return
     end
 
     if s:HasStarted() and not Mod.Debug then
-        Net.Respond(event, { false, __("Cannot stop while in progress.") })
+        Net.Respond(event, { false, TL("hf4935a60ga1c6g40f3g9c7ag06953e5824b7") })
         return
     end
 
     Scenario.Stop()
-    Net.Respond(event, { true, __("Scenario stopped.") })
+    Net.Respond(event, { true, TL("h2a7aafc0g7f2fg4fa9g9194g99cf33b6bbed") })
 end)
 
 Net.On("BuyUnlock", function(event)
@@ -199,7 +199,7 @@ Net.On("ToCamp", function(event)
     end
 
     if Player.InCombat() and not Mod.Debug then
-        Net.Respond(event, { false, __("Cannot teleport while in combat.") })
+        Net.Respond(event, { false, TL("he740f325gb215g4a67g8d47g3c016f651e23") })
         return
     end
     Player.ReturnToCamp()
@@ -211,7 +211,7 @@ Net.On("ForwardCombat", function(event)
     local s = Scenario.Current()
 
     if not s then
-        Net.Respond(event, { false, __("Scenario not started.") })
+        Net.Respond(event, { false, TL("hb72bdac5ge27eg48f9g8841g8e9f6a63acbd") })
         return
     end
 
@@ -234,12 +234,12 @@ Net.On("Teleport", function(event)
     end)
 
     if map == nil then
-        Net.Respond(event, { false, __("Map not found.") })
+        Net.Respond(event, { false, TL("h2cb85222g79edg4077gb1f8gb61113da9433") })
         return
     end
 
     if event.Payload.Restrict and Player.InCombat() and not Mod.Debug then
-        Net.Respond(event, { false, __("Cannot teleport while in combat.") })
+        Net.Respond(event, { false, TL("he740f325gb215g4a67g8d47g3c016f651e23") })
         return
     end
 
@@ -298,7 +298,7 @@ Net.On("MarkSpawns", function(event)
         return v.Name == mapName
     end)
     if map == nil then
-        Net.Respond(event, { false, __("Map not found.") })
+        Net.Respond(event, { false, TL("h2cb85222g79edg4077gb1f8gb61113da9433") })
         return
     end
 
@@ -317,7 +317,7 @@ Net.On("PingSpawns", function(event)
         return v.Name == mapName
     end)
     if map == nil then
-        Net.Respond(event, { false, __("Map not found.") })
+        Net.Respond(event, { false, TL("h2cb85222g79edg4077gb1f8gb61113da9433") })
         return
     end
 
@@ -414,7 +414,7 @@ Net.On("Config", function(event)
 				PersistentVars.GMMode = config.GMMode
 				PersistentVars.GameMaster = Player.Host()
 				if PersistentVars.GMMode == true then
-					Player.Notify(__("%s is now the game master.", Osi.ResolveTranslatedString(Osi.GetDisplayName(PersistentVars.GameMaster))))
+					Player.Notify(TL("h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c", Osi.ResolveTranslatedString(Osi.GetDisplayName(PersistentVars.GameMaster))))
                     config.LoneWolfMode = false
                     PersistentVars.LoneWolfMode = config.LoneWolfMode
                 end
@@ -447,7 +447,7 @@ end)
 
 Net.On("RemoveAllEntities", function(event)
     local count = #StoryBypass.RemoveAllEntities()
-    Net.Respond(event, { true, string.format("Removing %d entities.", count) })
+    Net.Respond(event, { true, TL("hba5a2ecbgef0fg47b9ga896g91df8ab4b3fd", count) })
 end)
 
 Net.On("RecruitOrigin", function(event)
@@ -457,15 +457,15 @@ Net.On("RecruitOrigin", function(event)
     end)
     if char then
         Player.RecruitOrigin(name)
-        Net.Respond(event, { true, __("Recruiting %s.", name) })
+        Net.Respond(event, { true, TL("h2e7ceb9cg7b29g4becg91d4gfd8af3f6dfa8", name) })
     else
-        Net.Respond(event, { false, string.format("Origin %s not found.", name) })
+        Net.Respond(event, { false, TL("hbe6d0621geb38g4537g88d5ge3512af7c173", name) })
     end
 end)
 
 Net.On("FixFactions", function(event)
     if Player.InCombat() then
-        Net.Respond(event, { false, __("Cannot change factions while in combat.") })
+        Net.Respond(event, { false, TL("h96296675gc37cg4332g8a51ga55468738776") })
     else
         for _, player in pairs(GU.DB.GetPlayers()) do
             Osi.SetFaction(player, C.CompanionFaction)
@@ -476,7 +476,7 @@ end)
 
 Net.On("FixLongRest", function(event)
     if Player.InCombat() then
-        Net.Respond(event, { false, __("Cannot use this function while in combat.") })
+        Net.Respond(event, { false, TL("hf21d5640ga748g4031g9c12ge6573e30c475") })
     else
         Osi.DB_Camp_Unlocked(1)
         Osi.SetLongRestAvailable(1)
@@ -501,9 +501,9 @@ Net.On("CancelDialog", function(event)
 
     if dialog then
         StoryBypass.CancelDialog(dialog, instance)
-        Net.Respond(event, { true, string.format("Dialog %s cancelled.", dialog) })
+        Net.Respond(event, { true, TL("hbc56c73ege903g4926gb8f6g5f40dad47d62", dialog) })
     else
-        Net.Respond(event, { false, "No dialog found." })
+        Net.Respond(event, { false, TL("h214d3377g7418g4662ga127ge0044305c226") })
     end
 end)
 
@@ -512,7 +512,7 @@ Net.On("UpdateLootFilter", function(event)
     PersistentVars.LootFilter[type][rarity] = bool
 
     broadcastState()
-    Net.Respond(event, { true, __("Loot filter updated") })
+    Net.Respond(event, { true, TL("hb6e91cdbge3bcg4498ga85dga2fe8a7f80dc") })
 end)
 
 Net.On("PickupAll", function(event)
@@ -521,14 +521,14 @@ Net.On("PickupAll", function(event)
         count = count + Item.PickupAll(event:Character())
     end
 
-    Net.Respond(event, { true, __("Picked up %d items.", count) })
+    Net.Respond(event, { true, TL("h410f889dg145ag4ddcg8723gcbbae501e998", count) })
 end)
 
 Net.On("Pickup", function(event)
     local rarity, type = table.unpack(event.Payload)
     local count = Item.PickupAll(event:Character(), rarity, type)
 
-    Net.Respond(event, { true, __("Picked up %d items.", count) })
+    Net.Respond(event, { true, TL("h410f889dg145ag4ddcg8723gcbbae501e998", count) })
 end)
 
 Net.On("DestroyAll", function(event)
@@ -537,14 +537,14 @@ Net.On("DestroyAll", function(event)
         count = count + Item.DestroyAll(rarity)
     end
 
-    Net.Respond(event, { true, __("Destroyed %d items.", count) })
+    Net.Respond(event, { true, TL("h42fa25a1g17afg470fg871cg9169253eb34b", count) })
 end)
 
 Net.On("DestroyLoot", function(event)
     local rarity, type = table.unpack(event.Payload)
     local count = Item.DestroyAll(rarity, type)
 
-    Net.Respond(event, { true, __("Destroyed %d items.", count) })
+    Net.Respond(event, { true, TL("h42fa25a1g17afg470fg871cg9169253eb34b", count) })
 end)
 
 Net.On("GetFilterableModList", function(event)
@@ -562,7 +562,7 @@ Net.On("GetFilterableModList", function(event)
     local filters = External.Templates.GetItemFilters()
     for _, modId in pairs(filters.Mods) do
         if not list[modId] then
-            local name = "Not loaded"
+            local name = TL("h2bda2046g7e8fg4751gb18eg913753acb315")
             if Ext.Mod.GetMod(modId) then
                 name = Ext.Mod.GetMod(modId).Info.Directory
             end
@@ -590,5 +590,5 @@ Net.On("UpdateModFilter", function(event)
 
     Item.ClearCache()
 
-    Net.Respond(event, { true, "Mod filter updated" })
+    Net.Respond(event, { true, TL("h2f73e820g7a26g4bd7g91c4g0db133e62f93") })
 end)

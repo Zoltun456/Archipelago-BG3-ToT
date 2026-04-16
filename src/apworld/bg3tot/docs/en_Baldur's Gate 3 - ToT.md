@@ -41,7 +41,7 @@ Most traps affect the full party, companions, and summons.
 
 - This is a Trials of Tav focused world, not the standard Baldur's Gate 3 campaign Archipelago experience.
 - You need the packaged BG3 mod alongside the AP world for checks, items, and notifications to function.
-- DeathLink is optional and can be configured to send on full wipes, any party death, or any party down. Received DeathLinks then apply the chosen punishment, including full wipes, random downs/kills, full resource drains, or action-only drains, with the default still wiping the active party, companions, and summons.
+- DeathLink is optional and can be configured to send on full wipes, any active party member death, or any active party member down. Received DeathLinks then apply the chosen punishment, including full wipes, random downs/kills, full resource drains, or action-only drains, with the default still wiping the active party, companions, and summons.
 - Progressive Shop is on by default. `Shop Fragment` progression items unlock the randomized AP shop in visible sections, with the first fragment forced into the BG3 player's early local checks and the first two checks in each shop section treated as priority progression spots.
 - `NG+` can be hidden until a chosen percentage of Shop Fragments has been collected, and its local shop price is configurable.
 - Pixie Blessing can optionally stay as the vanilla local 30-cost shop unlock instead of being randomized into the AP pool.

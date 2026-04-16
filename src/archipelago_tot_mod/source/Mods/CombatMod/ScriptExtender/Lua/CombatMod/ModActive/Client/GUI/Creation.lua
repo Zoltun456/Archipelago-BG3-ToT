@@ -3,22 +3,22 @@ Creation = {}
 ---@param tab ExtuiTabBar
 function Creation.Main(tab)
     ---@type ExtuiTree
-    local root = tab:AddTabItem(__("Creation"))
+    local root = tab:AddTabItem(TL("h20c028a6g7595g47dfgb13fg31b9531d139b"))
 
     do
         ---@type ExtuiInputText
-        local posBox = root:AddInputText("List")
+        local posBox = root:AddInputText(TL("h37371a7eg6262g44f2gb040g4294d26260b6"))
         posBox.Multiline = true
 
-        local pb = root:AddButton(__("Pos"))
+        local pb = root:AddButton(TL("h31b2227eg64e7g4772gb028g1114d20a3336"))
         pb.SameLine = true
 
-        local pi = root:AddInputText(__("Pos"))
+        local pi = root:AddInputText(TL("h31b2227eg64e7g4772gb028g1114d20a3336"))
         pi.IDContext = U.RandomId()
         pi.Text = "0, 0, 0"
-        local ping = root:AddButton(__("Ping"))
+        local ping = root:AddButton(TL("h37333c06g6266g4695gb040g00f3526222d1"))
         ping.SameLine = true
-        local tp = root:AddButton(__("TP"))
+        local tp = root:AddButton(TL("h097e26aeg5c2bg473fgb3a4gd159d186f37b"))
         tp.SameLine = true
 
         pb.OnClick = function()
@@ -62,11 +62,11 @@ function Creation.Main(tab)
     end
 
     do
-        local uwp = root:AddButton(__("Unlock Waypoints"))
+        local uwp = root:AddButton(TL("h2c5a29c3g790fg47c9ga1f6g91af03d4b38d"))
         uwp.OnClick = function()
             Net.RCE("Osi.PROC_Debug_UnlockAllWP()")
         end
-        local wp = root:AddCollapsingHeader(__("Waypoints"))
+        local wp = root:AddCollapsingHeader(TL("h273eb1cag726bg4e49gb140gd82f9362fa0d"))
         wp.SameLine = true
         Components.Layout(wp, 1, 1, function(layout)
             layout.Table.ScrollY = true

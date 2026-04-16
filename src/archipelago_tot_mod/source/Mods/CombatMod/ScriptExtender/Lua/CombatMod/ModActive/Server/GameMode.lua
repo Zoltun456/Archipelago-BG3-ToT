@@ -357,7 +357,7 @@ function GameMode.UpdateRogueScore(score)
     Event.Trigger("RogueScoreChanged", prev, score)
 
     Defer(1000, function()
-        Player.Notify(__("Your RogueScore changed: %d -> %d!", prev, score))
+        Player.Notify(TL("hc2618a3eg9734g4df6gbf15g2b90dd3709b2", prev, score))
     end)
 end
 
@@ -418,7 +418,7 @@ function GameMode.StartNext()
     end)
 
     if not rogueTemp then
-        Player.Notify(__("Select a Roguelike scenario to start!"))
+        Player.Notify(TL("h057ebf6dg502bg4ea3g8364gd8c5e146fae7"))
         return
     end
 
@@ -635,7 +635,7 @@ Event.On(
 		end
 
         if Config.AutoTeleport > 0 then
-            Player.Notify(__("Teleporting back to camp in %d seconds.", Config.AutoTeleport), true)
+            Player.Notify(TL("hf6e3e1c8ga3b6g4b49g9c5dg0d2fbe7f2f0d", Config.AutoTeleport), true)
             local timer = Defer(Config.AutoTeleport * 1000, function()
                 Player.ReturnToCamp()
             end)
@@ -678,7 +678,7 @@ local function makeItCow()
 
     if lolcow then
         Defer(1000, function()
-            Player.Notify(__("You found the secret cow level!"))
+            Player.Notify(TL("hcb742a6eg9e21g47f3gbf84g7195dda653b7"))
         end)
     end
 
@@ -694,7 +694,7 @@ local function makeItWilloughby()
 
     if harvard then
         Defer(1000, function()
-            Player.Notify(__("You have incurred the wrath of Nature's Vengeance!"))
+            Player.Notify(TL("h1b8b3985g4edeg46cdg828bg80ab60a9a289"))
         end)
     end
 

@@ -6,7 +6,7 @@ local original_get_stock = nil
 
 local GOAL_UNLOCK_ID = "APGOAL::QUICKSTART"
 local PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
-local AP_LOCAL_SHOP_SECTION_NAME = "Local Unlocks"
+local AP_LOCAL_SHOP_SECTION_NAME_HANDLE = "h315fa45ag640ag4f10gb026gc9769204eb54"
 local SHOP_SECTION_UNLOCK_PREFIX = "APSHOP::SECTION::"
 local AP_ATLAS_TEXTURE_UUID = "aa417c69-e69a-f1ef-5a8d-65b7b5d4e195"
 local AP_CLIENT_DEBUG_SHOP_FILE = "ap_debug_shop_client.json"
@@ -436,10 +436,10 @@ local function unlock_section_name(unlock)
 
     local unlock_id = tostring(unlock and unlock.Id or "")
     if unlock_id == GOAL_UNLOCK_ID or unlock_id == PIXIE_BLESSING_UNLOCK_ID then
-        return AP_LOCAL_SHOP_SECTION_NAME
+        return TL(AP_LOCAL_SHOP_SECTION_NAME_HANDLE)
     end
 
-    return "Shop Checks"
+    return TL("h334e0016g661bg4554gb007gd3325225f110")
 end
 
 
@@ -509,7 +509,7 @@ local function build_requirement_label(unlock, state)
     if required and required > 0 then
         table.insert(
             lines,
-            __("Shop Fragments: %d/%d collected", collected, required)
+            TL("h2334e427g7661g4b17ga100g7d7143225f53", collected, required)
                 .. string.format(" (%d/%d total)", required, total)
         )
     end
@@ -521,13 +521,13 @@ local function build_requirement_label(unlock, state)
 
     for _, entry in pairs(requirement or {}) do
         if type(entry) == "number" then
-            table.insert(lines, __("%d RogueScore required", entry))
+            table.insert(lines, TL("h8c0d708fgd958g425dgabf3ge43bc9d1c619", entry))
         elseif type(entry) == "string" and not parse_shop_section_unlock_id(entry) then
             local needed_unlock = table.find((state and state.Unlocks) or {}, function(candidate)
                 return candidate.Id == entry
             end)
             if needed_unlock then
-                table.insert(lines, __("%s required", needed_unlock.Name))
+                table.insert(lines, TL("h28bc4630g7de9g4136g91b8gf750339ad572", needed_unlock.Name))
             end
         end
     end
@@ -653,7 +653,7 @@ local function patch_unlock_ui()
 
         local header = grp:AddGroup(unlock.Id)
         header.SameLine = true
-        header:AddText(__("Cost: %s", unlock.Cost))
+        header:AddText(TL("h38df043eg6d8ag4516gb0begc370d29ce152", unlock.Cost))
 
         local stock_label = header:AddText("")
         if unlock.Amount ~= nil then
@@ -716,12 +716,12 @@ local function patch_unlock_ui()
     end
 
     ClientUnlock.Main = function(tab)
-        local root = tab:AddTabItem(__("Unlocks"))
+        local root = tab:AddTabItem(TL("h231a0e4eg764fg45b1gb102g93d7d320b1f5"))
         local content = nil
         local last_signature = ""
 
-        Components.Computed(root:AddSeparatorText(__("Currency owned: %d   RogueScore: %d", 0, 0)), function(_, state)
-            return __("Currency owned: %d   RogueScore: %d", state.Currency, state.RogueScore or 0)
+        Components.Computed(root:AddSeparatorText(TL("h16af0aafg43fag45ffga259gc399c07be1bb", 0, 0)), function(_, state)
+            return TL("h16af0aafg43fag45ffga259gc399c07be1bb", state.Currency, state.RogueScore or 0)
         end, "StateChange")
 
         local function rebuild(state)

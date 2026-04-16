@@ -2,11 +2,12 @@ from BaseClasses import Tutorial
 
 from worlds.AutoWorld import WebWorld
 
+from .i18n import canonical_text
 from .options import BG3_OPTION_PRESETS, bg3_option_groups
 
 
 class BG3WebWorld(WebWorld):
-    game = "Baldur's Gate 3 - ToT"
+    game = canonical_text("world.game_name")
     theme = "grassFlowers"
     rich_text_options_doc = False
     bug_report_page = "https://github.com/Zoltun456/Archipelago-BG3-ToT/issues"
@@ -15,9 +16,9 @@ class BG3WebWorld(WebWorld):
     option_groups = bg3_option_groups
 
     setup_en = Tutorial(
-        "Baldur's Gate 3 - ToT Setup Guide",
-        "Install the Trials-first BG3 Archipelago build, enable the merged BG3 mod, and start a seed.",
-        "English",
+        canonical_text("tutorial.setup.title"),
+        canonical_text("tutorial.setup.description"),
+        canonical_text("tutorial.setup.language"),
         "setup_en.md",
         "setup/en",
         ["Zoltun", "Broney"],

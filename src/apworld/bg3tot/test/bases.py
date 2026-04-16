@@ -4,5 +4,5 @@ from ..world import BG3World
 
 
 class BG3TrialsTestBase(WorldTestBase):
-    game = "Baldur's Gate 3 - ToT"
+    game = BG3World.game
     world: BG3World

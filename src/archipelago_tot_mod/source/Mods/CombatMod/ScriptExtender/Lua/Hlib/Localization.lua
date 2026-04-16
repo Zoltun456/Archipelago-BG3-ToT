@@ -167,6 +167,13 @@ function M.Localize(text, ...)
     return string.format(M.Translate(text, version), ...)
 end
 
+---@param handle string
+---@vararg any passed to string.format
+---@return string
+function M.LocalizeHandle(handle, ...)
+    return string.format(M.Get(handle), ...)
+end
+
 function M.BuildLocaFile()
     local xmlWrap = [[
 <?xml version="1.0" encoding="utf-8"?>

@@ -1,5 +1,6 @@
 from .bases import BG3TrialsTestBase
 from BaseClasses import LocationProgressType
+from ..i18n import canonical_text
 from ..options import BG3Options, PermanentBuffTarget
 from ..trials_data import (
     PIXIE_BLESSING_UNLOCK_ID,
@@ -168,7 +169,8 @@ class TestUnlockPoolGeneration(BG3TrialsTestBase):
             randomize_pixie_blessing=not bool(self.world.options.vanilla_pixie_blessing_in_shop),
             option_values=self.world.options,
         )
-        shop_locations = [location for location in self.world.get_locations() if location.name.startswith("Shop Check")]
+        shop_prefix = canonical_text("locations.shop_check")
+        shop_locations = [location for location in self.world.get_locations() if location.name.startswith(shop_prefix)]
 
         self.assertIn("include_equipment_fillers", BG3Options.type_hints)
         self.assertNotIn("buy_ascension_enabled", BG3Options.type_hints)
@@ -228,7 +230,7 @@ class TestProgressiveShopGeneration(BG3TrialsTestBase):
         for location in self.world.get_locations():
             if location.name in expected_priority_locations:
                 self.assertEqual(location.progress_type, LocationProgressType.PRIORITY)
-            elif location.name.startswith("Shop Check"):
+            elif location.name.startswith(canonical_text("locations.shop_check")):
                 self.assertEqual(location.progress_type, LocationProgressType.DEFAULT)
 
 

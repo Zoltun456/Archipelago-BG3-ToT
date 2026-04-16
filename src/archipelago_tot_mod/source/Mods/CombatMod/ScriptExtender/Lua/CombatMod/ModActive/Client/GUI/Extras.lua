@@ -2,32 +2,32 @@ Extras = {}
 
 function Extras.Main(tab)
     ---@type ExtuiTabItem
-    local root = tab:AddTabItem(__("Extras")):AddChildWindow(""):AddGroup("")
+    local root = tab:AddTabItem(TL("h20891676g75dcg4432gb13bga25453198076")):AddChildWindow(""):AddGroup("")
     root.PositionOffset = { 5, 5 }
-    root:AddSeparatorText(__("Extra features"))
+    root:AddSeparatorText(TL("h3550957ag6005g4c02gb066g3a6492441846"))
 
     Components.Conditional(root:AddGroup(U.RandomId()), function(c)
         return {
-            Extras.Button(c.Root, "Clean Ground", "", function(btn)
+            Extras.Button(c.Root, TL("h3372643cg6627g4316g9004g1570f2263752"), "", function(btn)
                 Net.Request("ClearSurfaces"):After(DisplayResponse)
             end),
-            Extras.Button(c.Root, "Remove all Entities", "", function(btn)
+            Extras.Button(c.Root, TL("h835e50a0gd60bg405fg9b06gd6393924f41b"), "", function(btn)
                 Net.Request("RemoveAllEntities"):After(DisplayResponse)
             end),
         }
     end, "ToggleDebug")
 
     root:AddSeparator()
-    Extras.Button(root, __("End Long Rest"), __("Use when stuck in night time."), function(btn)
+    Extras.Button(root, TL("h2af0133ag7fa5g4466gb19cg320093be1022"), TL("hf762a093ga237g4f5cgac45g193a0e673b18"), function(btn)
         Net.Request("CancelLongRest"):After(DisplayResponse)
     end)
 
     root:AddSeparator()
-    Extras.Button(root, __("Cancel Dialog"), __("End the current dialog."), function(btn)
+    Extras.Button(root, TL("h2f6f8b9cg7a3ag4decg91c5gcb8af3e7e9a8"), TL("h83573dd3gd602g4688gab06g40ee092462cc"), function(btn)
         Net.Request("CancelDialog"):After(DisplayResponse)
     end)
 
-    root:AddSeparatorText(__("Recruit Origins (Experimental)"))
+    root:AddSeparatorText(TL("hfafd2f0cgafa8g47a5g9c9cge1c3febec3e1"))
     root:AddDummy(1, 1)
     for name, char in pairs(C.OriginCharacters) do
         local desc = ""
@@ -38,28 +38,28 @@ function Extras.Main(tab)
 
         b.SameLine = true
     end
-    root:AddText(__("Needs to be run multiple times in some cases. May not work in all cases."))
-    root:AddText(__("Level will be reset. Inventory will be emptied."))
-    root:AddText(__("Alfira is barely functional. Larian did not fully implement her as a companion, just a set piece for one camp night. Use at your own risk."))
+    root:AddText(TL("h8810864dgdd45g4d31g8bb2g3b57e9901975"))
+    root:AddText(TL("h5bd81560g0e8dg4403g968egb26534ac9047"))
+    root:AddText(TL("h5d8139c8g08d4g46c9g96ebg20afb4c9028d"))
 
     root:AddSeparator()
-    Extras.Button(root, __("Fix Factions"), __("Resets the faction all of current party members, in case scripting has caused someone to stop being considered an ally. Cannot be used during combat."), function(btn)
+    Extras.Button(root, TL("h2f8e40d4g7adbg4158g91cbgd73e73e9f51c"), TL("h0d1402fbg5841g457aga3e2g731c81c0513e"), function(btn)
         Net.Request("FixFactions"):After(DisplayResponse)
     end)
 
     root:AddSeparator()
-    Extras.Button(root, __("Fix Long Rest"), __("Reruns the scripting that applies each time you press the Camp button, fixing Long Rest. Cannot be used during combat."), function(btn)
+    Extras.Button(root, TL("h2c31139ag7964g446cgb1f0g220a93d20028"), TL("h87eefe1cgd2bbg4ab4g9b4dgdcd2f96ffef0"), function(btn)
         Net.Request("FixLongRest"):After(DisplayResponse)
     end)
 
-    root:AddSeparatorText("Cheat")
-    root:AddInputInt("RogueScore", State.RogueScore or 0).OnChange = Debounce(1000, function(input)
+    root:AddSeparatorText(TL("h3720b0ceg6275g4e59gb041g383fd2631a1d"))
+    root:AddInputInt(TL("h374141e6g6214g414bgb047g272d5265050f"), State.RogueScore or 0).OnChange = Debounce(1000, function(input)
         Net.RCE("PersistentVars.RogueScore = %d", input.Value[1]):After(function()
             Net.Send("SyncState")
         end)
     end)
 
-    root:AddInputInt("Currency", State.Currency or 0).OnChange = Debounce(1000, function(input)
+    root:AddInputInt(TL("h2169b15eg743cg4e40gb125ga826d3078a04"), State.Currency or 0).OnChange = Debounce(1000, function(input)
         Net.RCE("PersistentVars.Currency = %d", input.Value[1]):After(function()
             Net.Send("SyncState")
         end)
@@ -67,7 +67,7 @@ function Extras.Main(tab)
 
     local input = root:AddInputInt(U.RandomId(), 0)
     input.Label = ""
-    local btn = root:AddButton("Add Experience")
+    local btn = root:AddButton(TL("h2feb2fb2g7abeg47aegb1cdg81c813efa3ea"))
     btn.SameLine = true
     btn.OnClick = function(btn)
         Net.RCE("Player.GiveExperience(%d)", input.Value[1]):After(function()

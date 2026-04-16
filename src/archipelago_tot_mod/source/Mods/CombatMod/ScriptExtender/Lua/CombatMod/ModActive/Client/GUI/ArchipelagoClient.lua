@@ -59,10 +59,10 @@ local function build_status_label(apState)
     end
 
     if apState.bridge_stale then
-        return __("Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.")
+        return TL("h48ec300ag1db9g4655gb7bdgf033959fd211")
     end
 
-    return __("Archipelago client idle.")
+    return TL("h28925ddeg7dc7g4088gb1bag16eed39834cc")
 end
 
 local function build_detail_lines(apState)
@@ -73,27 +73,34 @@ local function build_detail_lines(apState)
     local connectionState = tostring(apState.connection_state or "offline")
 
     if apState.bridge_stale or connectionState == "offline" then
-        table.insert(lines, __("Client: Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher."))
-        table.insert(lines, __("This tab mirrors that client and can send Connect, Disconnect, and Resync while it is open."))
+        table.insert(lines, TL("h55a72833g00f2g47d6ga669g41b0044b6392"))
+        table.insert(lines, TL("h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d"))
     end
 
     if room ~= "" then
-        table.insert(lines, __("Room: %s", room))
+        table.insert(lines, TL("h38c0165eg6d95g4430gb0bfg3256d29d1074", room))
     end
     if slotName ~= "" then
-        table.insert(lines, __("Slot: %s", slotName))
+        table.insert(lines, TL("h390f045eg6c5ag4510gb0a3gc376d281e154", slotName))
     end
     if seedName ~= "" then
-        table.insert(lines, __("Seed: %s", seedName))
+        table.insert(lines, TL("h3f4f248eg6a1ag471dgb0c7gc17bd2e5e359", seedName))
     end
 
-    table.insert(lines, __("Checks sent: %d", tonumber(apState.locations_checked or 0) or 0))
-    table.insert(lines, __("Items received: %d", tonumber(apState.items_received or 0) or 0))
-    table.insert(lines, __("DeathLink: %s", apState.death_link_enabled and "On" or "Off"))
+    table.insert(lines, TL("h2fd23e33g7a87g46b6ga1ceg10d003ec32f2", tonumber(apState.locations_checked or 0) or 0))
+    table.insert(lines, TL("h34bdbce7g61e8g4e9bga078ge8fd425acadf", tonumber(apState.items_received or 0) or 0))
+    table.insert(
+        lines,
+        TL(
+            "h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b",
+            apState.death_link_enabled and TL("h31f326aeg64a6g473fgb02cg0159d20e237b")
+                or TL("h37f322c6g62a6g4779gb04cg011f526e233d")
+        )
+    )
 
     local lastError = tostring(apState.last_error or "")
     if lastError ~= "" then
-        table.insert(lines, __("Last error: %s", lastError))
+        table.insert(lines, TL("h2bf6eed8g7ea3g4bb8g918cg5ddeb3ae7ffc", lastError))
     end
 
     return table.concat(lines, "\n")
@@ -123,7 +130,7 @@ local function build_log_text(apState)
     end
 
     if #lines == 0 then
-        return __("No Archipelago log lines yet.")
+        return TL("h01c821efg549dg474bga32fgb12dc10d930f")
     end
 
     return table.concat(lines, "\n")
@@ -131,32 +138,32 @@ end
 
 ---@param tab ExtuiTabBar
 function ArchipelagoClient.Main(tab)
-    local root = tab:AddTabItem(__("Archipelago Client")):AddChildWindow(""):AddGroup("")
+    local root = tab:AddTabItem(TL("h2ec6a75eg7b93g4f20gb1dfg5946d3fd7b64")):AddChildWindow(""):AddGroup("")
     root.PositionOffset = { 5, 5 }
 
-    root:AddSeparatorText(__("Status"))
+    root:AddSeparatorText(TL("h21911aeeg74c4g44fbgb12ag229dd30800bf"))
     local statusText = root:AddText("")
     local detailText = root:AddText("")
     root:AddDummy(1, 4)
 
-    root:AddSeparatorText(__("Connection"))
+    root:AddSeparatorText(TL("h29ae997ag7cfbg4cc2gb1a9gdaa4938bf886"))
     if not IsHost then
-        root:AddText(__("Only the host can connect or disconnect the Archipelago client."))
+        root:AddText(TL("hcce399e2g99b6g4ccbgbffdg0aad1ddf288f"))
     end
 
-    local roomInput = root:AddInputText(__("Room address"))
+    local roomInput = root:AddInputText(TL("h29e28ae6g7cb7g4dfbgb1adg1b9d538f39bf"))
     roomInput.Text = tostring(ArchipelagoClient.Settings.ServerAddress or "")
     roomInput.OnChange = function(input)
         ArchipelagoClient.Settings.ServerAddress = input.Text
     end
 
-    local slotInput = root:AddInputText(__("Slot name"))
+    local slotInput = root:AddInputText(TL("h237e812eg762bg4d47gb104gdb21d326f903"))
     slotInput.Text = tostring(ArchipelagoClient.Settings.SlotName or "")
     slotInput.OnChange = function(input)
         ArchipelagoClient.Settings.SlotName = input.Text
     end
 
-    local passwordInput = root:AddInputText(__("Password"))
+    local passwordInput = root:AddInputText(TL("h2643860ag7316g4d35gb157g0b5393752971"))
     pcall(function()
         passwordInput.Password = true
     end)
@@ -171,11 +178,11 @@ function ArchipelagoClient.Main(tab)
         passwordDraft = input.Text
     end
 
-    root:AddText(__("Room and slot reset for each game load. Password is kept for this session only."))
-    root:AddText(__("Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher first. This tab mirrors that client and can control it while it is open."))
-    root:AddText(__("The room field defaults to `archipelago.gg:`. Enter the current port and slot name here, then connect in game."))
+    root:AddText(TL("hf42a12e9ga17fg447bg8c71g921dae53b03f"))
+    root:AddText(TL("hc701aedfg9254g4fb8gaf43g29decd610bfc"))
+    root:AddText(TL("h202a0f80g757fg45adg9131g93cb3313b1e9"))
 
-    local connectButton = root:AddButton(__("Connect"))
+    local connectButton = root:AddButton(TL("h20490c7ag751cg4592gb137ga3f4931581d6"))
     connectButton.OnClick = function()
         Net.Request("ArchipelagoClientCommand", {
             command = "connect",
@@ -185,7 +192,7 @@ function ArchipelagoClient.Main(tab)
         }):After(DisplayResponse)
     end
 
-    local disconnectButton = root:AddButton(__("Disconnect"))
+    local disconnectButton = root:AddButton(TL("h2e67a71ag7b32g4f24gb1d5g494293f76b60"))
     disconnectButton.SameLine = true
     disconnectButton.OnClick = function()
         Net.Request("ArchipelagoClientCommand", {
@@ -193,7 +200,7 @@ function ArchipelagoClient.Main(tab)
         }):After(DisplayResponse)
     end
 
-    local resyncButton = root:AddButton(__("Resync"))
+    local resyncButton = root:AddButton(TL("h27dae07eg728fg4b52gb14eg9d34d36cbf16"))
     resyncButton.SameLine = true
     resyncButton.OnClick = function()
         Net.Request("ArchipelagoClientCommand", {
@@ -201,7 +208,7 @@ function ArchipelagoClient.Main(tab)
         }):After(DisplayResponse)
     end
 
-    local clearLogButton = root:AddButton(__("Clear Log"))
+    local clearLogButton = root:AddButton(TL("h39462a12g6c13g47f4gb0a7g5192128573b0"))
     clearLogButton.SameLine = true
     clearLogButton.OnClick = function()
         Net.Request("ArchipelagoClientCommand", {
@@ -209,9 +216,9 @@ function ArchipelagoClient.Main(tab)
         }):After(DisplayResponse)
     end
 
-    root:AddSeparatorText(__("Logs"))
+    root:AddSeparatorText(TL("h31b714deg64e2g4418gb028g427ed20a605c"))
     local scrollable = root:AddChildWindow(U.RandomId())
-    local logText = scrollable:AddText(__("No Archipelago log lines yet."))
+    local logText = scrollable:AddText(TL("h01c821efg549dg474bga32fgb12dc10d930f"))
 
     local function refresh_form(formState)
         local nextState = formState or {}

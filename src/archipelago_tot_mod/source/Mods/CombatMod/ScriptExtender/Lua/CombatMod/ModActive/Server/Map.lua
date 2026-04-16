@@ -58,7 +58,7 @@ function Object:Teleport(character, noOffset)
     local teleporting = Player.TeleportToAct(act)
 
     if teleporting then
-        Player.Notify(__("Teleporting to different ACT"))
+        Player.Notify(TL("hc396e53dg96c3g4b06g8f0ag5d60ed287f42"))
         teleporting:After(function()
             for _, character in pairs(charactersToTeleport) do
                 self:Teleport(character, noOffset)

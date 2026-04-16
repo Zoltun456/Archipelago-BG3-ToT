@@ -156,7 +156,7 @@ function Action.SpawnHelper()
         return
     end
 
-    Player.Notify(__("Combat is Starting."))
+    Player.Notify(TL("h44afa6c1g11fag4f39g8779gc95f255beb7d"))
 
     local x, y, z = table.unpack(s.Map.Enter)
 
@@ -252,11 +252,11 @@ function Action.UpdateHelperName()
     local s = Current()
 
     local text = {
-        __("Scenario: %s", tostring(s.Name)),
-        __("Round: %s", tostring(s.Round)),
-        __("Total Rounds: %s", tostring(#s.Timeline)),
-        __("Upcoming Spawns: %s", tostring(#(s.Enemies[s.Round + 1] or {}))),
-        __("Kill Score: %s", s:KillScore()),
+        TL("h218206b6g74d7g453egb12bg13585309317a", tostring(s.Name)),
+        TL("h3d5fde62g680ag48b3gb0e6gced512c4ecf7", tostring(s.Round)),
+        TL("h33c0b3bcg6695g4e6eg900fg3808f22d1a2a", tostring(#s.Timeline)),
+        TL("h8528df02gd07dg48a5gbb61gbec319439ce1", tostring(#(s.Enemies[s.Round + 1] or {}))),
+        TL("h34873bdcg61d2g46e8g907bg408ef25962ac", s:KillScore()),
     }
 
     Ext.Loca.UpdateTranslatedString(C.ScenarioHelper.Handle, table.concat(text, "\n"))
@@ -330,7 +330,7 @@ function Action.SpawnRound()
                 interval = 100,
             })
             :After(function(enemy, posCorrectionChainable)
-                Player.Notify(__("Enemy %s spawned.", enemy:GetTranslatedName()), true, enemy:GetId())
+                Player.Notify(TL("h37ed89a8g62b8g4dcfg904dgeba9b26fc98b", enemy:GetTranslatedName()), true, enemy:GetId())
                 Event.Trigger("ScenarioEnemySpawned", Current(), enemy)
 
                 return posCorrectionChainable
@@ -374,7 +374,7 @@ function Action.StartRound()
 
 
     s.Round = s.Round + 1
-    Player.Notify(__("Round %d", s.Round))
+    Player.Notify(TL("h38b71f0eg6de2g44a5gb0b8g42c3d29a60e1", s.Round))
 
     Event.Trigger("ScenarioRoundStarted", s)
 
@@ -401,7 +401,7 @@ function Action.NotifyStarted()
             return true
         end
 
-        Player.Notify(__("Leave camp to join the battle."))
+        Player.Notify(TL("h6119ae15g344cg4fb4g8522ga9d267008bf0"))
 
         return false
     end, {
@@ -424,7 +424,7 @@ function Action.MapEntered()
         Enemy.Cleanup()
 
         Event.Trigger("ScenarioMapEntered", Current())
-        Player.Notify(__("Entered combat area."))
+        Player.Notify(TL("hb6f1a7a1ge3a4g4f2fg885cg29492a7e0b6b"))
 
         for i, guid in pairs(Current().Map.Helpers) do
             StoryBypass.ClearSurfaces(guid, 4)
@@ -631,7 +631,7 @@ function Scenario.RestoreFromSave(state)
     xpcall(function()
         PersistentVars.Scenario = Scenario.Restore(state)
 
-        Player.Notify(__("Scenario restored."))
+        Player.Notify(TL("h2bed91d3g7eb8g4c48ga18dgea2e03afc80c"))
 
         if not S():HasStarted() then
             if S().OnMap then
@@ -651,7 +651,7 @@ function Scenario.RestoreFromSave(state)
         L.Error(err)
         Enemy.Cleanup()
         PersistentVars.Scenario = nil
-        Player.Notify(__("Failed to restore scenario."))
+        Player.Notify(TL("hdaa39862g8ff6g4cd3gbe99g0ab51cbb2897"))
     end)
 end
 
@@ -777,7 +777,7 @@ function Scenario.Start(template, map)
         table.insert(scenario.Positions, math.newRandom(#map.Spawns))
     end
 
-    Player.Notify(__("Scenario %s started.", template.Name))
+    Player.Notify(TL("hbc1acb0ege94fg49e5gb8f2g9f83dad0bda1", template.Name))
     PersistentVars.Scenario = scenario
 
     Action.NotifyStarted()
@@ -791,7 +791,7 @@ end
 function Scenario.End()
     Action.RemoveHelper()
 	Action.RemoveTurnHelper()
-    Player.Notify(__("Scenario ended."))
+    Player.Notify(TL("h28fa5cc5g7dafg4099g81bcg96ff639eb4dd"))
     Current().Map:Clear()
     Action.GiveReward()
 	WaitTicks(72, function()
@@ -831,7 +831,7 @@ function Scenario.Stop()
     Current().Map:Clear()
 
     PersistentVars.Scenario = nil
-    Player.Notify(__("Scenario stopped."))
+    Player.Notify(TL("h2a7aafc0g7f2fg4fa9g9194g99cf33b6bbed"))
 end
 
 Scenario.Teleport = Throttle(3000, function()
@@ -848,10 +848,10 @@ function Scenario.CheckEnded()
     local s = Current()
     if not s:HasMoreRounds() then
         if #s.SpawnedEnemies == 0 then
-            Player.Notify(__("All enemies are dead."))
+            Player.Notify(TL("hb5676e2age032g43b7gb865g45d19a4767f3"))
             Scenario.End()
         else
-            Player.Notify(__("%d enemies left.", #s.SpawnedEnemies))
+            Player.Notify(TL("h29013f4fg7c54g46a1ga1a3g20c7c38102e5", #s.SpawnedEnemies))
         end
     end
 end
@@ -863,7 +863,7 @@ function Scenario.CheckShouldStop()
 
     if Player.InCamp() and not Player.InCombat() then
         Scenario.Stop()
-        Player.Notify(__("Returned to camp."))
+        Player.Notify(TL("h2bc3faaag7e96g4affgb18fg0c9993ad2ebb"))
     end
 end
 
@@ -1234,7 +1234,7 @@ Ext.Osiris.RegisterListener(
 
         if table.find(s.SpawnedEnemies, function(e)
 			if e.Tier == "avatar" and not seenAvatar then
-				Player.Notify(__("An avatar has descended. This is the final challenge."))
+				Player.Notify(TL("h39e2bc3fg6cb7g4e96ga0adg18f0c28f3ad2"))
 				seenAvatar = true
 			end
 			if PersistentVars.GMMode and e.Name ~= "Temporary" then
@@ -1255,7 +1255,7 @@ Ext.Osiris.RegisterListener(
 
             if (Osi.IsAlly(Player.Host(), guid) == 0 or PersistentVars.GMMode) and Osi.GetTemplate(guid) ~= "TOT_Turn_Helper_3f0377a6-1bf5-4e9e-a186-d2a934f0a0c0" then
                 table.insert(s.SpawnedEnemies, e)
-                Player.Notify(__("Enemy %s joined.", e:GetTranslatedName()))
+                Player.Notify(TL("h35c56325g6090g4367g806fg6501624d4723", e:GetTranslatedName()))
 
                 Event.Trigger("ScenarioEnemySpawned", Current(), e)
 
@@ -1290,7 +1290,7 @@ Ext.Osiris.RegisterListener(
 
                 -- let it count twice for loot
                 table.insert(s.SpawnedEnemies, e)
-                Player.Notify(__("Enemy %s rejoined.", e:GetTranslatedName()))
+                Player.Notify(TL("h37bb2c47g62eeg4791ga048g81f7426aa3d5", e:GetTranslatedName()))
                 -- table.remove(s.KilledEnemies, i)
 
                 Action.EnemyAdded(e)
@@ -1325,7 +1325,7 @@ Ext.Osiris.RegisterListener(
                 table.remove(s.SpawnedEnemies, i)
 
                 -- might revive and rejoin battle
-                Player.Notify(__("Enemy %s killed.", e:GetTranslatedName()))
+                Player.Notify(TL("h35d521a9g6080g474fg806eg6129a24c430b", e:GetTranslatedName()))
                 Event.Trigger("ScenarioEnemyKilled", Current(), e)
 
                 spawnedKilled = true
@@ -1423,7 +1423,7 @@ Ext.Osiris.RegisterListener(
 							Net.Send("RemoveHelperPortraits")
 						end)
 					end
-                    Player.Notify(__("Combat started."))
+                    Player.Notify(TL("h2e517b01g7b04g42e5g81d6g248323f406a1"))
 
                     Scenario.CombatSpawned()
                 end

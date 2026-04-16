@@ -692,7 +692,7 @@ end)
 Event.On(
     "ScenarioEnded",
     Async.Wrap(function(scenario)
-        Player.Notify(__("Dropping loot."), true)
+        Player.Notify(TL("h2a64adc6g7f31g4f89gb195g79ef53b75bcd"), true)
 
         local lootMultiplier = 1
         if PersistentVars.Unlocked.LootMultiplier then

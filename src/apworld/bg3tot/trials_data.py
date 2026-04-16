@@ -7,6 +7,8 @@ from collections.abc import Mapping
 from importlib import resources
 from typing import Any
 
+from .i18n import canonical_text
+
 
 MAX_CLEAR_CHECKS = 40
 MAX_KILL_CHECKS = 50
@@ -23,7 +25,10 @@ PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
 DEFAULT_PROGRESSIVE_SHOP_UNLOCK_RATE = 10
 PROGRESSIVE_SHOP_UNLOCK_RATES = (5, 10, 20, 25, 50, 100)
 GOAL_NG_PLUS_FRAGMENT_GATE_PERCENTS = (0, 25, 50, 75, 100)
-SHOP_FRAGMENT_ITEM_NAME = "Shop Fragment"
+GAME_NAME = canonical_text("world.game_name")
+REGION_NAME = canonical_text("world.region_name")
+VICTORY_NAME = canonical_text("world.victory_name")
+SHOP_FRAGMENT_ITEM_NAME = canonical_text("shop.fragment_item_name")
 
 
 def _normalized_copies(value: Any) -> int:
@@ -244,7 +249,7 @@ def progressive_shop_section_indices(total_shop_unlocks: int, fragment_count: in
 def progressive_shop_section_name(section_index: int, section_count: int) -> str:
     if section_index <= 0 or section_count <= 0:
         return ""
-    return f"Shop Fragment {section_index}/{section_count}"
+    return canonical_text("shop.section_name", section_index=section_index, section_count=section_count)
 
 
 def build_shop_layout(
@@ -307,19 +312,19 @@ def _counter_location_name(label: str, index: int, total: int | None = None) -> 
 
 
 def clear_location_name(index: int, total: int | None = None) -> str:
-    return _counter_location_name("Clear Check", index, total)
+    return _counter_location_name(canonical_text("locations.clear_check"), index, total)
 
 
 def kill_location_name(index: int, total: int | None = None) -> str:
-    return _counter_location_name("Kill Check", index, total)
+    return _counter_location_name(canonical_text("locations.kill_check"), index, total)
 
 
 def perfect_location_name(index: int, total: int | None = None) -> str:
-    return _counter_location_name("Perfect Check", index, total)
+    return _counter_location_name(canonical_text("locations.perfect_check"), index, total)
 
 
 def roguescore_location_name(index: int, total: int | None = None) -> str:
-    return _counter_location_name("RogueScore Check", index, total)
+    return _counter_location_name(canonical_text("locations.roguescore_check"), index, total)
 
 
 def shop_slot_display_name(index: int, option_values: Any = None) -> str:
@@ -331,7 +336,7 @@ def shop_slot_display_name(index: int, option_values: Any = None) -> str:
 
 
 def shop_location_name(index: int, total: int | None = None) -> str:
-    return _counter_location_name("Shop Check", index, total)
+    return _counter_location_name(canonical_text("locations.shop_check"), index, total)
 
 
 def build_location_name_to_id() -> dict[str, int]:
@@ -352,7 +357,7 @@ def build_location_name_to_id() -> dict[str, int]:
 
 
 def build_bg3_location_to_ap_locations() -> dict[str, list[str]]:
-    mapping: dict[str, list[str]] = {"TOT-GOAL-001": ["Victory"]}
+    mapping: dict[str, list[str]] = {"TOT-GOAL-001": [VICTORY_NAME]}
 
     for index in range(1, MAX_CLEAR_CHECKS + 1):
         mapping[f"TOT-CLEAR-{index:03d}"] = [clear_location_name(index)]
@@ -378,7 +383,7 @@ def location_id_for_token(
     shop_count: int,
 ) -> int | str | None:
     if token == "TOT-GOAL-001":
-        return "Victory"
+        return VICTORY_NAME
 
     matchers = (
         (r"^TOT-CLEAR-(\d{3})$", clear_count, clear_location_id),

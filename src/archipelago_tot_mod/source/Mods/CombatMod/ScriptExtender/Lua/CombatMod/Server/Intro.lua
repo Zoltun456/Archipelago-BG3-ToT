@@ -98,7 +98,7 @@ function Intro.AskTutSkip()
 					-- prevent colony teleport on load
 					Osi.DB_OnlyOnce("KethericShowdown_CrownController")
 
-                    Player.Notify(__("Starting items added. Hirelings unlocked."))
+                    Player.Notify(TL("hc1216d49g9474g4381g8f21g25e7ad0307c5"))
                     done = true
 
                     Osi.AutoSave()

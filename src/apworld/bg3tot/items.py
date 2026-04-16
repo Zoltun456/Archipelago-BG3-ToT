@@ -9,7 +9,9 @@ if TYPE_CHECKING:
     from .world import BG3World
 
 from .equipment import EQUIPMENT
+from .i18n import canonical_text
 from .trials_data import (
+    GAME_NAME,
     SHOP_FRAGMENT_ITEM_NAME,
     build_shop_layout,
     UNLOCK_CATALOG,
@@ -25,57 +27,57 @@ DUPLICATE_ITEM_FILLERS = [
 ]
 
 CUSTOM_FILLERS = [
-    ["Currency +25", "ToTFiller:Currency:25"],
-    ["Currency +50", "ToTFiller:Currency:50"],
-    ["Currency +100", "ToTFiller:Currency:100"],
+    [canonical_text("items.custom_fillers.currency_25"), "ToTFiller:Currency:25"],
+    [canonical_text("items.custom_fillers.currency_50"), "ToTFiller:Currency:50"],
+    [canonical_text("items.custom_fillers.currency_100"), "ToTFiller:Currency:100"],
     #["RogueScore +5", "ToTFiller:RogueScore:5"],
     #["RogueScore +10", "ToTFiller:RogueScore:10"],
     #["RogueScore +25", "ToTFiller:RogueScore:25"],
-    ["XP +1000", "ToTFiller:Experience:1000"],
+    [canonical_text("items.custom_fillers.xp_1000"), "ToTFiller:Experience:1000"],
     #["XP +3000", "ToTFiller:Experience:3000"],
 ]
 
 TRAP_OPTIONS = [
-    ["Monster Spawn Trap", "Trap-Monster"],
-    ["Bleeding Trap", "Trap-Bleeding"],
-    ["Stunned Trap", "Trap-Stun"],
-    ["Confusion Trap", "Trap-Confusion"],
-    ["Sussur Trap", "Trap-Sussur"],
-    ["Clown Trap", "Trap-Clown"],
-    ["Overburdened Trap", "Trap-Overburdened"],
-    ["Bane Trap", "Trap-Bane"],
-    ["Blindness Trap", "Trap-Blindness"],
-    ["Slow Trap", "Trap-Slow"],
-    ["Poisoned Trap", "Trap-Poisoned"],
-    ["Faerie Fire Trap", "Trap-FaerieFire"],
-    ["Ensnared Trap", "Trap-Ensnared"],
-    ["Frightened Trap", "Trap-Frightened"],
-    ["Burning Trap", "Trap-Burning"],
-    ["Hold Person Trap", "Trap-HoldPerson"],
-    ["Cheesed Trap", "Trap-Cheesed"],
-    ["Silence Trap", "Trap-Silence"],
-    ["Grease Trap", "Trap-Grease"],
+    [canonical_text("items.traps.monster"), "Trap-Monster"],
+    [canonical_text("items.traps.bleeding"), "Trap-Bleeding"],
+    [canonical_text("items.traps.stunned"), "Trap-Stun"],
+    [canonical_text("items.traps.confusion"), "Trap-Confusion"],
+    [canonical_text("items.traps.sussur"), "Trap-Sussur"],
+    [canonical_text("items.traps.clown"), "Trap-Clown"],
+    [canonical_text("items.traps.overburdened"), "Trap-Overburdened"],
+    [canonical_text("items.traps.bane"), "Trap-Bane"],
+    [canonical_text("items.traps.blindness"), "Trap-Blindness"],
+    [canonical_text("items.traps.slow"), "Trap-Slow"],
+    [canonical_text("items.traps.poisoned"), "Trap-Poisoned"],
+    [canonical_text("items.traps.faerie_fire"), "Trap-FaerieFire"],
+    [canonical_text("items.traps.ensnared"), "Trap-Ensnared"],
+    [canonical_text("items.traps.frightened"), "Trap-Frightened"],
+    [canonical_text("items.traps.burning"), "Trap-Burning"],
+    [canonical_text("items.traps.hold_person"), "Trap-HoldPerson"],
+    [canonical_text("items.traps.cheesed"), "Trap-Cheesed"],
+    [canonical_text("items.traps.silence"), "Trap-Silence"],
+    [canonical_text("items.traps.grease"), "Trap-Grease"],
 ]
 
 # Keep the legacy trap items registered so older seeds can still deserialize them,
 # but only the supported subset should be generated going forward.
 TRAP_ITEM_NAME_BY_OPTION = {
-    "Monster": "Monster Spawn Trap",
-    "Bleeding": "Bleeding Trap",
-    "Stun": "Stunned Trap",
-    "Confusion": "Confusion Trap",
-    "Bane": "Bane Trap",
-    "Blindness": "Blindness Trap",
-    "Slow": "Slow Trap",
-    "Poisoned": "Poisoned Trap",
-    "FaerieFire": "Faerie Fire Trap",
-    "Ensnared": "Ensnared Trap",
-    "Frightened": "Frightened Trap",
-    "Burning": "Burning Trap",
-    "HoldPerson": "Hold Person Trap",
-    "Cheesed": "Cheesed Trap",
-    "Silence": "Silence Trap",
-    "Grease": "Grease Trap",
+    "Monster": canonical_text("items.traps.monster"),
+    "Bleeding": canonical_text("items.traps.bleeding"),
+    "Stun": canonical_text("items.traps.stunned"),
+    "Confusion": canonical_text("items.traps.confusion"),
+    "Bane": canonical_text("items.traps.bane"),
+    "Blindness": canonical_text("items.traps.blindness"),
+    "Slow": canonical_text("items.traps.slow"),
+    "Poisoned": canonical_text("items.traps.poisoned"),
+    "FaerieFire": canonical_text("items.traps.faerie_fire"),
+    "Ensnared": canonical_text("items.traps.ensnared"),
+    "Frightened": canonical_text("items.traps.frightened"),
+    "Burning": canonical_text("items.traps.burning"),
+    "HoldPerson": canonical_text("items.traps.hold_person"),
+    "Cheesed": canonical_text("items.traps.cheesed"),
+    "Silence": canonical_text("items.traps.silence"),
+    "Grease": canonical_text("items.traps.grease"),
 }
 
 UNLOCK_ITEM_NAMES = {unlock["name"] for unlock in UNLOCK_CATALOG}
@@ -134,13 +136,13 @@ BASE_FILLER_ITEM_NAMES = [item[0] for item in CUSTOM_FILLERS + DUPLICATE_ITEM_FI
 EQUIPMENT_FILLER_ITEM_NAMES = [item[0] for item in EQUIPMENT_FILLERS]
 FILLER_ITEM_NAMES = BASE_FILLER_ITEM_NAMES + EQUIPMENT_FILLER_ITEM_NAMES
 ITEM_NAME_GROUPS = {
-    "Unlocks": UNLOCK_ITEM_NAMES,
-    "Progression Unlocks": PROGRESSION_UNLOCK_ITEM_NAMES,
-    "Shop Progression": {SHOP_FRAGMENT_ITEM_NAME},
-    "Useful Unlocks": USEFUL_UNLOCK_ITEM_NAMES,
-    "Filler Unlocks": FILLER_UNLOCK_ITEM_NAMES,
-    "Fillers": set(FILLER_ITEM_NAMES),
-    "Traps": TRAP_ITEM_NAMES,
+    canonical_text("item_groups.unlocks"): UNLOCK_ITEM_NAMES,
+    canonical_text("item_groups.progression_unlocks"): PROGRESSION_UNLOCK_ITEM_NAMES,
+    canonical_text("item_groups.shop_progression"): {SHOP_FRAGMENT_ITEM_NAME},
+    canonical_text("item_groups.useful_unlocks"): USEFUL_UNLOCK_ITEM_NAMES,
+    canonical_text("item_groups.filler_unlocks"): FILLER_UNLOCK_ITEM_NAMES,
+    canonical_text("item_groups.fillers"): set(FILLER_ITEM_NAMES),
+    canonical_text("item_groups.traps"): TRAP_ITEM_NAMES,
 }
 
 ITEM_TUPLES: list[list[str | int | ItemClassification]] = []
@@ -177,7 +179,7 @@ UNLOCK_ITEM_NAME_BY_ID = {unlock_id: name for unlock_id, name in UNLOCK_NAME_BY_
 
 
 class BG3Item(Item):
-    game = "Baldur's Gate 3 - ToT"
+    game = GAME_NAME
 
 
 def get_enabled_filler_item_names(world: BG3World) -> list[str]:
@@ -220,10 +222,7 @@ def create_all_items(world: BG3World) -> None:
 
     number_of_unfilled_locations = len(world.multiworld.get_unfilled_locations(world.player))
     if len(itempool) > number_of_unfilled_locations:
-        raise OptionError(
-            "This slot generates more local progression items than it has locations available. "
-            "Reduce the Progressive Shop fragment count or add more non-shop checks."
-        )
+        raise OptionError(canonical_text("errors.local_progression_overflow"))
     needed_number_of_filler_items = max(0, number_of_unfilled_locations - len(itempool))
     itempool.extend(world.create_filler() for _ in range(needed_number_of_filler_items))
 

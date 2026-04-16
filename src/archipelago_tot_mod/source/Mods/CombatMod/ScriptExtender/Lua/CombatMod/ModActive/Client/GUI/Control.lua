@@ -38,7 +38,7 @@ end
 function Control.Main(tab)
     Control.Events()
 
-    local root = tab:AddTabItem(__("Play"))
+    local root = tab:AddTabItem(TL("h307360eeg6526g435bgb034g053dd216271f"))
 
     local header = root:AddSeparatorText("")
     Components.Layout(root, 1, 2, function(layout)
@@ -52,32 +52,32 @@ function Control.Main(tab)
             if state and state.Scenario then
                 startLayout.Table.Visible = false
                 stopLayout.Table.Visible = true
-                header.Label = __("Running")
+                header.Label = TL("h21780c4eg742dg4591gb124gb3f7d30691d5")
             else
                 startLayout.Table.Visible = true
                 stopLayout.Table.Visible = false
-                header.Label = __("Start Menu")
+                header.Label = TL("h3166c60eg6433g4935gb025g5f53d2077d71")
             end
 
             if state and state.RogueModeActive then
-                header.Label = header.Label .. " - RogueScore: " .. tostring(state.RogueScore)
+                header.Label = TL("hab6c1c62gfe39g4493gb985gf2f51ba7d0d7", header.Label, tonumber(state.RogueScore or 0) or 0)
             end
         end):Exec()
     end)
 
     root:AddSeparator()
     root:AddText(__(""))
-    root:AddText(__("The encounter budget increases as your RogueScore increases and scales faster with higher difficulties."))
+    root:AddText(TL("h1a239f49g4f76g4ca1g8291g0ac7a0b328e5"))
     root:AddText(__(""))
-    root:AddText(__("'Bias' refers to the way that budget is spent. High Bias leans toward selecting expensive monsters. Low Bias leans toward selecting many cheap monsters."))
+    root:AddText(TL("hbeac8647gebf9g4d31ga8d9gfb574afbd975"))
     root:AddText(__(""))
-    root:AddText(__("Lone Wolf Mode is recommended for players who want to play solo. It can be enabled on the Config tab, and it can be used in conjunction with Challenge Mode or Hell Mode. Remember to Reset Templates after enabling or disabling Lone Wolf Mode."))
+    root:AddText(TL("h214532ddg7410g4678g8127g601ee305423c"))
     root:AddText(__(""))
-	root:AddText(__("Want even more bosses? New complex legendary mechanics? Install Spells of Exandria to add Critical Role monsters to the pool!"))
+	root:AddText(TL("hb495ade9ge1c0g4f8bg887ag69edaa584bcf"))
     root:AddText(__(""))
     root:AddSeparator()
 
-    root:AddSeparatorText(__("Logs"))
+    root:AddSeparatorText(TL("h31b714deg64e2g4418gb028g427ed20a605c"))
 
     local scrollable = root:AddChildWindow(U.RandomId())
 
@@ -94,9 +94,9 @@ end
 
 function Control.StartPanel(root)
     return Components.Layout(root, 3, 1, function(startLayout)
-        startLayout.Cells[1][1]:AddText(__("Scenarios"))
-		startLayout.Cells[1][2]:AddText(__("Difficulty"))
-        startLayout.Cells[1][3]:AddText(__("Maps"))
+        startLayout.Cells[1][1]:AddText(TL("h2553979eg7006g4c2cgb166g0a4ad3442868"))
+		startLayout.Cells[1][2]:AddText(TL("h2c9ee446g79cbg4b11gb1fagdd7753d8ff55"))
+        startLayout.Cells[1][3]:AddText(TL("h35341416g6061g4414gb060g727252425050"))
         local listCols = startLayout.Cells[1]
 
         local scenarioSelection = Components.Selection(listCols[1])
@@ -117,17 +117,17 @@ function Control.StartPanel(root)
             end
             scenarioSelPagination.UpdateItems(scenarioSelection.Selectables)
 
-			difficultySelection.AddItem("Regular Mode: Variety, power, and quantity of monsters scales gently.", 0)
-			difficultySelection.AddItem("Challenge Mode: A challenge for experienced players.", 1)
-			difficultySelection.AddItem("Hell Mode: For players who want a punishing, unfair experience.", 2)
+			difficultySelection.AddItem(TL("hda5a3f21g8f0fg46a7g8e96g90c12cb4b2e3"), 0)
+			difficultySelection.AddItem(TL("heac966ffgbf9cg433agad9fga55ccfbd877e"), 1)
+			difficultySelection.AddItem(TL("h82b49961gd7e1g4cc3g8b18g7aa5293a5887"), 2)
 			difficultySelPagination.UpdateItems(difficultySelection.Selectables)
 
-            mapSelection.AddItem("Random", nil)
+            mapSelection.AddItem(TL("h279d3a06g72c8g46f5gb14age0935368c2b1"), nil)
             if not State.RogueModeActive then
                 for i, item in ipairs(event.Payload.Maps) do
                     local label = item.Name
                     if item.Author then
-                        label = item.Author .. "'s " .. label
+                        label = TL("h3b4890a6g6e1dg4c5fgb087gba3952a5981b", item.Author, label)
                     end
 
                     mapSelection.AddItem(label, item.Name)
@@ -137,7 +137,7 @@ function Control.StartPanel(root)
             mapSelPagination.UpdateItems(mapSelection.Selectables)
         end)
 
-        local startButton = listCols[1]:AddButton(__("Start"))
+        local startButton = listCols[1]:AddButton(TL("h323096eeg6765g4c3bgb010g3a5dd232187f"))
         startButton.IDContext = U.RandomId()
 
         local pressed = false
@@ -157,19 +157,19 @@ function Control.StartPanel(root)
         end
 
         Components.Conditional(listCols[3], function(cond)
-            local grp = cond.Root:AddGroup(__("Debug"))
+            local grp = cond.Root:AddGroup(TL("h366718e6g6332g44dbgb055g42bd5277609f"))
 
-            grp:AddButton(__("Teleport")).OnClick = function(button)
+            grp:AddButton(TL("h25531a42g7006g44f1gb166g0297134420b5")).OnClick = function(button)
                 Event.Trigger("Teleport", { Map = mapSelection.Value })
             end
 
-            local b2 = grp:AddButton(__("Ping Spawns"))
+            local b2 = grp:AddButton(TL("h315e322eg640bg4677gb026gd011d204f233"))
             b2.SameLine = true
             b2.OnClick = function(button)
                 Event.Trigger("PingSpawns", { Map = mapSelection.Value })
             end
 
-            local b3 = grp:AddButton(__("Kill spawned"))
+            local b3 = grp:AddButton(TL("h2d5b4e72g780eg41b2gb1e6g87d413c4a5f6"))
             b3.OnClick = function()
                 Net.Send("KillSpawned")
             end
@@ -177,7 +177,7 @@ function Control.StartPanel(root)
             return grp
         end, "ToggleDebug").Update(Mod.Debug)
 
-        listCols[1]:AddButton(__("Go to Camp")).OnClick = function(button)
+        listCols[1]:AddButton(TL("h3160102eg6435g4457gb025g3231d2071013")).OnClick = function(button)
             Event.Trigger("ToCamp")
         end
     end)
@@ -192,11 +192,11 @@ function Control.RunningPanel(root)
         Components.Computed(scenarioName, function(box, state)
             if state.Scenario then
                 local text = {
-                    __("Scenario: %s", tostring(state.Scenario.Name)),
-                    __("Round: %s", tostring(state.Scenario.Round)),
-                    __("Total Rounds: %s", tostring(#state.Scenario.Timeline)),
-                    __("Upcoming Spawns: %s", tostring(#(state.Scenario.Enemies[state.Scenario.Round + 1] or {}))),
-                    __("Killed: %s", tostring(#state.Scenario.KilledEnemies)),
+                    TL("h218206b6g74d7g453egb12bg13585309317a", tostring(state.Scenario.Name)),
+                    TL("h3d5fde62g680ag48b3gb0e6gced512c4ecf7", tostring(state.Scenario.Round)),
+                    TL("h33c0b3bcg6695g4e6eg900fg3808f22d1a2a", tostring(#state.Scenario.Timeline)),
+                    TL("h8528df02gd07dg48a5gbb61gbec319439ce1", tostring(#(state.Scenario.Enemies[state.Scenario.Round + 1] or {}))),
+                    TL("h2cb5c7a2g79e0g492fgb1f8g6f4913da4d6b", tostring(#state.Scenario.KilledEnemies)),
                 }
                 return table.concat(text, "\n")
             end
@@ -206,11 +206,11 @@ function Control.RunningPanel(root)
 		Components.Computed(difficultyName, function(box, state)
             if state.Scenario then
                 if state.HardMode then
-				    return __("Difficulty: Challenge Mode")
+				    return TL("hcb371950g9e62g44c0g9f80g42a63da26084")
 				elseif state.SuperHardMode then
-				    return __("Difficulty: Hell Mode")
+				    return TL("h8c24778bgd971g422dgabf1g744b89d35669")
 				else 
-				    return __("Difficulty: Regular Mode")
+				    return TL("hcdb6a75eg98e3g4f20gbfe8g5946ddca7b64")
 				end
             end
         end, "StateChange")
@@ -224,27 +224,27 @@ function Control.RunningPanel(root)
 
                 local mapName = state.Scenario.Map.Name
                 if state.Scenario.Map.Author then
-                    mapName = state.Scenario.Map.Author .. "'s " .. mapName
+                    mapName = TL("h3b4890a6g6e1dg4c5fgb087gba3952a5981b", state.Scenario.Map.Author, mapName)
                 end
 
-                return __("Map: %s", string.format("%s - %s", mapName, act))
+                return TL("h3cf1646eg69a4g4313gb0fcg2575d2de0757", string.format("%s - %s", mapName, act))
             end
         end, "StateChange")
 
-        layout.Cells[1][1]:AddButton(__("Stop")).OnClick = function()
+        layout.Cells[1][1]:AddButton(TL("h327e121eg672bg4474gb014gd212d236f030")).OnClick = function()
             Event.Trigger("Stop")
         end
 
-        layout.Cells[1][1]:AddButton(__("Go to Camp")).OnClick = function()
+        layout.Cells[1][1]:AddButton(TL("h3160102eg6435g4457gb025g3231d2071013")).OnClick = function()
             Event.Trigger("ToCamp")
         end
 
         Components.Conditional(layout.Cells[1][1], function(cond)
-            local btn = cond.Root:AddButton(__("Next Round"))
+            local btn = cond.Root:AddButton(TL("h3097f93eg65c2g4ac6gb03ag4ca0d2186e82"))
 
             local t = btn:Tooltip()
             t:SetStyle("WindowPadding", 30, 10)
-            t:AddText("Will forward 1 round. Use when fight gets stuck or you want to fight more enemies at once.")
+            t:AddText(TL("hf7517eadga204g42bfg8c46g24d9ee6406fb"))
 
             btn.SameLine = true
             btn.OnClick = function(button)
@@ -258,26 +258,26 @@ function Control.RunningPanel(root)
             return btn
         end, "StateChange")
 
-        layout.Cells[1][3]:AddButton(__("Teleport")).OnClick = function()
+        layout.Cells[1][3]:AddButton(TL("h25531a42g7006g44f1gb166g0297134420b5")).OnClick = function()
             Event.Trigger("Teleport", { Map = State.Scenario.Map.Name, Restrict = true })
         end
 
-        -- layout.Cells[1][2]:AddButton(__("Ping Spawns")).OnClick = function()
+        -- layout.Cells[1][2]:AddButton(TL("h315e322eg640bg4677gb026gd011d204f233")).OnClick = function()
         --     Event.Trigger("PingSpawns", { Map = State.Scenario.Map.Name })
         -- end
 
-        layout.Cells[1][3]:AddButton(__("Highlight Spawns")).OnClick = function()
+        layout.Cells[1][3]:AddButton(TL("h24936cf3g71c6g439aga17ag05fc035827de")).OnClick = function()
             Event.Trigger("MarkSpawns", { Map = State.Scenario.Map.Name })
         end
 
         Components.Conditional(layout.Cells[1][3], function(cond)
-            local grp = cond.Root:AddGroup(__("Debug"))
+            local grp = cond.Root:AddGroup(TL("h366718e6g6332g44dbgb055g42bd5277609f"))
 
-            grp:AddButton(__("Kill spawned")).OnClick = function()
+            grp:AddButton(TL("h2d5b4e72g780eg41b2gb1e6g87d413c4a5f6")).OnClick = function()
                 Net.Send("KillSpawned")
             end
 
-            grp:AddButton(__("Ping Spawns")).OnClick = function()
+            grp:AddButton(TL("h315e322eg640bg4677gb026gd011d204f233")).OnClick = function()
                 Event.Trigger("PingSpawns", { Map = State.Scenario.Map.Name })
             end
 

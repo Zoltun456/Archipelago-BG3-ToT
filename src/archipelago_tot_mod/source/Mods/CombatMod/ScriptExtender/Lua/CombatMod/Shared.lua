@@ -58,6 +58,7 @@ Event = Require("Hlib/Event")
 ---@type Localization
 Localization = Require("Hlib/Localization")
 __ = Localization.Localize
+TL = Localization.LocalizeHandle
 
 Require("CombatMod/Constants")
 

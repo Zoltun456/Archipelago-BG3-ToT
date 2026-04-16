@@ -5,10 +5,40 @@
         "Text": "%d RogueScore required",
         "Version": 1
     },
+    "%d enemies left.;1": {
+        "Handle": "h29013f4fg7c54g46a1ga1a3g20c7c38102e5",
+        "Stack": [],
+        "Text": "%d enemies left.",
+        "Version": 1
+    },
+    "%s - RogueScore: %d;1": {
+        "Handle": "hab6c1c62gfe39g4493gb985gf2f51ba7d0d7",
+        "Stack": [],
+        "Text": "%s - RogueScore: %d",
+        "Version": 1
+    },
+    "%s Recipient: %s.;1": {
+        "Handle": "h28e4e464g7db1g4b13g91bdg7d75739f5f57",
+        "Stack": [],
+        "Text": "%s Recipient: %s.",
+        "Version": 1
+    },
     "%s is now active.;1": {
         "Handle": "h3b8161bbg6ed4g434ega08bg252882a9070a",
         "Stack": [],
         "Text": "%s is now active.",
+        "Version": 1
+    },
+    "%s is now the game master.;1": {
+        "Handle": "h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c",
+        "Stack": [],
+        "Text": "%s is now the game master.",
+        "Version": 1
+    },
+    "%s lost all actions, bonus actions, and movement.;1": {
+        "Handle": "h03b97a13g56ecg42f4ga308ga492012a86b0",
+        "Stack": [],
+        "Text": "%s lost all actions, bonus actions, and movement.",
         "Version": 1
     },
     "%s required;1": {
@@ -17,16 +47,34 @@
         "Text": "%s required",
         "Version": 1
     },
+    "%s was downed.;1": {
+        "Handle": "h280c6000g7d59g4355g91b3gf5333391d711",
+        "Stack": [],
+        "Text": "%s was downed.",
+        "Version": 1
+    },
+    "%s was killed.;1": {
+        "Handle": "h2bfee70cg7eabg4b25g918cgdd43f3aeff61",
+        "Stack": [],
+        "Text": "%s was killed.",
+        "Version": 1
+    },
+    "%s's %s;1": {
+        "Handle": "h3b4890a6g6e1dg4c5fgb087gba3952a5981b",
+        "Stack": [],
+        "Text": "%s's %s",
+        "Version": 1
+    },
+    "%s's resources were drained, including spell slots, actions, bonus actions, movement, and class charges.;1": {
+        "Handle": "h202fd298g757ag487cg9131gce1ab313ec38",
+        "Stack": [],
+        "Text": "%s's resources were drained, including spell slots, actions, bonus actions, movement, and class charges.",
+        "Version": 1
+    },
     "'Bias' refers to the way that budget is spent. High Bias leans toward selecting expensive monsters. Low Bias leans toward selecting many cheap monsters.;1": {
         "Handle": "hbeac8647gebf9g4d31ga8d9gfb574afbd975",
         "Stack": [],
         "Text": "'Bias' refers to the way that budget is spent. High Bias leans toward selecting expensive monsters. Low Bias leans toward selecting many cheap monsters.",
-        "Version": 1
-    },
-    ";1": {
-        "Handle": "h148726aeg41d2g473fgb27bg4159d059637b",
-        "Stack": [],
-        "Text": "",
         "Version": 1
     },
     "A challenge for experienced players. Increases Encounter Budget, increases rate of Enemy Scaling, and allows more powerful monsters to arrive sooner.;1": {
@@ -35,10 +83,22 @@
         "Text": "A challenge for experienced players. Increases Encounter Budget, increases rate of Enemy Scaling, and allows more powerful monsters to arrive sooner.",
         "Version": 1
     },
+    "A party member;1": {
+        "Handle": "h1ac9f6beg4f9cg4a3egb29fgac58d0bd8e7a",
+        "Stack": [],
+        "Text": "A party member",
+        "Version": 1
+    },
     "A scenario rebalanced for solo players. Press ResetTemplates button at bottom of page after enabling or disabling.;1": {
         "Handle": "h7db9022eg28ecg4577gb4e8ga311d6ca8133",
         "Stack": [],
         "Text": "A scenario rebalanced for solo players. Press ResetTemplates button at bottom of page after enabling or disabling.",
+        "Version": 1
+    },
+    "AP Check: %s;1": {
+        "Handle": "h1c307686g4965g423dgb2f0g345b50d21679",
+        "Stack": [],
+        "Text": "AP Check: %s",
         "Version": 1
     },
     "Accelerates the beginning of a run by capapulting you into more dangerous encounters.;1": {
@@ -47,16 +107,100 @@
         "Text": "Accelerates the beginning of a run by capapulting you into more dangerous encounters.",
         "Version": 1
     },
+    "Active;1": {
+        "Handle": "h270f8076g725ag4d52gb143gcb345361e916",
+        "Stack": [],
+        "Text": "Active",
+        "Version": 1
+    },
+    "Add Experience;1": {
+        "Handle": "h2feb2fb2g7abeg47aegb1cdg81c813efa3ea",
+        "Stack": [],
+        "Text": "Add Experience",
+        "Version": 1
+    },
     "Alfira is barely functional. Larian did not fully implement her as a companion, just a set piece for one camp night. Use at your own risk.;1": {
         "Handle": "h5d8139c8g08d4g46c9g96ebg20afb4c9028d",
         "Stack": [],
         "Text": "Alfira is barely functional. Larian did not fully implement her as a companion, just a set piece for one camp night. Use at your own risk.",
         "Version": 1
     },
+    "All enemies are dead.;1": {
+        "Handle": "hb5676e2age032g43b7gb865g45d19a4767f3",
+        "Stack": [],
+        "Text": "All enemies are dead.",
+        "Version": 1
+    },
+    "All party actions, bonus actions, and movement were removed.;1": {
+        "Handle": "hc25d3ccfg9708g4699gaf16ge0ffcd34c2dd",
+        "Stack": [],
+        "Text": "All party actions, bonus actions, and movement were removed.",
+        "Version": 1
+    },
+    "All party resources were drained, including spell slots, actions, bonus actions, movement, and class charges.;1": {
+        "Handle": "hf3cf4f3dga69ag41a6g8c0fgc7c0ee2de5e2",
+        "Stack": [],
+        "Text": "All party resources were drained, including spell slots, actions, bonus actions, movement, and class charges.",
+        "Version": 1
+    },
+    "An avatar has descended. This is the final challenge.;1": {
+        "Handle": "h39e2bc3fg6cb7g4e96ga0adg18f0c28f3ad2",
+        "Stack": [],
+        "Text": "An avatar has descended. This is the final challenge.",
+        "Version": 1
+    },
     "An unfair challenge for players who want a punishing experience. Powerful monsters will arrive much sooner and begin swarming.;1": {
         "Handle": "hd3a90714g86fcg4524g9e09ga3427c2b8160",
         "Stack": [],
         "Text": "An unfair challenge for players who want a punishing experience. Powerful monsters will arrive much sooner and begin swarming.",
+        "Version": 1
+    },
+    "Archipelago Client;1": {
+        "Handle": "h2ec6a75eg7b93g4f20gb1dfg5946d3fd7b64",
+        "Stack": [],
+        "Text": "Archipelago Client",
+        "Version": 1
+    },
+    "Archipelago client error.;1": {
+        "Handle": "h2d864a1eg78d3g41f4gb1ebg5792d3c975b0",
+        "Stack": [],
+        "Text": "Archipelago client error.",
+        "Version": 1
+    },
+    "Archipelago client idle.;1": {
+        "Handle": "h28925ddeg7dc7g4088gb1bag16eed39834cc",
+        "Stack": [],
+        "Text": "Archipelago client idle.",
+        "Version": 1
+    },
+    "Archipelago connect requested.;1": {
+        "Handle": "hff9ca69bgaac9g4f3cgaccagf95a8ee8db78",
+        "Stack": [],
+        "Text": "Archipelago connect requested.",
+        "Version": 1
+    },
+    "Archipelago disconnect requested.;1": {
+        "Handle": "h9fe5992cgcab0g4cc7g9acdg6aa1f8ef4883",
+        "Stack": [],
+        "Text": "Archipelago disconnect requested.",
+        "Version": 1
+    },
+    "Archipelago goal item. Buy this to complete the seed.;1": {
+        "Handle": "hcdc81710g989dg4424g9fefgb2423dcd9060",
+        "Stack": [],
+        "Text": "Archipelago goal item. Buy this to complete the seed.",
+        "Version": 1
+    },
+    "Archipelago log cleared.;1": {
+        "Handle": "hfdbb4998ga8eeg41ccg9ce8g87aabecaa588",
+        "Stack": [],
+        "Text": "Archipelago log cleared.",
+        "Version": 1
+    },
+    "Archipelago resync requested.;1": {
+        "Handle": "h09babe14g5cefg4eb4g93a8g98d2718abaf0",
+        "Stack": [],
+        "Text": "Archipelago resync requested.",
         "Version": 1
     },
     "Auto Hide;1": {
@@ -69,6 +213,18 @@
         "Handle": "h34411c36g6114g4496gb077g22f0525500d2",
         "Stack": [],
         "Text": "Auto Toggle",
+        "Version": 1
+    },
+    "Auto disarming;1": {
+        "Handle": "h2d3c3c9eg7869g469cgb1e0gf0fad3c2d2d8",
+        "Stack": [],
+        "Text": "Auto disarming",
+        "Version": 1
+    },
+    "Auto unlocking;1": {
+        "Handle": "h2c08bba6g795dg4eefgb1f3gb88953d19aab",
+        "Stack": [],
+        "Text": "Auto unlocking",
         "Version": 1
     },
     "Auto-Pickup for Armor;1": {
@@ -167,16 +323,70 @@
         "Text": "Cancel Dialog",
         "Version": 1
     },
+    "Cannot buy while in combat.;1": {
+        "Handle": "hc1ee9e0bg94bbg4cb5gaf2dgdad38d0ff8f1",
+        "Stack": [],
+        "Text": "Cannot buy while in combat.",
+        "Version": 1
+    },
+    "Cannot change factions while in combat.;1": {
+        "Handle": "h96296675gc37cg4332g8a51ga55468738776",
+        "Stack": [],
+        "Text": "Cannot change factions while in combat.",
+        "Version": 1
+    },
+    "Cannot stop while in progress.;1": {
+        "Handle": "hf4935a60ga1c6g40f3g9c7ag06953e5824b7",
+        "Stack": [],
+        "Text": "Cannot stop while in progress.",
+        "Version": 1
+    },
+    "Cannot teleport while in combat.;1": {
+        "Handle": "he740f325gb215g4a67g8d47g3c016f651e23",
+        "Stack": [],
+        "Text": "Cannot teleport while in combat.",
+        "Version": 1
+    },
+    "Cannot use this function while in combat.;1": {
+        "Handle": "hf21d5640ga748g4031g9c12ge6573e30c475",
+        "Stack": [],
+        "Text": "Cannot use this function while in combat.",
+        "Version": 1
+    },
     "Causes a limited amount of Long Rest resources to be regained on each Short Rest. The amount scales with character level.;1": {
         "Handle": "h0f1c219ag5a49g474cgb3c2gf12a91e0d308",
         "Stack": [],
         "Text": "Causes a limited amount of Long Rest resources to be regained on each Short Rest. The amount scales with character level.",
         "Version": 1
     },
+    "Challenge Mode: A challenge for experienced players.;1": {
+        "Handle": "heac966ffgbf9cg433agad9fga55ccfbd877e",
+        "Stack": [],
+        "Text": "Challenge Mode: A challenge for experienced players.",
+        "Version": 1
+    },
     "Challenge Mode;1": {
         "Handle": "h26aa74f2g73ffg421agb159g947c137bb65e",
         "Stack": [],
         "Text": "Challenge Mode",
+        "Version": 1
+    },
+    "Cheat;1": {
+        "Handle": "h3720b0ceg6275g4e59gb041g383fd2631a1d",
+        "Stack": [],
+        "Text": "Cheat",
+        "Version": 1
+    },
+    "Checks sent: %d;1": {
+        "Handle": "h2fd23e33g7a87g46b6ga1ceg10d003ec32f2",
+        "Stack": [],
+        "Text": "Checks sent: %d",
+        "Version": 1
+    },
+    "Clean Ground;1": {
+        "Handle": "h3372643cg6627g4316g9004g1570f2263752",
+        "Stack": [],
+        "Text": "Clean Ground",
         "Version": 1
     },
     "Clear All Entities;1": {
@@ -191,10 +401,34 @@
         "Text": "Clear Area",
         "Version": 1
     },
+    "Clear Log;1": {
+        "Handle": "h39462a12g6c13g47f4gb0a7g5192128573b0",
+        "Stack": [],
+        "Text": "Clear Log",
+        "Version": 1
+    },
     "Clearing all entities;1": {
         "Handle": "h8cb6b79dgd9e3g4e2cg8bf8g584ae9da7a68",
         "Stack": [],
         "Text": "Clearing all entities",
+        "Version": 1
+    },
+    "Client: Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.;1": {
+        "Handle": "h55a72833g00f2g47d6ga669g41b0044b6392",
+        "Stack": [],
+        "Text": "Client: Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.",
+        "Version": 1
+    },
+    "Combat is Starting.;1": {
+        "Handle": "h44afa6c1g11fag4f39g8779gc95f255beb7d",
+        "Stack": [],
+        "Text": "Combat is Starting.",
+        "Version": 1
+    },
+    "Combat started.;1": {
+        "Handle": "h2e517b01g7b04g42e5g81d6g248323f406a1",
+        "Stack": [],
+        "Text": "Combat started.",
         "Version": 1
     },
     "Common;1": {
@@ -213,6 +447,30 @@
         "Handle": "h23c73e06g7692g46b5gb10fg40d3532d62f1",
         "Stack": [],
         "Text": "Config",
+        "Version": 1
+    },
+    "Connect;1": {
+        "Handle": "h20490c7ag751cg4592gb137ga3f4931581d6",
+        "Stack": [],
+        "Text": "Connect",
+        "Version": 1
+    },
+    "Connected.;1": {
+        "Handle": "h25addd7ag70f8g4882gb169geee4934bccc6",
+        "Stack": [],
+        "Text": "Connected.",
+        "Version": 1
+    },
+    "Connecting to Archipelago.;1": {
+        "Handle": "hc6ecfd20g93b9g4a87g9f5dgfce13d7fdec3",
+        "Stack": [],
+        "Text": "Connecting to Archipelago.",
+        "Version": 1
+    },
+    "Connection;1": {
+        "Handle": "h29ae997ag7cfbg4cc2gb1a9gdaa4938bf886",
+        "Stack": [],
+        "Text": "Connection",
         "Version": 1
     },
     "Cost: %s;1": {
@@ -239,6 +497,30 @@
         "Text": "Currency owned: %d   RogueScore: %d",
         "Version": 1
     },
+    "Currency;1": {
+        "Handle": "h2169b15eg743cg4e40gb125ga826d3078a04",
+        "Stack": [],
+        "Text": "Currency",
+        "Version": 1
+    },
+    "DeathLink received from %s. %s;1": {
+        "Handle": "h2357ca60g7602g49f3g9106g4f9533246db7",
+        "Stack": [],
+        "Text": "DeathLink received from %s. %s",
+        "Version": 1
+    },
+    "DeathLink received. %s;1": {
+        "Handle": "h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97",
+        "Stack": [],
+        "Text": "DeathLink received. %s",
+        "Version": 1
+    },
+    "DeathLink: %s;1": {
+        "Handle": "h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b",
+        "Stack": [],
+        "Text": "DeathLink: %s",
+        "Version": 1
+    },
     "Debug;1": {
         "Handle": "h366718e6g6332g44dbgb055g42bd5277609f",
         "Stack": [],
@@ -249,6 +531,12 @@
         "Handle": "h29b77480g7ce2g421dg91a8g447b338a6659",
         "Stack": [],
         "Text": "Default Config",
+        "Version": 1
+    },
+    "Default config...;1": {
+        "Handle": "h29895c61g7cdcg4093g81abga6f5238984d7",
+        "Stack": [],
+        "Text": "Default config...",
         "Version": 1
     },
     "Destroy All;1": {
@@ -263,10 +551,52 @@
         "Text": "Destroy",
         "Version": 1
     },
+    "Destroyed %d items.;1": {
+        "Handle": "h42fa25a1g17afg470fg871cg9169253eb34b",
+        "Stack": [],
+        "Text": "Destroyed %d items.",
+        "Version": 1
+    },
+    "Dialog %s cancelled.;1": {
+        "Handle": "hbc56c73ege903g4926gb8f6g5f40dad47d62",
+        "Stack": [],
+        "Text": "Dialog %s cancelled.",
+        "Version": 1
+    },
+    "Difficulty: Challenge Mode;1": {
+        "Handle": "hcb371950g9e62g44c0g9f80g42a63da26084",
+        "Stack": [],
+        "Text": "Difficulty: Challenge Mode",
+        "Version": 1
+    },
+    "Difficulty: Hell Mode;1": {
+        "Handle": "h8c24778bgd971g422dgabf1g744b89d35669",
+        "Stack": [],
+        "Text": "Difficulty: Hell Mode",
+        "Version": 1
+    },
+    "Difficulty: Regular Mode;1": {
+        "Handle": "hcdb6a75eg98e3g4f20gbfe8g5946ddca7b64",
+        "Stack": [],
+        "Text": "Difficulty: Regular Mode",
+        "Version": 1
+    },
     "Difficulty;1": {
         "Handle": "h2c9ee446g79cbg4b11gb1fagdd7753d8ff55",
         "Stack": [],
         "Text": "Difficulty",
+        "Version": 1
+    },
+    "Disconnect;1": {
+        "Handle": "h2e67a71ag7b32g4f24gb1d5g494293f76b60",
+        "Stack": [],
+        "Text": "Disconnect",
+        "Version": 1
+    },
+    "Display Name;1": {
+        "Handle": "h2eeb5756g7bbeg4020gb1ddg864653ffa464",
+        "Stack": [],
+        "Text": "Display Name",
         "Version": 1
     },
     "Don't show ingame notifications.;1": {
@@ -279,6 +609,12 @@
         "Handle": "h3e82a111g6bd7g4f44g80dbg192222f93b00",
         "Stack": [],
         "Text": "Drop Camp Clothes",
+        "Version": 1
+    },
+    "Dropping loot.;1": {
+        "Handle": "h2a64adc6g7f31g4f89gb195g79ef53b75bcd",
+        "Stack": [],
+        "Text": "Dropping loot.",
         "Version": 1
     },
     "Enable Debug;1": {
@@ -305,10 +641,40 @@
         "Text": "Enemies",
         "Version": 1
     },
+    "Enemy %s joined.;1": {
+        "Handle": "h35c56325g6090g4367g806fg6501624d4723",
+        "Stack": [],
+        "Text": "Enemy %s joined.",
+        "Version": 1
+    },
+    "Enemy %s killed.;1": {
+        "Handle": "h35d521a9g6080g474fg806eg6129a24c430b",
+        "Stack": [],
+        "Text": "Enemy %s killed.",
+        "Version": 1
+    },
+    "Enemy %s rejoined.;1": {
+        "Handle": "h37bb2c47g62eeg4791ga048g81f7426aa3d5",
+        "Stack": [],
+        "Text": "Enemy %s rejoined.",
+        "Version": 1
+    },
+    "Enemy %s spawned.;1": {
+        "Handle": "h37ed89a8g62b8g4dcfg904dgeba9b26fc98b",
+        "Stack": [],
+        "Text": "Enemy %s spawned.",
+        "Version": 1
+    },
     "Enemy Stat Scaling Modifier;1": {
         "Handle": "h1cd23d77g4987g4682ga2feg10e440dc32c6",
         "Stack": [],
         "Text": "Enemy Stat Scaling Modifier",
+        "Version": 1
+    },
+    "Entered combat area.;1": {
+        "Handle": "hb6f1a7a1ge3a4g4f2fg885cg29492a7e0b6b",
+        "Stack": [],
+        "Text": "Entered combat area.",
         "Version": 1
     },
     "Equipped with Mol's tricks of the trade. Reduce Fire damage by 5 and gain the ability to cast Rays of Fire.;1": {
@@ -335,6 +701,12 @@
         "Text": "Extras",
         "Version": 1
     },
+    "Failed to restore scenario.;1": {
+        "Handle": "hdaa39862g8ff6g4cd3gbe99g0ab51cbb2897",
+        "Stack": [],
+        "Text": "Failed to restore scenario.",
+        "Version": 1
+    },
     "Fix Factions;1": {
         "Handle": "h2f8e40d4g7adbg4158g91cbgd73e73e9f51c",
         "Stack": [],
@@ -345,6 +717,12 @@
         "Handle": "h2c31139ag7964g446cgb1f0g220a93d20028",
         "Stack": [],
         "Text": "Fix Long Rest",
+        "Version": 1
+    },
+    "Fully Restore Character;1": {
+        "Handle": "hfea436e8gabf1g463bg9cd9g705dbefb527f",
+        "Stack": [],
+        "Text": "Fully Restore Character",
         "Version": 1
     },
     "Gain 20%% more Currency;1": {
@@ -401,6 +779,18 @@
         "Text": "Go to Camp",
         "Version": 1
     },
+    "Heal character and restore used spells.;1": {
+        "Handle": "h23173fb5g7642g46aeg8102g40c8632062ea",
+        "Stack": [],
+        "Text": "Heal character and restore used spells.",
+        "Version": 1
+    },
+    "Hell Mode: For players who want a punishing, unfair experience.;1": {
+        "Handle": "h82b49961gd7e1g4cc3g8b18g7aa5293a5887",
+        "Stack": [],
+        "Text": "Hell Mode: For players who want a punishing, unfair experience.",
+        "Version": 1
+    },
     "Hell Mode;1": {
         "Handle": "h38cb985eg6d9eg4cd0gb0bfg8ab6d29da894",
         "Stack": [],
@@ -423,6 +813,18 @@
         "Handle": "h24936cf3g71c6g439aga17ag05fc035827de",
         "Stack": [],
         "Text": "Highlight Spawns",
+        "Version": 1
+    },
+    "Host has restricted buying unlocks.;1": {
+        "Handle": "he8dbdedegbd8eg48b8gbdbeg8ededf9cacfc",
+        "Stack": [],
+        "Text": "Host has restricted buying unlocks.",
+        "Version": 1
+    },
+    "Icon;1": {
+        "Handle": "h36a80e1eg63fdg45b4gb059gb3d2d27b91f0",
+        "Stack": [],
+        "Text": "Icon",
         "Version": 1
     },
     "In roguelike mode, scale the stats of enemies based on this number.;1": {
@@ -449,6 +851,12 @@
         "Text": "Includes %s",
         "Version": 1
     },
+    "Items received: %d;1": {
+        "Handle": "h34bdbce7g61e8g4e9bga078ge8fd425acadf",
+        "Stack": [],
+        "Text": "Items received: %d",
+        "Version": 1
+    },
     "Items will spawn at the current player's position instead of the map's entry point.;1": {
         "Handle": "hb77766a4ge222g433fg9844g45597a66677b",
         "Stack": [],
@@ -461,10 +869,52 @@
         "Text": "Items",
         "Version": 1
     },
+    "Kill Score: %s;1": {
+        "Handle": "h34873bdcg61d2g46e8g907bg408ef25962ac",
+        "Stack": [],
+        "Text": "Kill Score: %s",
+        "Version": 1
+    },
     "Kill spawned;1": {
         "Handle": "h2d5b4e72g780eg41b2gb1e6g87d413c4a5f6",
         "Stack": [],
         "Text": "Kill spawned",
+        "Version": 1
+    },
+    "Killed: %s;1": {
+        "Handle": "h2cb5c7a2g79e0g492fgb1f8g6f4913da4d6b",
+        "Stack": [],
+        "Text": "Killed: %s",
+        "Version": 1
+    },
+    "Last error: %s;1": {
+        "Handle": "h2bf6eed8g7ea3g4bb8g918cg5ddeb3ae7ffc",
+        "Stack": [],
+        "Text": "Last error: %s",
+        "Version": 1
+    },
+    "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher first. This tab mirrors that client and can control it while it is open.;1": {
+        "Handle": "hc701aedfg9254g4fb8gaf43g29decd610bfc",
+        "Stack": [],
+        "Text": "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher first. This tab mirrors that client and can control it while it is open.",
+        "Version": 1
+    },
+    "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher, then connect from that client or from this in-game tab.;1": {
+        "Handle": "h53bed4acg06ebg481fg9608gde79f42afc5b",
+        "Stack": [],
+        "Text": "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher, then connect from that client or from this in-game tab.",
+        "Version": 1
+    },
+    "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.;1": {
+        "Handle": "h48ec300ag1db9g4655gb7bdgf033959fd211",
+        "Stack": [],
+        "Text": "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.",
+        "Version": 1
+    },
+    "Leave camp to join the battle.;1": {
+        "Handle": "h6119ae15g344cg4fb4g8522ga9d267008bf0",
+        "Stack": [],
+        "Text": "Leave camp to join the battle.",
         "Version": 1
     },
     "Legendary;1": {
@@ -477,6 +927,18 @@
         "Handle": "h5bd81560g0e8dg4403g968egb26534ac9047",
         "Stack": [],
         "Text": "Level will be reset. Inventory will be emptied.",
+        "Version": 1
+    },
+    "List;1": {
+        "Handle": "h37371a7eg6262g44f2gb040g4294d26260b6",
+        "Stack": [],
+        "Text": "List",
+        "Version": 1
+    },
+    "Local Unlocks;1": {
+        "Handle": "h315fa45ag640ag4f10gb026gc9769204eb54",
+        "Stack": [],
+        "Text": "Local Unlocks",
         "Version": 1
     },
     "Logs;1": {
@@ -497,10 +959,34 @@
         "Text": "Lone Wolf Mode",
         "Version": 1
     },
+    "Loot filter updated;1": {
+        "Handle": "hb6e91cdbge3bcg4498ga85dga2fe8a7f80dc",
+        "Stack": [],
+        "Text": "Loot filter updated",
+        "Version": 1
+    },
     "Loot;1": {
         "Handle": "h31b71a1eg64e2g44f4gb028g4292d20a60b0",
         "Stack": [],
         "Text": "Loot",
+        "Version": 1
+    },
+    "Map error;1": {
+        "Handle": "h26d5eb62g7380g4be3gb15eg6d85137c4fa7",
+        "Stack": [],
+        "Text": "Map error",
+        "Version": 1
+    },
+    "Map not found.;1": {
+        "Handle": "h2cb85222g79edg4077gb1f8gb61113da9433",
+        "Stack": [],
+        "Text": "Map not found.",
+        "Version": 1
+    },
+    "Map: %s;1": {
+        "Handle": "h3cf1646eg69a4g4313gb0fcg2575d2de0757",
+        "Stack": [],
+        "Text": "Map: %s",
         "Version": 1
     },
     "Maps;1": {
@@ -515,6 +1001,12 @@
         "Text": "Mod Item Blacklist",
         "Version": 1
     },
+    "Mod filter updated;1": {
+        "Handle": "h2f73e820g7a26g4bd7g91c4g0db133e62f93",
+        "Stack": [],
+        "Text": "Mod filter updated",
+        "Version": 1
+    },
     "More info in the console and other debug features;1": {
         "Handle": "h07417422g5214g4217gb347g247111650653",
         "Stack": [],
@@ -525,6 +1017,18 @@
         "Handle": "hc2671d37g9732g4486gaf15g42e04d3760c2",
         "Stack": [],
         "Text": "Multiplies the experience gained by killing enemies",
+        "Version": 1
+    },
+    "NG+;1": {
+        "Handle": "h0fb4243eg5ae1g4716gb3c8g7170d1ea5352",
+        "Stack": [],
+        "Text": "NG+",
+        "Version": 1
+    },
+    "Name;1": {
+        "Handle": "h3535380eg6060g46d5gb060g60b3d2424291",
+        "Stack": [],
+        "Text": "Name",
         "Version": 1
     },
     "Needs to be a Paladin.;1": {
@@ -545,6 +1049,84 @@
         "Text": "Next Round",
         "Version": 1
     },
+    "No Archipelago log lines yet.;1": {
+        "Handle": "h01c821efg549dg474bga32fgb12dc10d930f",
+        "Stack": [],
+        "Text": "No Archipelago log lines yet.",
+        "Version": 1
+    },
+    "No dialog found.;1": {
+        "Handle": "h214d3377g7418g4662ga127ge0044305c226",
+        "Stack": [],
+        "Text": "No dialog found.",
+        "Version": 1
+    },
+    "No party actions, bonus actions, or movement could be removed.;1": {
+        "Handle": "h4ffd5884g1aa8g40ddg97ccge6bb75eec499",
+        "Stack": [],
+        "Text": "No party actions, bonus actions, or movement could be removed.",
+        "Version": 1
+    },
+    "No party resources could be drained.;1": {
+        "Handle": "h1dd9331fg488cg4664ga2eega002c0cc8220",
+        "Stack": [],
+        "Text": "No party resources could be drained.",
+        "Version": 1
+    },
+    "No punishment was applied.;1": {
+        "Handle": "he39e5114gb6cbg4044g9d0agd6227f28f400",
+        "Stack": [],
+        "Text": "No punishment was applied.",
+        "Version": 1
+    },
+    "No valid party member could be downed.;1": {
+        "Handle": "hd4915f9fg81c4g40acgae7ag26cacc5804e8",
+        "Stack": [],
+        "Text": "No valid party member could be downed.",
+        "Version": 1
+    },
+    "No valid party member could be drained.;1": {
+        "Handle": "hd7151d29g8240g4487g8e42g62e1ac6040c3",
+        "Stack": [],
+        "Text": "No valid party member could be drained.",
+        "Version": 1
+    },
+    "No valid party member could be killed.;1": {
+        "Handle": "hd4f28583g81a7g4d0dgae7cg1b6b0c5e3949",
+        "Stack": [],
+        "Text": "No valid party member could be killed.",
+        "Version": 1
+    },
+    "No valid party member could lose their actions.;1": {
+        "Handle": "h7033ee56g2566g4bb0gb430g0dd656122ff4",
+        "Stack": [],
+        "Text": "No valid party member could lose their actions.",
+        "Version": 1
+    },
+    "Not enough currency.;1": {
+        "Handle": "h9cec8225gc9b9g4d77g8afdgfb1168dfd933",
+        "Stack": [],
+        "Text": "Not enough currency.",
+        "Version": 1
+    },
+    "Not loaded;1": {
+        "Handle": "h2bda2046g7e8fg4751gb18eg913753acb315",
+        "Stack": [],
+        "Text": "Not loaded",
+        "Version": 1
+    },
+    "Off;1": {
+        "Handle": "h37f322c6g62a6g4779gb04cg011f526e233d",
+        "Stack": [],
+        "Text": "Off",
+        "Version": 1
+    },
+    "On;1": {
+        "Handle": "h31f326aeg64a6g473fgb02cg0159d20e237b",
+        "Stack": [],
+        "Text": "On",
+        "Version": 1
+    },
     "One must remove all obstacles to follow one's destiny - Arabella's favour grants affected entities the benefits of Freedom of Movement.;1": {
         "Handle": "h97709a29gc225g4cf7g8a44g3a91a86618b3",
         "Stack": [],
@@ -557,6 +1139,36 @@
         "Text": "Only Host Can Buy Unlocks",
         "Version": 1
     },
+    "Only the host can connect or disconnect the Archipelago client.;1": {
+        "Handle": "hcce399e2g99b6g4ccbgbffdg0aad1ddf288f",
+        "Stack": [],
+        "Text": "Only the host can connect or disconnect the Archipelago client.",
+        "Version": 1
+    },
+    "Only the host can control the Archipelago client.;1": {
+        "Handle": "h0c52c96bg5907g49c3ga3f6g1fa581d43d87",
+        "Stack": [],
+        "Text": "Only the host can control the Archipelago client.",
+        "Version": 1
+    },
+    "Origin %s not found.;1": {
+        "Handle": "hbe6d0621geb38g4537g88d5ge3512af7c173",
+        "Stack": [],
+        "Text": "Origin %s not found.",
+        "Version": 1
+    },
+    "Out of stock;1": {
+        "Handle": "h298720feg7cd2g475agb1abg413cd389631e",
+        "Stack": [],
+        "Text": "Out of stock",
+        "Version": 1
+    },
+    "Password;1": {
+        "Handle": "h2643860ag7316g4d35gb157g0b5393752971",
+        "Stack": [],
+        "Text": "Password",
+        "Version": 1
+    },
     "Permanent;1": {
         "Handle": "h255ed026g700bg4857gb166gde315344fc13",
         "Stack": [],
@@ -567,6 +1179,18 @@
         "Handle": "h28cd5020g7d98g4057g91bfge631339dc413",
         "Stack": [],
         "Text": "Persist Config",
+        "Version": 1
+    },
+    "Persisting config...;1": {
+        "Handle": "h4d21e11dg1874g4b44g87e1g2d22e5c30f00",
+        "Stack": [],
+        "Text": "Persisting config...",
+        "Version": 1
+    },
+    "Picked up %d items.;1": {
+        "Handle": "h410f889dg145ag4ddcg8723gcbbae501e998",
+        "Stack": [],
+        "Text": "Picked up %d items.",
         "Version": 1
     },
     "Pickup All;1": {
@@ -647,6 +1271,12 @@
         "Text": "Quick Start: - Unlock Multipliers for Free",
         "Version": 1
     },
+    "Random;1": {
+        "Handle": "h279d3a06g72c8g46f5gb14age0935368c2b1",
+        "Stack": [],
+        "Text": "Random",
+        "Version": 1
+    },
     "Randomize Spawn Offset;1": {
         "Handle": "hb823bf93ged76g4eacga8b1g08ca0a932ae8",
         "Stack": [],
@@ -677,16 +1307,46 @@
         "Text": "Recruit Origins (Experimental)",
         "Version": 1
     },
+    "Recruiting %s.;1": {
+        "Handle": "h2e7ceb9cg7b29g4becg91d4gfd8af3f6dfa8",
+        "Stack": [],
+        "Text": "Recruiting %s.",
+        "Version": 1
+    },
     "Regenerate enemy, item, and map tables?\nIf you've recently updated, this is recommended.\nOld data may need to be cleared, and new data may need to be pulled in;1": {
         "Handle": "hff61ea30gaa34g4bf6g9cc5g2d903ee70fb2",
         "Stack": [],
         "Text": "Regenerate enemy, item, and map tables?\nIf you've recently updated, this is recommended.\nOld data may need to be cleared, and new data may need to be pulled in",
         "Version": 1
     },
+    "Regular Mode: Variety, power, and quantity of monsters scales gently.;1": {
+        "Handle": "hda5a3f21g8f0fg46a7g8e96g90c12cb4b2e3",
+        "Stack": [],
+        "Text": "Regular Mode: Variety, power, and quantity of monsters scales gently.",
+        "Version": 1
+    },
+    "Reload your latest save.;1": {
+        "Handle": "h2dee447fg78bbg4112ga1edgd774c3cff556",
+        "Stack": [],
+        "Text": "Reload your latest save.",
+        "Version": 1
+    },
     "Reload;1": {
         "Handle": "h27b40c36g72e1g4596gb148g73f0536a51d2",
         "Stack": [],
         "Text": "Reload",
+        "Version": 1
+    },
+    "Remove all Entities;1": {
+        "Handle": "h835e50a0gd60bg405fg9b06gd6393924f41b",
+        "Stack": [],
+        "Text": "Remove all Entities",
+        "Version": 1
+    },
+    "Removing %d entities.;1": {
+        "Handle": "hba5a2ecbgef0fg47b9ga896g91df8ab4b3fd",
+        "Stack": [],
+        "Text": "Removing %d entities.",
         "Version": 1
     },
     "Reruns the scripting that applies each time you press the Camp button, fixing Long Rest. Cannot be used during combat.;1": {
@@ -731,6 +1391,12 @@
         "Text": "Resets the stock of purchased standard unlocks.",
         "Version": 1
     },
+    "Resetting config...;1": {
+        "Handle": "h413f98d6g146ag4cd8gb720gcabe5502e89c",
+        "Stack": [],
+        "Text": "Resetting config...",
+        "Version": 1
+    },
     "Resetting templates...;1": {
         "Handle": "h8ccc2af7gd999g47fagabffgf19c49ddd3be",
         "Stack": [],
@@ -741,6 +1407,24 @@
         "Handle": "h7b7406d7g2e21g4538ga484g735e46a6517c",
         "Stack": [],
         "Text": "Restrict other players in multiplayer from buying unlocks.",
+        "Version": 1
+    },
+    "Resync;1": {
+        "Handle": "h27dae07eg728fg4b52gb14eg9d34d36cbf16",
+        "Stack": [],
+        "Text": "Resync",
+        "Version": 1
+    },
+    "Returned to camp.;1": {
+        "Handle": "h2bc3faaag7e96g4affgb18fg0c9993ad2ebb",
+        "Stack": [],
+        "Text": "Returned to camp.",
+        "Version": 1
+    },
+    "RogueScore;1": {
+        "Handle": "h374141e6g6214g414bgb047g272d5265050f",
+        "Stack": [],
+        "Text": "RogueScore",
         "Version": 1
     },
     "Roll Epic Loot %dx;1": {
@@ -767,6 +1451,96 @@
         "Text": "Roll Rare Loot %dx",
         "Version": 1
     },
+    "Room address is required.;1": {
+        "Handle": "hd60a6ce0g835fg439bg9e53g95fd3c71b7df",
+        "Stack": [],
+        "Text": "Room address is required.",
+        "Version": 1
+    },
+    "Room address;1": {
+        "Handle": "h29e28ae6g7cb7g4dfbgb1adg1b9d538f39bf",
+        "Stack": [],
+        "Text": "Room address",
+        "Version": 1
+    },
+    "Room and slot reset for each game load. Password is kept for this session only.;1": {
+        "Handle": "hf42a12e9ga17fg447bg8c71g921dae53b03f",
+        "Stack": [],
+        "Text": "Room and slot reset for each game load. Password is kept for this session only.",
+        "Version": 1
+    },
+    "Room: %s;1": {
+        "Handle": "h38c0165eg6d95g4430gb0bfg3256d29d1074",
+        "Stack": [],
+        "Text": "Room: %s",
+        "Version": 1
+    },
+    "Root Template: %s;1": {
+        "Handle": "h34aa446dg61ffg4113g8079g9775e25bb557",
+        "Stack": [],
+        "Text": "Root Template: %s",
+        "Version": 1
+    },
+    "Round %d;1": {
+        "Handle": "h38b71f0eg6de2g44a5gb0b8g42c3d29a60e1",
+        "Stack": [],
+        "Text": "Round %d",
+        "Version": 1
+    },
+    "Round: %s;1": {
+        "Handle": "h3d5fde62g680ag48b3gb0e6gced512c4ecf7",
+        "Stack": [],
+        "Text": "Round: %s",
+        "Version": 1
+    },
+    "Running;1": {
+        "Handle": "h21780c4eg742dg4591gb124gb3f7d30691d5",
+        "Stack": [],
+        "Text": "Running",
+        "Version": 1
+    },
+    "Scenario %s started.;1": {
+        "Handle": "hbc1acb0ege94fg49e5gb8f2g9f83dad0bda1",
+        "Stack": [],
+        "Text": "Scenario %s started.",
+        "Version": 1
+    },
+    "Scenario ended.;1": {
+        "Handle": "h28fa5cc5g7dafg4099g81bcg96ff639eb4dd",
+        "Stack": [],
+        "Text": "Scenario ended.",
+        "Version": 1
+    },
+    "Scenario error;1": {
+        "Handle": "h296c87dcg7c39g4d28g91a5gfb4ef387d96c",
+        "Stack": [],
+        "Text": "Scenario error",
+        "Version": 1
+    },
+    "Scenario not started.;1": {
+        "Handle": "hb72bdac5ge27eg48f9g8841g8e9f6a63acbd",
+        "Stack": [],
+        "Text": "Scenario not started.",
+        "Version": 1
+    },
+    "Scenario restored.;1": {
+        "Handle": "h2bed91d3g7eb8g4c48ga18dgea2e03afc80c",
+        "Stack": [],
+        "Text": "Scenario restored.",
+        "Version": 1
+    },
+    "Scenario stopped.;1": {
+        "Handle": "h2a7aafc0g7f2fg4fa9g9194g99cf33b6bbed",
+        "Stack": [],
+        "Text": "Scenario stopped.",
+        "Version": 1
+    },
+    "Scenario: %s;1": {
+        "Handle": "h218206b6g74d7g453egb12bg13585309317a",
+        "Stack": [],
+        "Text": "Scenario: %s",
+        "Version": 1
+    },
     "Scenarios;1": {
         "Handle": "h2553979eg7006g4c2cgb166g0a4ad3442868",
         "Stack": [],
@@ -777,6 +1551,48 @@
         "Handle": "h243816eeg716dg443bgb170gb25dd352907f",
         "Stack": [],
         "Text": "Search",
+        "Version": 1
+    },
+    "Seed: %s;1": {
+        "Handle": "h3f4f248eg6a1ag471dgb0c7gc17bd2e5e359",
+        "Stack": [],
+        "Text": "Seed: %s",
+        "Version": 1
+    },
+    "Select a Roguelike scenario to start!;1": {
+        "Handle": "h057ebf6dg502bg4ea3g8364gd8c5e146fae7",
+        "Stack": [],
+        "Text": "Select a Roguelike scenario to start!",
+        "Version": 1
+    },
+    "Sends %s from the multiworld.;1": {
+        "Handle": "he89ab093gbdcfg4e5cgadbag983a0f98ba18",
+        "Stack": [],
+        "Text": "Sends %s from the multiworld.",
+        "Version": 1
+    },
+    "Sends an Archipelago check. The reward is delivered from the multiworld.;1": {
+        "Handle": "hc9778f97g9c22g4dacgafa4g4bca4d8669e8",
+        "Stack": [],
+        "Text": "Sends an Archipelago check. The reward is delivered from the multiworld.",
+        "Version": 1
+    },
+    "Shop Checks;1": {
+        "Handle": "h334e0016g661bg4554gb007gd3325225f110",
+        "Stack": [],
+        "Text": "Shop Checks",
+        "Version": 1
+    },
+    "Shop Fragment %d/%d;1": {
+        "Handle": "ha821951agfd74g4c04gb9b1g2a629b930840",
+        "Stack": [],
+        "Text": "Shop Fragment %d/%d",
+        "Version": 1
+    },
+    "Shop Fragments: %d/%d collected;1": {
+        "Handle": "h2334e427g7661g4b17ga100g7d7143225f53",
+        "Stack": [],
+        "Text": "Shop Fragments: %d/%d collected",
         "Version": 1
     },
     "Skip dialogues, combat and interactions that aren't related to Roguelike mode.;1": {
@@ -791,6 +1607,24 @@
         "Text": "Skip to Camp?",
         "Version": 1
     },
+    "Slot name is required.;1": {
+        "Handle": "h891683e6gdc43g4d6bgbba2g5b0d5980792f",
+        "Stack": [],
+        "Text": "Slot name is required.",
+        "Version": 1
+    },
+    "Slot name;1": {
+        "Handle": "h237e812eg762bg4d47gb104gdb21d326f903",
+        "Stack": [],
+        "Text": "Slot name",
+        "Version": 1
+    },
+    "Slot: %s;1": {
+        "Handle": "h390f045eg6c5ag4510gb0a3gc376d281e154",
+        "Stack": [],
+        "Text": "Slot: %s",
+        "Version": 1
+    },
     "Spawn Items At Player;1": {
         "Handle": "h868cae89gd3d9g4fbdg8b5bgf9dba979dbf9",
         "Stack": [],
@@ -801,6 +1635,12 @@
         "Handle": "hc6c558ccg9390g40d9g9f5fg66bffd7d449d",
         "Stack": [],
         "Text": "Spawn Mindflayer Companion",
+        "Version": 1
+    },
+    "Spawn;1": {
+        "Handle": "h31359ceeg6460g4c9bgb020g6afdd20248df",
+        "Stack": [],
+        "Text": "Spawn",
         "Version": 1
     },
     "Spawns Dame Aylin as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
@@ -845,6 +1685,12 @@
         "Text": "State",
         "Version": 1
     },
+    "Status;1": {
+        "Handle": "h21911aeeg74c4g44fbgb12ag229dd30800bf",
+        "Stack": [],
+        "Text": "Status",
+        "Version": 1
+    },
     "Stock: %s;1": {
         "Handle": "h3e9c6432g6bc9g4316gb0dagf57012f8d752",
         "Stack": [],
@@ -875,6 +1721,24 @@
         "Text": "Teleport",
         "Version": 1
     },
+    "Teleporting back to camp in %d seconds.;1": {
+        "Handle": "hf6e3e1c8ga3b6g4b49g9c5dg0d2fbe7f2f0d",
+        "Stack": [],
+        "Text": "Teleporting back to camp in %d seconds.",
+        "Version": 1
+    },
+    "Teleporting to different ACT;1": {
+        "Handle": "hc396e53dg96c3g4b06g8f0ag5d60ed287f42",
+        "Stack": [],
+        "Text": "Teleporting to different ACT",
+        "Version": 1
+    },
+    "Template ID: %s;1": {
+        "Handle": "h22c45432g7791g4016gb11fg7670133d5452",
+        "Stack": [],
+        "Text": "Template ID: %s",
+        "Version": 1
+    },
     "Templates reset;1": {
         "Handle": "h2771ca17g7224g49f4ga144g2f9243660db0",
         "Stack": [],
@@ -887,6 +1751,12 @@
         "Text": "Templates",
         "Version": 1
     },
+    "The Archipelago client stopped responding. Close it, launch Baldur's Gate 3 - ToT Client again from the Archipelago Launcher, then reconnect.;1": {
+        "Handle": "hf6bb50e7ga3eeg405bgac58g863d4e7aa41f",
+        "Stack": [],
+        "Text": "The Archipelago client stopped responding. Close it, launch Baldur's Gate 3 - ToT Client again from the Archipelago Launcher, then reconnect.",
+        "Version": 1
+    },
     "The encounter budget increases as your RogueScore increases and scales faster with higher difficulties.;1": {
         "Handle": "h1a239f49g4f76g4ca1g8291g0ac7a0b328e5",
         "Stack": [],
@@ -897,6 +1767,18 @@
         "Handle": "h7e986d9bg2bcdg438cga4dagb5ea86f897c8",
         "Stack": [],
         "Text": "The reunited soul Thaniel provides a +1 to all Ability Scores and an additional 2m movement speed.",
+        "Version": 1
+    },
+    "The room field defaults to `archipelago.gg:`. Enter the current port and slot name here, then connect in game.;1": {
+        "Handle": "h202a0f80g757fg45adg9131g93cb3313b1e9",
+        "Stack": [],
+        "Text": "The room field defaults to `archipelago.gg:`. Enter the current port and slot name here, then connect in game.",
+        "Version": 1
+    },
+    "This tab mirrors that client and can send Connect, Disconnect, and Resync while it is open.;1": {
+        "Handle": "h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d",
+        "Stack": [],
+        "Text": "This tab mirrors that client and can send Connect, Disconnect, and Resync while it is open.",
         "Version": 1
     },
     "This will reset all changes you've made to the templates.;1": {
@@ -917,6 +1799,18 @@
         "Text": "To Camp After n Seconds",
         "Version": 1
     },
+    "ToT Client open. Press Connect here or in the client window.;1": {
+        "Handle": "h7c017c98g2954g429cg94f3g24fab6d106d8",
+        "Stack": [],
+        "Text": "ToT Client open. Press Connect here or in the client window.",
+        "Version": 1
+    },
+    "Total Rounds: %s;1": {
+        "Handle": "h33c0b3bcg6695g4e6eg900fg3808f22d1a2a",
+        "Stack": [],
+        "Text": "Total Rounds: %s",
+        "Version": 1
+    },
     "Turn Off Notifications;1": {
         "Handle": "h9dc524a2gc890g471fgbaefg617918cd435b",
         "Stack": [],
@@ -927,6 +1821,24 @@
         "Handle": "h23579496g7602g4c1cgb106g4a7a53246858",
         "Stack": [],
         "Text": "Uncommon",
+        "Version": 1
+    },
+    "Unknown Archipelago client command.;1": {
+        "Handle": "hdbe11c7ag8eb4g4492gbe8dg22f49caf00d6",
+        "Stack": [],
+        "Text": "Unknown Archipelago client command.",
+        "Version": 1
+    },
+    "Unlock %s bought for %s.;1": {
+        "Handle": "hd0c773c3g8592g4269gae3fg440f0c1d662d",
+        "Stack": [],
+        "Text": "Unlock %s bought for %s.",
+        "Version": 1
+    },
+    "Unlock %s bought.;1": {
+        "Handle": "h2308c823g765dg49d7ga103gbfb103219d93",
+        "Stack": [],
+        "Text": "Unlock %s bought.",
         "Version": 1
     },
     "Unlock Multipliers;1": {
@@ -953,10 +1865,34 @@
         "Text": "Unlock Waypoints",
         "Version": 1
     },
+    "Unlock needs a character.;1": {
+        "Handle": "hd490c7efg81c5g492bgae7ag3f4dcc581d6f",
+        "Stack": [],
+        "Text": "Unlock needs a character.",
+        "Version": 1
+    },
+    "Unlock not found.;1": {
+        "Handle": "h2c37ca25g7962g49f7g81f0g4f9163d26db3",
+        "Stack": [],
+        "Text": "Unlock not found.",
+        "Version": 1
+    },
+    "Unlock out of stock.;1": {
+        "Handle": "h8bfedf62gdeabg48a3gbb8cgdec519aefce7",
+        "Stack": [],
+        "Text": "Unlock out of stock.",
+        "Version": 1
+    },
     "Unlocks;1": {
         "Handle": "h231a0e4eg764fg45b1gb102g93d7d320b1f5",
         "Stack": [],
         "Text": "Unlocks",
+        "Version": 1
+    },
+    "Upcoming Spawns: %s;1": {
+        "Handle": "h8528df02gd07dg48a5gbb61gbec319439ce1",
+        "Stack": [],
+        "Text": "Upcoming Spawns: %s",
         "Version": 1
     },
     "Updating config...;1": {
@@ -1001,6 +1937,12 @@
         "Text": "Welcome to %s! Start playing?",
         "Version": 1
     },
+    "Will forward 1 round. Use when fight gets stuck or you want to fight more enemies at once.;1": {
+        "Handle": "hf7517eadga204g42bfg8c46g24d9ee6406fb",
+        "Stack": [],
+        "Text": "Will forward 1 round. Use when fight gets stuck or you want to fight more enemies at once.",
+        "Version": 1
+    },
     "Will remove all entities from the map automatically and fix most issues with unexpected story triggers. (Most likely required);1": {
         "Handle": "hffb9fd3egaaecg4a86gbcc8gace0deea8ec2",
         "Stack": [],
@@ -1031,10 +1973,40 @@
         "Text": "With unyielding ambition, grasp the Crown of Karsus and make its might yours.",
         "Version": 1
     },
+    "You found the secret cow level!;1": {
+        "Handle": "hcb742a6eg9e21g47f3gbf84g7195dda653b7",
+        "Stack": [],
+        "Text": "You found the secret cow level!",
+        "Version": 1
+    },
+    "You have incurred the wrath of Nature's Vengeance!;1": {
+        "Handle": "h1b8b3985g4edeg46cdg828bg80ab60a9a289",
+        "Stack": [],
+        "Text": "You have incurred the wrath of Nature's Vengeance!",
+        "Version": 1
+    },
+    "Your Currency changed: %d -> %d!;1": {
+        "Handle": "h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2",
+        "Stack": [],
+        "Text": "Your Currency changed: %d -> %d!",
+        "Version": 1
+    },
+    "Your RogueScore changed: %d -> %d!;1": {
+        "Handle": "hc2618a3eg9734g4df6gbf15g2b90dd3709b2",
+        "Stack": [],
+        "Text": "Your RogueScore changed: %d -> %d!",
+        "Version": 1
+    },
     "Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
         "Handle": "hcff9583bg9aacg40d6gafccga6b08dee8492",
         "Stack": [],
         "Text": "Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.",
+        "Version": 1
+    },
+    "bought;1": {
+        "Handle": "h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5",
+        "Stack": [],
+        "Text": "bought",
         "Version": 1
     }
 }

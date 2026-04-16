@@ -500,12 +500,12 @@ Ext.Osiris.RegisterListener(
         end
         if Osi.IsLocked(item) == 1 then
             L.Debug("Auto unlocking", item)
-            Player.Notify(__("Auto unlocking"), true)
+            Player.Notify(TL("h2c08bba6g795dg4eefgb1f3gb88953d19aab"), true)
             Osi.Unlock(item, character)
         end
         if Osi.IsTrapArmed(item) == 1 then
             L.Debug("Auto disarming", item)
-            Player.Notify(__("Auto disarming"), true)
+            Player.Notify(TL("h2d3c3c9eg7869g469cgb1e0gf0fad3c2d2d8"), true)
             Osi.SetTrapArmed(item, 0)
         end
     end)
@@ -769,7 +769,7 @@ local function removeAllEntities()
         return
     end
 
-    Player.Notify(__("Clearing all entities"), true)
+    Player.Notify(TL("h8cb6b79dgd9e3g4e2cg8bf8g584ae9da7a68"), true)
 
     StoryBypass.RemoveAllEntities()
 

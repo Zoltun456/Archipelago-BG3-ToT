@@ -40,7 +40,7 @@ local AP_NOTIFICATION_DURATION = 6
 local AP_NOTIFICATION_REORDER_GRACE_MS = 2500
 local AP_PIXIE_BLESSING_UNLOCK_ID = "APLOCAL::PIXIE_BLESSING"
 local AP_SHOP_SECTION_UNLOCK_PREFIX = "APSHOP::SECTION::"
-local AP_LOCAL_SHOP_SECTION_NAME = "Local Unlocks"
+local AP_LOCAL_SHOP_SECTION_NAME_HANDLE = "h315fa45ag640ag4f10gb026gc9769204eb54"
 local PIXIE_BLESSING_UNLOCK_ID = "Moonshield"
 
 Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat = Mod.PersistentVarsTemplate.ArchipelagoTrialsCompat or {
@@ -246,7 +246,7 @@ local function archipelago_client_default_state()
         bridge_running = false,
         bridge_stale = true,
         connection_state = "offline",
-        status_text = "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher.",
+        status_text = TL("h48ec300ag1db9g4655gb7bdgf033959fd211"),
         server_address = "",
         slot_name = "",
         seed_name = "",
@@ -260,12 +260,12 @@ end
 
 
 local function archipelago_backend_launch_message()
-    return "Launch Baldur's Gate 3 - ToT Client from the Archipelago Launcher, then connect from that client or from this in-game tab."
+    return TL("h53bed4acg06ebg481fg9608gde79f42afc5b")
 end
 
 
 local function archipelago_backend_relaunch_message()
-    return "The Archipelago client stopped responding. Close it, launch Baldur's Gate 3 - ToT Client again from the Archipelago Launcher, then reconnect."
+    return TL("hf6bb50e7ga3eeg405bgac58g863d4e7aa41f")
 end
 
 
@@ -288,7 +288,7 @@ local function maybe_prompt_archipelago_backend(force)
     end
 
     if Player and Player.Notify then
-        Player.Notify(__(message), true)
+        Player.Notify(message, true)
         return
     end
 
@@ -324,15 +324,15 @@ end
 
 local function archipelago_client_status_text(connection_state)
     if connection_state == "connected" then
-        return "Connected."
+        return TL("h25addd7ag70f8g4882gb169geee4934bccc6")
     end
     if connection_state == "connecting" then
-        return "Connecting to Archipelago."
+        return TL("hc6ecfd20g93b9g4a87g9f5dgfce13d7fdec3")
     end
     if connection_state == "error" then
-        return "Archipelago client error."
+        return TL("h2d864a1eg78d3g41f4gb1ebg5792d3c975b0")
     end
-    return "ToT Client open. Press Connect here or in the client window."
+    return TL("h7c017c98g2954g429cg94f3g24fab6d106d8")
 end
 
 
@@ -896,7 +896,7 @@ end
 
 
 local function shop_section_name(section_index, section_count)
-    return string.format("Shop Fragment %d/%d", tonumber(section_index or 0) or 0, tonumber(section_count or 0) or 0)
+    return TL("ha821951agfd74g4c04gb9b1g2a629b930840", tonumber(section_index or 0) or 0, tonumber(section_count or 0) or 0)
 end
 
 
@@ -1005,6 +1005,22 @@ local function update_party_wipe_state()
 end
 
 
+local function is_core_party_member(character)
+    local party_members = GU.DB.GetPlayers() or {}
+    if #party_members == 0 then
+        party_members = GU.DB.GetAvatars() or {}
+    end
+
+    for _, party_member in ipairs(party_members) do
+        if tostring(party_member or "") == character then
+            return true
+        end
+    end
+
+    return false
+end
+
+
 local function should_track_deathlink_character(character)
     character = tostring(character or "")
     if character == "" or Osi.IsCharacter(character) ~= 1 then
@@ -1013,7 +1029,11 @@ local function should_track_deathlink_character(character)
     if not GC.IsPlayable(character) then
         return false
     end
-    return Osi.CanJoinCombat(character) == 1
+    if not is_core_party_member(character) then
+        return false
+    end
+
+    return Osi.CanJoinCombat(character) == 1 or is_character_incapacitated(character)
 end
 
 
@@ -1135,9 +1155,9 @@ end
 local function deathlink_notify(event, text)
     local source = tostring(event and event.source or "")
     if source ~= "" then
-        Player.Notify(__("DeathLink received from %s. %s", source, tostring(text or "")), true)
+        Player.Notify(TL("h2357ca60g7602g49f3g9106g4f9533246db7", source, tostring(text or "")), true)
     else
-        Player.Notify(__("DeathLink received. %s", tostring(text or "")), true)
+        Player.Notify(TL("h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97", tostring(text or "")), true)
     end
 end
 
@@ -1150,7 +1170,7 @@ local function deathlink_character_name(character)
         end
     end
 
-    return __("A party member")
+    return TL("h1ac9f6beg4f9cg4a3egb29fgac58d0bd8e7a")
 end
 
 
@@ -1341,7 +1361,7 @@ local function apply_deathlink_punishment(event)
         or DEATHLINK_PUNISHMENT_KILL_ALL_PARTY_MEMBERS
 
     if punishment == DEATHLINK_PUNISHMENT_NOTHING then
-        deathlink_notify(event, "No punishment was applied.")
+        deathlink_notify(event, TL("he39e5114gb6cbg4044g9d0agd6227f28f400"))
         return
     end
 
@@ -1355,7 +1375,7 @@ local function apply_deathlink_punishment(event)
         end
 
         runtime.deathlink_party_wipe_active = true
-        deathlink_notify(event, "Reload your latest save.")
+        deathlink_notify(event, TL("h2dee447fg78bbg4112ga1edgd774c3cff556"))
         return
     end
 
@@ -1366,15 +1386,15 @@ local function apply_deathlink_punishment(event)
         end)
         local target = choose_random_character(eligible_targets)
         if target == "" then
-            deathlink_notify(event, "No valid party member could be downed.")
+            deathlink_notify(event, TL("hd4915f9fg81c4g40acgae7ag26cacc5804e8"))
             return
         end
 
         temporarily_suppress_outgoing_deathlink(1500)
         if down_character_for_deathlink(target) then
-            deathlink_notify(event, __("%s was downed.", deathlink_character_name(target)))
+            deathlink_notify(event, TL("h280c6000g7d59g4355g91b3gf5333391d711", deathlink_character_name(target)))
         else
-            deathlink_notify(event, "No valid party member could be downed.")
+            deathlink_notify(event, TL("hd4915f9fg81c4g40acgae7ag26cacc5804e8"))
         end
         return
     end
@@ -1385,15 +1405,15 @@ local function apply_deathlink_punishment(event)
         end)
         local target = choose_random_character(eligible_targets)
         if target == "" then
-            deathlink_notify(event, "No valid party member could be killed.")
+            deathlink_notify(event, TL("hd4f28583g81a7g4d0dgae7cg1b6b0c5e3949"))
             return
         end
 
         temporarily_suppress_outgoing_deathlink(1500)
         if kill_character_for_deathlink(target) then
-            deathlink_notify(event, __("%s was killed.", deathlink_character_name(target)))
+            deathlink_notify(event, TL("h2bfee70cg7eabg4b25g918cgdd43f3aeff61", deathlink_character_name(target)))
         else
-            deathlink_notify(event, "No valid party member could be killed.")
+            deathlink_notify(event, TL("hd4f28583g81a7g4d0dgae7cg1b6b0c5e3949"))
         end
         return
     end
@@ -1409,10 +1429,10 @@ local function apply_deathlink_punishment(event)
         if drained_any then
             deathlink_notify(
                 event,
-                "All party resources were drained, including spell slots, actions, bonus actions, movement, and class charges."
+                TL("hf3cf4f3dga69ag41a6g8c0fgc7c0ee2de5e2")
             )
         else
-            deathlink_notify(event, "No party resources could be drained.")
+            deathlink_notify(event, TL("h1dd9331fg488cg4664ga2eega002c0cc8220"))
         end
         return
     end
@@ -1423,20 +1443,17 @@ local function apply_deathlink_punishment(event)
         end)
         local target = choose_random_character(eligible_targets)
         if target == "" then
-            deathlink_notify(event, "No valid party member could be drained.")
+            deathlink_notify(event, TL("hd7151d29g8240g4487g8e42g62e1ac6040c3"))
             return
         end
 
         if clear_character_all_resources(target) then
             deathlink_notify(
                 event,
-                __(
-                    "%s's resources were drained, including spell slots, actions, bonus actions, movement, and class charges.",
-                    deathlink_character_name(target)
-                )
+                TL("h202fd298g757ag487cg9131gce1ab313ec38", deathlink_character_name(target))
             )
         else
-            deathlink_notify(event, "No party resources could be drained.")
+            deathlink_notify(event, TL("h1dd9331fg488cg4664ga2eega002c0cc8220"))
         end
         return
     end
@@ -1450,9 +1467,9 @@ local function apply_deathlink_punishment(event)
         )
 
         if removed_any then
-            deathlink_notify(event, "All party actions, bonus actions, and movement were removed.")
+            deathlink_notify(event, TL("hc25d3ccfg9708g4699gaf16ge0ffcd34c2dd"))
         else
-            deathlink_notify(event, "No party actions, bonus actions, or movement could be removed.")
+            deathlink_notify(event, TL("h4ffd5884g1aa8g40ddg97ccge6bb75eec499"))
         end
         return
     end
@@ -1463,22 +1480,22 @@ local function apply_deathlink_punishment(event)
         end)
         local target = choose_random_character(eligible_targets)
         if target == "" then
-            deathlink_notify(event, "No valid party member could lose their actions.")
+            deathlink_notify(event, TL("h7033ee56g2566g4bb0gb430g0dd656122ff4"))
             return
         end
 
         if clear_character_turn_actions(target) then
             deathlink_notify(
                 event,
-                __("%s lost all actions, bonus actions, and movement.", deathlink_character_name(target))
+                TL("h03b97a13g56ecg42f4ga308ga492012a86b0", deathlink_character_name(target))
             )
         else
-            deathlink_notify(event, "No party actions, bonus actions, or movement could be removed.")
+            deathlink_notify(event, TL("h4ffd5884g1aa8g40ddg97ccge6bb75eec499"))
         end
         return
     end
 
-    deathlink_notify(event, "No punishment was applied.")
+    deathlink_notify(event, TL("he39e5114gb6cbg4044g9d0agd6227f28f400"))
 end
 
 
@@ -2087,7 +2104,7 @@ Net.On("ArchipelagoClientCommand", function(event)
     local command = tostring(table_get(payload, "command", "") or "")
 
     if not event:IsHost() then
-        Net.Respond(event, { false, __("Only the host can control the Archipelago client.") })
+        Net.Respond(event, { false, TL("h0c52c96bg5907g49c3ga3f6g1fa581d43d87") })
         return
     end
 
@@ -2097,11 +2114,11 @@ Net.On("ArchipelagoClientCommand", function(event)
         local password = trim_archipelago_client_text(table_get(payload, "password", ""), 256)
 
         if server_address == "" then
-            Net.Respond(event, { false, __("Room address is required.") })
+            Net.Respond(event, { false, TL("hd60a6ce0g835fg439bg9e53g95fd3c71b7df") })
             return
         end
         if slot_name == "" then
-            Net.Respond(event, { false, __("Slot name is required.") })
+            Net.Respond(event, { false, TL("h891683e6gdc43g4d6bgbba2g5b0d5980792f") })
             return
         end
 
@@ -2120,7 +2137,7 @@ Net.On("ArchipelagoClientCommand", function(event)
             maybe_prompt_archipelago_backend(true)
             Net.Respond(event, {
                 false,
-                __(backend_message),
+                backend_message,
             })
             return
         end
@@ -2131,30 +2148,30 @@ Net.On("ArchipelagoClientCommand", function(event)
             password = password,
         })
         refresh_archipelago_client_ui(true)
-        Net.Respond(event, { true, __("Archipelago connect requested.") })
+        Net.Respond(event, { true, TL("hff9ca69bgaac9g4f3cgaccagf95a8ee8db78") })
         return
     end
 
     if command == "disconnect" then
         enqueue_archipelago_client_command("disconnect", {})
-        Net.Respond(event, { true, __("Archipelago disconnect requested.") })
+        Net.Respond(event, { true, TL("h9fe5992cgcab0g4cc7g9acdg6aa1f8ef4883") })
         return
     end
 
     if command == "resync" then
         enqueue_archipelago_client_command("resync", {})
-        Net.Respond(event, { true, __("Archipelago resync requested.") })
+        Net.Respond(event, { true, TL("h09babe14g5cefg4eb4g93a8g98d2718abaf0") })
         return
     end
 
     if command == "clear_log" then
         save_json_array(AP_CLIENT_LOG_FILE, {})
         refresh_archipelago_client_ui(true)
-        Net.Respond(event, { true, __("Archipelago log cleared.") })
+        Net.Respond(event, { true, TL("hfdbb4998ga8eeg41ccg9ce8g87aabecaa588") })
         return
     end
 
-    Net.Respond(event, { false, __("Unknown Archipelago client command.") })
+    Net.Respond(event, { false, TL("hdbe11c7ag8eb4g4492gbe8dg22f49caf00d6") })
 end)
 
 
@@ -2226,7 +2243,7 @@ local function make_shop_check_unlock(template, index, options)
     local section_name = tostring(table_get(shop_preview, "section_name", ""))
     local unlock = shallow_copy(template)
     unlock.Id = shop_check_id(template.Id, token_index)
-    unlock.Name = table_get(shop_preview, "display_name", "AP Check: " .. tostring(template.Name or template.Id))
+    unlock.Name = table_get(shop_preview, "display_name", TL("h1c307686g4965g423dgb2f0g345b50d21679", tostring(template.Name or template.Id)))
     unlock.FallbackIcon = template.Icon
     local randomized_cost = tonumber(table_get(options.shop_check_costs, index, unlock.Cost))
     if randomized_cost ~= nil then
@@ -2241,12 +2258,12 @@ local function make_shop_check_unlock(template, index, options)
     elseif explicit_icon_key ~= "" then
         unlock.Icon = explicit_icon_key
     end
-    unlock.Description = "Sends an Archipelago check. The reward is delivered from the multiworld."
+    unlock.Description = TL("hc9778f97g9c22g4dacgafa4g4bca4d8669e8")
     if table_get(shop_preview, "item_name", "") ~= "" then
-        unlock.Description = "Sends " .. tostring(shop_preview.item_name) .. " from the multiworld."
+        unlock.Description = TL("he89ab093gbdcfg4e5cgadbag983a0f98ba18", tostring(shop_preview.item_name))
     end
     if table_get(shop_preview, "player_name", "") ~= "" then
-        unlock.Description = unlock.Description .. " Recipient: " .. tostring(shop_preview.player_name) .. "."
+        unlock.Description = TL("h28e4e464g7db1g4b13g91bdg7d75739f5f57", unlock.Description, tostring(shop_preview.player_name))
     end
     unlock.Character = false
     unlock.Persistent = false
@@ -2282,8 +2299,8 @@ end
 local function make_goal_unlock(template, options)
     local unlock = shallow_copy(template)
     unlock.Id = tostring(options.goal_unlock_id or AP_GOAL_UNLOCK_ID)
-    unlock.Name = "NG+"
-    unlock.Description = "Archipelago goal item. Buy this to complete the seed."
+    unlock.Name = TL("h0fb4243eg5ae1g4716gb3c8g7170d1ea5352")
+    unlock.Description = TL("hcdc81710g989dg4424g9fefgb2423dcd9060")
     local configured_cost = tonumber(options.goal_unlock_cost or DEFAULT_GOAL_UNLOCK_COST)
         or DEFAULT_GOAL_UNLOCK_COST
     unlock.Cost = math.max(0, configured_cost)
@@ -2297,7 +2314,7 @@ local function make_goal_unlock(template, options)
         unlock.Requirement = shop_section_unlock_id(unlock.RequiredShopFragments)
     end
     unlock.HideStock = true
-    unlock.SectionName = AP_LOCAL_SHOP_SECTION_NAME
+    unlock.SectionName = TL(AP_LOCAL_SHOP_SECTION_NAME_HANDLE)
     unlock.SortSectionIndex = 0
     unlock.SortSectionOrder = 0
     local original_on_buy = unlock.OnBuy
@@ -2319,7 +2336,7 @@ local function make_pixie_blessing_unlock(template)
     unlock.Requirement = nil
     unlock.HideStock = true
     unlock.Icon = tostring(unlock.Icon or "statIcons_Moonshield")
-    unlock.SectionName = AP_LOCAL_SHOP_SECTION_NAME
+    unlock.SectionName = TL(AP_LOCAL_SHOP_SECTION_NAME_HANDLE)
     unlock.SortSectionIndex = 0
     unlock.SortSectionOrder = 1
     return unlock

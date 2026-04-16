@@ -5,13 +5,17 @@ from typing import TYPE_CHECKING
 from BaseClasses import Location, LocationProgressType
 
 from . import items
+from .i18n import canonical_text
 from .trials_data import (
+    GAME_NAME,
     LOCATION_NAME_TO_ID,
     MAX_SHOP_CHECKS,
     MAX_CLEAR_CHECKS,
     MAX_KILL_CHECKS,
     MAX_PERFECT_CHECKS,
     MAX_ROGUESCORE_CHECKS,
+    REGION_NAME,
+    VICTORY_NAME,
     clear_location_id,
     clear_location_name,
     kill_location_id,
@@ -30,15 +34,15 @@ if TYPE_CHECKING:
 
 
 class BG3Location(Location):
-    game = "Baldur's Gate 3 - ToT"
+    game = GAME_NAME
 
 
 LOCATION_NAME_GROUPS = {
-    "Clears": {clear_location_name(index) for index in range(1, MAX_CLEAR_CHECKS + 1)},
-    "Kills": {kill_location_name(index) for index in range(1, MAX_KILL_CHECKS + 1)},
-    "Perfect Clears": {perfect_location_name(index) for index in range(1, MAX_PERFECT_CHECKS + 1)},
-    "RogueScore": {roguescore_location_name(index) for index in range(1, MAX_ROGUESCORE_CHECKS + 1)},
-    "Shop": {shop_location_name(index) for index in range(1, MAX_SHOP_CHECKS + 1)},
+    canonical_text("location_groups.clears"): {clear_location_name(index) for index in range(1, MAX_CLEAR_CHECKS + 1)},
+    canonical_text("location_groups.kills"): {kill_location_name(index) for index in range(1, MAX_KILL_CHECKS + 1)},
+    canonical_text("location_groups.perfect_clears"): {perfect_location_name(index) for index in range(1, MAX_PERFECT_CHECKS + 1)},
+    canonical_text("location_groups.roguescore"): {roguescore_location_name(index) for index in range(1, MAX_ROGUESCORE_CHECKS + 1)},
+    canonical_text("location_groups.shop"): {shop_location_name(index) for index in range(1, MAX_SHOP_CHECKS + 1)},
 }
 
 
@@ -58,7 +62,7 @@ def _build_location_group(
 
 
 def create_all_locations(world: BG3World) -> None:
-    trials_region = world.get_region("Trials of Tav")
+    trials_region = world.get_region(REGION_NAME)
     location_name_to_id: dict[str, int] = {}
     shop_layout = build_shop_layout(
         int(world.options.shop_check_count),
@@ -103,4 +107,4 @@ def create_all_locations(world: BG3World) -> None:
                 LocationProgressType.PRIORITY
             )
             prioritized_per_section[section_index] = prioritized_count + 1
-    trials_region.add_event("Victory", "Victory", location_type=BG3Location, item_type=items.BG3Item)
+    trials_region.add_event(VICTORY_NAME, VICTORY_NAME, location_type=BG3Location, item_type=items.BG3Item)

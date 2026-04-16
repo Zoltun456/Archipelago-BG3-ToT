@@ -136,7 +136,7 @@ end
 
 Event.On("ModActive", function()
     if not PersistentVars.Active then
-        Player.Notify(__("%s is now active.", Mod.Prefix), true)
+        Player.Notify(TL("h3b8161bbg6ed4g434ega08bg252882a9070a", Mod.Prefix), true)
     end
 
     PersistentVars.Active = true
