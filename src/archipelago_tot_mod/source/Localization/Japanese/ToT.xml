@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentList>
+    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d RogueScore 必須</content>
+    <content contentuid="h29013f4fg7c54g46a1ga1a3g20c7c38102e5" version="1">%d]人の敵が残りました。</content>
+    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - RogueScore: %d</content>
+    <content contentuid="h28e4e464g7db1g4b13g91bdg7d75739f5f57" version="1">%s 受信者: %s。</content>
+    <content contentuid="h3b8161bbg6ed4g434ega08bg252882a9070a" version="1">%s は現在アクティブです。</content>
+    <content contentuid="h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c" version="1">%s がゲームマスターになりました。</content>
+    <content contentuid="h03b97a13g56ecg42f4ga308ga492012a86b0" version="1">%sはすべてのアクション、ボーナスアクション、移動を失いました。</content>
+    <content contentuid="h28bc4630g7de9g4136g91b8gf750339ad572" version="1">%sが必要です</content>
+    <content contentuid="h280c6000g7d59g4355g91b3gf5333391d711" version="1">%sはダウンしました。</content>
+    <content contentuid="h2bfee70cg7eabg4b25g918cgdd43f3aeff61" version="1">%sが殺されました。</content>
+    <content contentuid="h3b4890a6g6e1dg4c5fgb087gba3952a5981b" version="1">%sの%s</content>
+    <content contentuid="h202fd298g757ag487cg9131gce1ab313ec38" version="1">%sの呪文スロット、アクション、ボーナスアクション、移動、クラスチャージを含むリソースが枯渇しました。</content>
+    <content contentuid="hbeac8647gebf9g4d31ga8d9gfb574afbd975" version="1">「偏り」とは、予算の使い方を指します。 高バイアスでは、高価なモンスターを選択する傾向があります。 低バイアスでは、安価なモンスターを多く選択する傾向があります。</content>
+    <content contentuid="he5e0d749gb0b5g4821g8d6dg3e47af4f1c65" version="1">経験豊富なプレイヤー向けの挑戦。 エンカウンターバジェットを増加させ、敵のスケーリング速度を増加させ、より強力なモンスターがより早く到着できるようにします。</content>
+    <content contentuid="h1ac9f6beg4f9cg4a3egb29fgac58d0bd8e7a" version="1">パーティーメンバー</content>
+    <content contentuid="h7db9022eg28ecg4577gb4e8ga311d6ca8133" version="1">ソロプレイヤー向けにシナリオがリバランスされました。 有効または無効にした後、ページの下部にある ResetTemplates ボタンを押します。</content>
+    <content contentuid="h1c307686g4965g423dgb2f0g345b50d21679" version="1">AP チェック: %s</content>
+    <content contentuid="hd854417eg8d01g4142gbeb6g7724dc945506" version="1">より危険な遭遇にあなたを魅了することで、走りの始まりを加速します。</content>
+    <content contentuid="h270f8076g725ag4d52gb143gcb345361e916" version="1">アクティブ</content>
+    <content contentuid="h2feb2fb2g7abeg47aegb1cdg81c813efa3ea" version="1">経験の追加</content>
+    <content contentuid="h5d8139c8g08d4g46c9g96ebg20afb4c9028d" version="1">アルフィラはほとんど機能していません。 ラリアンは彼女を仲間として完全に実装したわけではなく、あるキャンプの夜のセットピースにすぎませんでした。 ご自身の責任でご使用ください。</content>
+    <content contentuid="hb5676e2age032g43b7gb865g45d19a4767f3" version="1">敵は全員死んでいる。</content>
+    <content contentuid="hc25d3ccfg9708g4699gaf16ge0ffcd34c2dd" version="1">すべてのパーティーアクション、ボーナスアクション、および移動が削除されました。</content>
+    <content contentuid="hf3cf4f3dga69ag41a6g8c0fgc7c0ee2de5e2" version="1">スペルスロット、アクション、ボーナスアクション、移動、クラスチャージを含むすべてのパーティーリソースが枯渇しました。</content>
+    <content contentuid="h39e2bc3fg6cb7g4e96ga0adg18f0c28f3ad2" version="1">アバターが降臨しました。 これが最後の挑戦です。</content>
+    <content contentuid="hd3a90714g86fcg4524g9e09ga3427c2b8160" version="1">罰当たりな体験を求めるプレイヤーにとっては不公平な挑戦です。 強力なモンスターがより早く到着し、群がり始めます。</content>
+    <content contentuid="h2ec6a75eg7b93g4f20gb1dfg5946d3fd7b64" version="1">Archipelago クライアント</content>
+    <content contentuid="h2d864a1eg78d3g41f4gb1ebg5792d3c975b0" version="1">Archipelago クライアント エラー。</content>
+    <content contentuid="h28925ddeg7dc7g4088gb1bag16eed39834cc" version="1">Archipelago クライアントがアイドル状態です。</content>
+    <content contentuid="hff9ca69bgaac9g4f3cgaccagf95a8ee8db78" version="1">Archipelago の接続が要求されました。</content>
+    <content contentuid="h9fe5992cgcab0g4cc7g9acdg6aa1f8ef4883" version="1">Archipelago の切断が要求されました。</content>
+    <content contentuid="hcdc81710g989dg4424g9fefgb2423dcd9060" version="1">Archipelago 個の目標アイテム。 これを購入するとシードが完成します。</content>
+    <content contentuid="hfdbb4998ga8eeg41ccg9ce8g87aabecaa588" version="1">Archipelago ログがクリアされました。</content>
+    <content contentuid="h09babe14g5cefg4eb4g93a8g98d2718abaf0" version="1">Archipelago の再同期が要求されました。</content>
+    <content contentuid="h3c609e26g6935g4cb7gb0f5g3ad152d718f3" version="1">自動非表示</content>
+    <content contentuid="h34411c36g6114g4496gb077g22f0525500d2" version="1">自動切り替え</content>
+    <content contentuid="h2d3c3c9eg7869g469cgb1e0gf0fad3c2d2d8" version="1">自動解除</content>
+    <content contentuid="h2c08bba6g795dg4eefgb1f3gb88953d19aab" version="1">自動ロック解除</content>
+    <content contentuid="h94e5715dgc1b0g4240g8a7dg6426e85f4604" version="1">防具の自動ピックアップ</content>
+    <content contentuid="h91fd8555gc4a8g4d00g8a2cgeb66680ec944" version="1">戦闘オブジェクトの自動ピックアップ</content>
+    <content contentuid="hc777ee1dg9222g4bb4g8f44g4dd2ed666ff0" version="1">オブジェクトの自動ピックアップ</content>
+    <content contentuid="hfe76c8bdgab23g49deg8cd4g5fb8eef67d9a" version="1">武器の自動ピックアップ</content>
+    <content contentuid="hb3c9920ege69cg4c75gb80fgaa13da2d8831" version="1">CR30 神聖なアバターを倒すと自動的に獲得: 次のランの開始を急速に加速し、より危険にするための機能のロックを解除します。</content>
+    <content contentuid="hf34df053ga618g4a50gac07gec360e25ce14" version="1">目覚めたイリシッドの力</content>
+    <content contentuid="h38b88b07g6dedg4de5ga0b8gbb83429a99a1" version="1">ベータ: ホストがすべてのモンスターを制御し、シナリオの疑似ゲーム マスターとして機能するモード。 マルチプレイヤー向け。</content>
+    <content contentuid="hb2385d5age76dg4080gb810gb6e69a3294c4" version="1">戦闘準備完了のオウルベア</content>
+    <content contentuid="hc38ac208g96dfg4975g9f0bg9f13bd29bd31" version="1">Absolute のブランドを冠します。</content>
+    <content contentuid="h25b59712g70e0g4c24gb168g6a42134a4860" version="1">ブラックリストに登録された MOD はアイテムをドロップしません。</content>
+    <content contentuid="h337385c4g6626g4d09g9004g0b6f7226294d" version="1">誓いを破る/回復する</content>
+    <content contentuid="hab83587fgfed6g40d2ga98bg06b4cba92496" version="1">キャンプ用品を40個購入する</content>
+    <content contentuid="h2cb33b1dg79e6g46e4g81f8g0082e3da22a0" version="1">キャラクター目的で購入</content>
+    <content contentuid="h322023aeg6775g476fgb011g3109d233132b" version="1">購入する</content>
+    <content contentuid="h29375bf8g7c62g40eag91a0g468cb38264ae" version="1">バイパスストーリー</content>
+    <content contentuid="h2f6f8b9cg7a3ag4decg91c5gcb8af3e7e9a8" version="1">キャンセルダイアログ</content>
+    <content contentuid="hc1ee9e0bg94bbg4cb5gaf2dgdad38d0ff8f1" version="1">戦闘中は購入できません。</content>
+    <content contentuid="h96296675gc37cg4332g8a51ga55468738776" version="1">戦闘中に派閥を変更することはできません。</content>
+    <content contentuid="hf4935a60ga1c6g40f3g9c7ag06953e5824b7" version="1">進行中は停止できません。</content>
+    <content contentuid="he740f325gb215g4a67g8d47g3c016f651e23" version="1">戦闘中はテレポートできません。</content>
+    <content contentuid="hf21d5640ga748g4031g9c12ge6573e30c475" version="1">戦闘中はこの機能を使用できません。</content>
+    <content contentuid="h0f1c219ag5a49g474cgb3c2gf12a91e0d308" version="1">短い休憩ごとに限られた量の長い休憩リソースが回復されます。 金額はキャラクターのレベルに応じて変化します。</content>
+    <content contentuid="heac966ffgbf9cg433agad9fga55ccfbd877e" version="1">チャレンジ モード: 経験豊富なプレイヤー向けのチャレンジです。</content>
+    <content contentuid="h26aa74f2g73ffg421agb159g947c137bb65e" version="1">チャレンジモード</content>
+    <content contentuid="h3720b0ceg6275g4e59gb041g383fd2631a1d" version="1">チート</content>
+    <content contentuid="h2fd23e33g7a87g46b6ga1ceg10d003ec32f2" version="1">送信された小切手: %d</content>
+    <content contentuid="h3372643cg6627g4316g9004g1570f2263752" version="1">きれいな地面</content>
+    <content contentuid="h3bc40171g6e91g4542g808fg732422ad5106" version="1">すべてのエンティティをクリア</content>
+    <content contentuid="h31b7af7eg64e2g4fa2gb028g49c4d20a6be6" version="1">クリアエリア</content>
+    <content contentuid="h39462a12g6c13g47f4gb0a7g5192128573b0" version="1">ログをクリアする</content>
+    <content contentuid="h8cb6b79dgd9e3g4e2cg8bf8g584ae9da7a68" version="1">すべてのエンティティをクリアする</content>
+    <content contentuid="h55a72833g00f2g47d6ga669g41b0044b6392" version="1">クライアント: Archipelago ランチャーから Baldur's Gate 3 - ToT クライアントを起動します。</content>
+    <content contentuid="h44afa6c1g11fag4f39g8779gc95f255beb7d" version="1">戦闘が始まります。</content>
+    <content contentuid="h2e517b01g7b04g42e5g81d6g248323f406a1" version="1">戦闘が始まりました。</content>
+    <content contentuid="h22e2080eg77b7g45d5gb11dg13b3d33f3191" version="1">共通</content>
+    <content contentuid="h2e624d0ag7b37g4185gb1d5g17e393f735c1" version="1">構成が更新されました</content>
+    <content contentuid="h23c73e06g7692g46b5gb10fg40d3532d62f1" version="1">構成</content>
+    <content contentuid="h20490c7ag751cg4592gb137ga3f4931581d6" version="1">接続する</content>
+    <content contentuid="h25addd7ag70f8g4882gb169geee4934bccc6" version="1">接続されました。</content>
+    <content contentuid="hc6ecfd20g93b9g4a87g9f5dgfce13d7fdec3" version="1">Archipelago に接続中です。</content>
+    <content contentuid="h29ae997ag7cfbg4cc2gb1a9gdaa4938bf886" version="1">接続</content>
+    <content contentuid="h38df043eg6d8ag4516gb0begc370d29ce152" version="1">コスト: %s</content>
+    <content contentuid="h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e" version="1">影の呪いに対抗します。</content>
+    <content contentuid="h20c028a6g7595g47dfgb13fg31b9531d139b" version="1">創造</content>
+    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">所有通貨: %d RogueScore: %d</content>
+    <content contentuid="h2169b15eg743cg4e40gb125ga826d3078a04" version="1">通貨</content>
+    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">DeathLinkは%sから受け取りました。 %s</content>
+    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">DeathLinkを受け取りました。 %s</content>
+    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">DeathLink: %s</content>
+    <content contentuid="h366718e6g6332g44dbgb055g42bd5277609f" version="1">デバッグ</content>
+    <content contentuid="h29b77480g7ce2g421dg91a8g447b338a6659" version="1">デフォルト設定</content>
+    <content contentuid="h29895c61g7cdcg4093g81abga6f5238984d7" version="1">デフォルト設定...</content>
+    <content contentuid="h2cf955d8g79acg4008g91fcga66eb3de844c" version="1">すべてを破壊する</content>
+    <content contentuid="h254298eeg7017g4cdbgb167g1abdd345389f" version="1">破壊する</content>
+    <content contentuid="h42fa25a1g17afg470fg871cg9169253eb34b" version="1">%d 個のアイテムを破壊しました。</content>
+    <content contentuid="hbc56c73ege903g4926gb8f6g5f40dad47d62" version="1">ダイアログ%sはキャンセルされました。</content>
+    <content contentuid="hcb371950g9e62g44c0g9f80g42a63da26084" version="1">難易度: チャレンジモード</content>
+    <content contentuid="h8c24778bgd971g422dgabf1g744b89d35669" version="1">難易度: 地獄モード</content>
+    <content contentuid="hcdb6a75eg98e3g4f20gbfe8g5946ddca7b64" version="1">難易度: レギュラーモード</content>
+    <content contentuid="h2c9ee446g79cbg4b11gb1fagdd7753d8ff55" version="1">難易度</content>
+    <content contentuid="h2e67a71ag7b32g4f24gb1d5g494293f76b60" version="1">切断する</content>
+    <content contentuid="h2eeb5756g7bbeg4020gb1ddg864653ffa464" version="1">表示名</content>
+    <content contentuid="hf95a1c84gac0fg449dg9ca6g92fb7e84b0d9" version="1">ゲーム内通知を表示しません。</content>
+    <content contentuid="h3e82a111g6bd7g4f44g80dbg192222f93b00" version="1">キャンプ服をドロップ</content>
+    <content contentuid="h2a64adc6g7f31g4f89gb195g79ef53b75bcd" version="1">戦利品を落とす。</content>
+    <content contentuid="h29620d0ag7c37g4585gb1a5g13e3938731c1" version="1">デバッグを有効にする</content>
+    <content contentuid="h2af0133ag7fa5g4466gb19cg320093be1022" version="1">長い休憩を終了する</content>
+    <content contentuid="h83573dd3gd602g4688gab06g40ee092462cc" version="1">現在のダイアログを終了します。</content>
+    <content contentuid="h20450ab6g7510g45fegb137g6398531541ba" version="1">敵</content>
+    <content contentuid="h35c56325g6090g4367g806fg6501624d4723" version="1">敵%sが参加しました。</content>
+    <content contentuid="h35d521a9g6080g474fg806eg6129a24c430b" version="1">敵%sが殺されました。</content>
+    <content contentuid="h37bb2c47g62eeg4791ga048g81f7426aa3d5" version="1">敵%sが再合流した。</content>
+    <content contentuid="h37ed89a8g62b8g4dcfg904dgeba9b26fc98b" version="1">敵%sが出現しました。</content>
+    <content contentuid="h1cd23d77g4987g4682ga2feg10e440dc32c6" version="1">敵のステータススケーリング修飾子</content>
+    <content contentuid="hb6f1a7a1ge3a4g4f2fg885cg29492a7e0b6b" version="1">戦闘地域に入りました。</content>
+    <content contentuid="h41328a2ag1467g4df7gb720g1b91950239b3" version="1">モルの得意技を搭載。 Fireダメージを5軽減し、Ray of Fireをキャストする能力を獲得します。</content>
+    <content contentuid="h2c411dfcg7914g448ag91f7g22ecf3d500ce" version="1">経験乗数</content>
+    <content contentuid="h3550957ag6005g4c02gb066g3a6492441846" version="1">追加機能</content>
+    <content contentuid="h20891676g75dcg4432gb13bga25453198076" version="1">エクストラ</content>
+    <content contentuid="hdaa39862g8ff6g4cd3gbe99g0ab51cbb2897" version="1">シナリオの復元に失敗しました。</content>
+    <content contentuid="h2f8e40d4g7adbg4158g91cbgd73e73e9f51c" version="1">派閥を修正する</content>
+    <content contentuid="h2c31139ag7964g446cgb1f0g220a93d20028" version="1">長い休憩を修正する</content>
+    <content contentuid="hfea436e8gabf1g463bg9cd9g705dbefb527f" version="1">キャラクターを完全に回復する</content>
+    <content contentuid="hce43e6c9g9b16g4b39g8fd7g0d5fadf52f7d" version="1">さらに 20%% 通貨を獲得</content>
+    <content contentuid="h972818a9gc27dg44dfg8a41gb2b9a863909b" version="1">さらに 50%% 個の戦利品を獲得</content>
+    <content contentuid="h3450ea1cg6105g4bf4g9076g3d92f2541fb0" version="1">知性を貪る仲間を召喚する能力を得る</content>
+    <content contentuid="h294ce46eg7c19g4b13gb1a7gfd75d385df57" version="1">XPを2倍獲得</content>
+    <content contentuid="h37f1aaabg62a4g4fffga04cg2999826e0bbb" version="1">ゲームマスターモード</content>
+    <content contentuid="h27f7bcfeg72a2g4e9agb14cg48fcd36e6ade" version="1">ピクシーの祝福を得る</content>
+    <content contentuid="h36f8f1b6g63adg4a4egb05cgbc28527e9e0a" version="1">オタマジャクシを入手する</content>
+    <content contentuid="h501f8202g054ag4d75gb632gcb131410e931" version="1">グローバル設定 - ホストのみ</content>
+    <content contentuid="h3160102eg6435g4457gb025g3231d2071013" version="1">キャンプに行く</content>
+    <content contentuid="h23173fb5g7642g46aeg8102g40c8632062ea" version="1">キャラクターを回復し、使用した呪文を回復します。</content>
+    <content contentuid="h82b49961gd7e1g4cc3g8b18g7aa5293a5887" version="1">Hell モード: 罰せられる不公平な体験を求めるプレイヤー向け。</content>
+    <content contentuid="h38cb985eg6d9eg4cd0gb0bfg8ab6d29da894" version="1">ヘルモード</content>
+    <content contentuid="hd9d18c01g8c84g4d95g8eaeg2bf32c8c09d1" version="1">マップに入るときはこのウィンドウを非表示にします。 シナリオ開始時にこのウィンドウを表示します。</content>
+    <content contentuid="h193979fag4c6cg42cagb2a0ga4ac9082868e" version="1">ネイティブ UI がフォーカスされている場合は、このウィンドウを非表示にします。</content>
+    <content contentuid="h24936cf3g71c6g439aga17ag05fc035827de" version="1">ハイライトスポーン</content>
+    <content contentuid="he8dbdedegbd8eg48b8gbdbeg8ededf9cacfc" version="1">ホストはロック解除の購入を制限しています。</content>
+    <content contentuid="h36a80e1eg63fdg45b4gb059gb3d2d27b91f0" version="1">アイコン</content>
+    <content contentuid="hf099a598ga5ccg4f0cg9c3aga96abe188b48" version="1">ローグライク モードでは、この数値に基づいて敵のステータスを調整します。</content>
+    <content contentuid="ha4163608gf143g4635g9972g5053bb507271" version="1">ローグライク モードでは、戦闘後に自動的にキャンプにテレポートします。 自動テレポートを無効にするには 0 に設定します。</content>
+    <content contentuid="hd8cafdddg8d9fg4a88g8ebfg9ceeec9dbecc" version="1">アイテムドロップにキャンプ服を含める</content>
+    <content contentuid="h2544d6fag7011g483agb167g7e5c93455c7e" version="1">%sが含まれます</content>
+    <content contentuid="h34bdbce7g61e8g4e9bga078ge8fd425acadf" version="1">受け取ったアイテム: %d</content>
+    <content contentuid="hb77766a4ge222g433fg9844g45597a66677b" version="1">アイテムは、マップのエントリ ポイントではなく、現在のプレイヤーの位置にスポーンします。</content>
+    <content contentuid="h322608ceg6773g45d9gb011g53bfd233719d" version="1">アイテム</content>
+    <content contentuid="h34873bdcg61d2g46e8g907bg408ef25962ac" version="1">キルスコア: %s</content>
+    <content contentuid="h2d5b4e72g780eg41b2gb1e6g87d413c4a5f6" version="1">スポーンされたキル</content>
+    <content contentuid="h2cb5c7a2g79e0g492fgb1f8g6f4913da4d6b" version="1">殺害: %s</content>
+    <content contentuid="h2bf6eed8g7ea3g4bb8g918cg5ddeb3ae7ffc" version="1">最後のエラー: %s</content>
+    <content contentuid="hc701aedfg9254g4fb8gaf43g29decd610bfc" version="1">まず Archipelago ランチャーから Baldur's Gate 3 - ToT クライアントを起動します。 このタブはそのクライアントをミラーリングし、開いている間にそれを制御できます。</content>
+    <content contentuid="h53bed4acg06ebg481fg9608gde79f42afc5b" version="1">Archipelago ランチャーから Baldur's Gate 3 - ToT クライアントを起動し、そのクライアントまたはこのゲーム内タブから接続します。</content>
+    <content contentuid="h48ec300ag1db9g4655gb7bdgf033959fd211" version="1">Archipelago ランチャーから Baldur's Gate 3 - ToT クライアントを起動します。</content>
+    <content contentuid="h6119ae15g344cg4fb4g8522ga9d267008bf0" version="1">戦闘に参加するためにキャンプを離れます。</content>
+    <content contentuid="h2795a4eeg72c0g4f1bgb14ag697dd3684b5f" version="1">伝説の</content>
+    <content contentuid="h5bd81560g0e8dg4403g968egb26534ac9047" version="1">レベルがリセットされます。 インベントリは空になります。</content>
+    <content contentuid="h37371a7eg6262g44f2gb040g4294d26260b6" version="1">リスト</content>
+    <content contentuid="h315fa45ag640ag4f10gb026gc9769204eb54" version="1">ローカルロック解除</content>
+    <content contentuid="h31b714deg64e2g4418gb028g427ed20a605c" version="1">ログ</content>
+    <content contentuid="h214532ddg7410g4678g8127g601ee305423c" version="1">ローンウルフモードはソロでプレイしたいプレイヤーにおすすめです。 これは [構成] タブで有効にすることができ、チャレンジ モードまたはヘル モードと組み合わせて使用​​できます。 一匹狼モードを有効または無効にした後は、必ずテンプレートをリセットしてください。</content>
+    <content contentuid="h21dd0d16g7488g4584gb12ege3e2530cc1c0" version="1">一匹狼モード</content>
+    <content contentuid="hb6e91cdbge3bcg4498ga85dga2fe8a7f80dc" version="1">戦利品フィルターが更新されました</content>
+    <content contentuid="h31b71a1eg64e2g44f4gb028g4292d20a60b0" version="1">戦利品</content>
+    <content contentuid="h26d5eb62g7380g4be3gb15eg6d85137c4fa7" version="1">マップエラー</content>
+    <content contentuid="h2cb85222g79edg4077gb1f8gb61113da9433" version="1">地図が見つかりません。</content>
+    <content contentuid="h3cf1646eg69a4g4313gb0fcg2575d2de0757" version="1">地図: %s</content>
+    <content contentuid="h35341416g6061g4414gb060g727252425050" version="1">地図</content>
+    <content contentuid="h230707dfg7652g4528ga103g434ec321616c" version="1">Mod アイテムのブラックリスト</content>
+    <content contentuid="h2f73e820g7a26g4bd7g91c4g0db133e62f93" version="1">MODフィルターが更新されました</content>
+    <content contentuid="h07417422g5214g4217gb347g247111650653" version="1">コンソールおよびその他のデバッグ機能の詳細情報</content>
+    <content contentuid="hc2671d37g9732g4486gaf15g42e04d3760c2" version="1">敵を倒すことで得られる経験値が倍増する</content>
+    <content contentuid="h0fb4243eg5ae1g4716gb3c8g7170d1ea5352" version="1">NG+</content>
+    <content contentuid="h3535380eg6060g46d5gb060g60b3d2424291" version="1">名前</content>
+    <content contentuid="had299379gf87cg4c62g89e1gaa04abc38826" version="1">パラディンである必要がある。</content>
+    <content contentuid="h8810864dgdd45g4d31g8bb2g3b57e9901975" version="1">場合によっては複数回実行する必要があります。 すべての場合に機能するとは限りません。</content>
+    <content contentuid="h3097f93eg65c2g4ac6gb03ag4ca0d2186e82" version="1">次のラウンド</content>
+    <content contentuid="h01c821efg549dg474bga32fgb12dc10d930f" version="1">Archipelago 個のログ行はまだありません。</content>
+    <content contentuid="h214d3377g7418g4662ga127ge0044305c226" version="1">ダイアログが見つかりませんでした。</content>
+    <content contentuid="h4ffd5884g1aa8g40ddg97ccge6bb75eec499" version="1">パーティのアクション、ボーナス アクション、または移動は削除できません。</content>
+    <content contentuid="h1dd9331fg488cg4664ga2eega002c0cc8220" version="1">パーティーのリソースを使い果たすことはできません。</content>
+    <content contentuid="he39e5114gb6cbg4044g9d0agd6227f28f400" version="1">罰則は適用されなかった。</content>
+    <content contentuid="hd4915f9fg81c4g40acgae7ag26cacc5804e8" version="1">有効なパーティーメンバーはダウンできませんでした。</content>
+    <content contentuid="hd7151d29g8240g4487g8e42g62e1ac6040c3" version="1">有効なパーティーメンバーを排出できませんでした。</content>
+    <content contentuid="hd4f28583g81a7g4d0dgae7cg1b6b0c5e3949" version="1">有効なパーティーメンバーを殺害することはできません。</content>
+    <content contentuid="h7033ee56g2566g4bb0gb430g0dd656122ff4" version="1">有効なパーティーメンバーはアクションを失うことはできません。</content>
+    <content contentuid="h9cec8225gc9b9g4d77g8afdgfb1168dfd933" version="1">通貨が足りません。</content>
+    <content contentuid="h2bda2046g7e8fg4751gb18eg913753acb315" version="1">ロードされていません</content>
+    <content contentuid="h37f322c6g62a6g4779gb04cg011f526e233d" version="1">オフ</content>
+    <content contentuid="h31f326aeg64a6g473fgb02cg0159d20e237b" version="1">オン</content>
+    <content contentuid="h97709a29gc225g4cf7g8a44g3a91a86618b3" version="1">自分の運命に従うためには、すべての障害を取り除かなければなりません。アラベラの好意により、影響を受ける存在に移動の自由の恩恵が与えられます。</content>
+    <content contentuid="hfadaa9bfgaf8fg4fcegac9eg99a8cebcbb8a" version="1">ホストのみがロック解除を購入できる</content>
+    <content contentuid="hcce399e2g99b6g4ccbgbffdg0aad1ddf288f" version="1">ホストのみが Archipelago クライアントに接続または切断できます。</content>
+    <content contentuid="h0c52c96bg5907g49c3ga3f6g1fa581d43d87" version="1">ホストのみが Archipelago クライアントを制御できます。</content>
+    <content contentuid="hbe6d0621geb38g4537g88d5ge3512af7c173" version="1">原点 %s が見つかりません。</content>
+    <content contentuid="h298720feg7cd2g475agb1abg413cd389631e" version="1">在庫切れ</content>
+    <content contentuid="h2643860ag7316g4d35gb157g0b5393752971" version="1">パスワード</content>
+    <content contentuid="h255ed026g700bg4857gb166gde315344fc13" version="1">永久的</content>
+    <content contentuid="h28cd5020g7d98g4057g91bfge631339dc413" version="1">構成の永続化</content>
+    <content contentuid="h4d21e11dg1874g4b44g87e1g2d22e5c30f00" version="1">構成を永続化しています...</content>
+    <content contentuid="h410f889dg145ag4ddcg8723gcbbae501e998" version="1">%d個のアイテムを拾いました。</content>
+    <content contentuid="h2dba28d2g78efg47d8gb1e8g91be13cab39c" version="1">すべてピックアップ</content>
+    <content contentuid="h243c04feg7169g451agb170gf37cd352d15e" version="1">ピックアップ</content>
+    <content contentuid="h315e322eg640bg4677gb026gd011d204f233" version="1">Ping スポーン</content>
+    <content contentuid="h37333c06g6266g4695gb040g00f3526222d1" version="1">ピン</content>
+    <content contentuid="hac065c23gf953g4097ga9f3g56f10bd174d3" version="1">ローグライクモードをプレイする</content>
+    <content contentuid="hf44e063cga11bg4536g9c77gd350fe55f172" version="1">ローグライク モードをプレイしますか?
+新しい戦闘を継続的に作成します。
+戦闘が完了するたびに、より高いスコアを獲得できます。
+スコアに応じて難易度も上がります。</content>
+    <content contentuid="hd27c8442g8729g4d11gbe14gfb771c36d955" version="1">継続的に難しいランダムバトルをプレイする</content>
+    <content contentuid="h307360eeg6526g435bgb034g053dd216271f" version="1">遊ぶ</content>
+    <content contentuid="h31b2227eg64e7g4772gb028g1114d20a3336" version="1">位置</content>
+    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">クイックスタート: - %s RogueScore</content>
+    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">クイックスタート: - 2x RogueScoreを獲得し、レートの難易度が2倍になります。</content>
+    <content contentuid="hee9d3983gbbc8g46cdgaddage0ab0ff8c289" version="1">クイックスタート: - 戦利品をロール %dx</content>
+    <content contentuid="he27b6a7bgb72eg43f2gad14g85948f36a7b6" version="1">クイックスタート: - マルチプライヤーのロックを無料で解除</content>
+    <content contentuid="h279d3a06g72c8g46f5gb14age0935368c2b1" version="1">ランダム</content>
+    <content contentuid="hb823bf93ged76g4eacga8b1g08ca0a932ae8" version="1">スポーンオフセットをランダム化する</content>
+    <content contentuid="h004f93edg551ag4c6bg8337gca0de115e82f" version="1">スポーン位置をランダム化して、より多様な遭遇位置を実現します。 (値を高くすると、壁の内側または境界外にスポーンする可能性があります)</content>
+    <content contentuid="h35313866g6064g46d3gb060g20b552420297" version="1">珍しい</content>
+    <content contentuid="h211f8066g744ag4d53gb122gcb355300e917" version="1">レアリティ</content>
+    <content contentuid="hfafd2f0cgafa8g47a5g9c9cge1c3febec3e1" version="1">リクルートオリジンズ (実験的)</content>
+    <content contentuid="h2e7ceb9cg7b29g4becg91d4gfd8af3f6dfa8" version="1">%sを募集中。</content>
+    <content contentuid="hff61ea30gaa34g4bf6g9cc5g2d903ee70fb2" version="1">敵、アイテム、マップのテーブルを再生成しますか?
+最近更新した場合は、これをお勧めします。
+古いデータを消去する必要がある場合があり、新しいデータを取り込む必要がある場合があります。</content>
+    <content contentuid="hda5a3f21g8f0fg46a7g8e96g90c12cb4b2e3" version="1">通常モード: モンスターの種類、力、量は緩やかに調整されます。</content>
+    <content contentuid="h2dee447fg78bbg4112ga1edgd774c3cff556" version="1">最新の保存をリロードします。</content>
+    <content contentuid="h27b40c36g72e1g4596gb148g73f0536a51d2" version="1">リロード</content>
+    <content contentuid="h835e50a0gd60bg405fg9b06gd6393924f41b" version="1">すべてのエンティティを削除する</content>
+    <content contentuid="hba5a2ecbgef0fg47b9ga896g91df8ab4b3fd" version="1">%d エンティティを削除しています。</content>
+    <content contentuid="h87eefe1cgd2bbg4ab4g9b4dgdcd2f96ffef0" version="1">Camp ボタンを押すたびに適用されるスクリプトを再実行し、Long Rest を修正します。 戦闘中は使用不可。</content>
+    <content contentuid="h3659a876g630cg4fd2gb056ga9b452748b96" version="1">設定をリセット</content>
+    <content contentuid="h360818b2g635dg44degb053gb2b81271909a" version="1">在庫をリセット</content>
+    <content contentuid="h32554192g6700g414cgb016g672a12344508" version="1">テンプレートをリセット</content>
+    <content contentuid="h367fb87eg632ag4ed2gb054gc8b4d276ea96" version="1">リセット</content>
+    <content contentuid="h0d1402fbg5841g457aga3e2g731c81c0513e" version="1">スクリプトによって誰かが同盟者とみなされなくなった場合に備えて、現在のパーティーメンバー全員のファクションをリセットします。 戦闘中は使用不可。</content>
+    <content contentuid="h6256c771g3703g4922g8516g5f4427347d66" version="1">購入した標準ロック解除の在庫をリセットします。</content>
+    <content contentuid="h413f98d6g146ag4cd8gb720gcabe5502e89c" version="1">設定をリセットしています...</content>
+    <content contentuid="h8ccc2af7gd999g47fagabffgf19c49ddd3be" version="1">テンプレートをリセットしています...</content>
+    <content contentuid="h7b7406d7g2e21g4538ga484g735e46a6517c" version="1">マルチプレイヤーの他のプレイヤーがロック解除を購入できないように制限します。</content>
+    <content contentuid="h27dae07eg728fg4b52gb14eg9d34d36cbf16" version="1">再同期</content>
+    <content contentuid="h2bc3faaag7e96g4affgb18fg0c9993ad2ebb" version="1">キャンプに戻りました。</content>
+    <content contentuid="h374141e6g6214g414bgb047g272d5265050f" version="1">RogueScore</content>
+    <content contentuid="h3f24d43fg6a71g4816ga0c1g7e70c2e35c52" version="1">エピック戦利品をロール%dx</content>
+    <content contentuid="hc2dd2983g9788g47cdgaf1ege1ab0d3cc389" version="1">伝説の戦利品をロール%dx</content>
+    <content contentuid="h3b8839f6g6eddg46cagb08bgb0ac52a9928e" version="1">戦利品をロール %dx</content>
+    <content contentuid="h3d445f63g6811g40a3ga0e7g76c502c554e7" version="1">ロールレア戦利品%dx</content>
+    <content contentuid="hd60a6ce0g835fg439bg9e53g95fd3c71b7df" version="1">部屋の住所は必須です。</content>
+    <content contentuid="h29e28ae6g7cb7g4dfbgb1adg1b9d538f39bf" version="1">部屋の住所</content>
+    <content contentuid="hf42a12e9ga17fg447bg8c71g921dae53b03f" version="1">ゲームロードごとにルームとスロットがリセットされます。 パスワードはこのセッションのみに保持されます。</content>
+    <content contentuid="h38c0165eg6d95g4430gb0bfg3256d29d1074" version="1">部屋: %s</content>
+    <content contentuid="h34aa446dg61ffg4113g8079g9775e25bb557" version="1">ルート テンプレート: %s</content>
+    <content contentuid="h38b71f0eg6de2g44a5gb0b8g42c3d29a60e1" version="1">ラウンド %d</content>
+    <content contentuid="h3d5fde62g680ag48b3gb0e6gced512c4ecf7" version="1">ラウンド: %s</content>
+    <content contentuid="h21780c4eg742dg4591gb124gb3f7d30691d5" version="1">ランニング</content>
+    <content contentuid="hbc1acb0ege94fg49e5gb8f2g9f83dad0bda1" version="1">シナリオ %s が開始されました。</content>
+    <content contentuid="h28fa5cc5g7dafg4099g81bcg96ff639eb4dd" version="1">シナリオが終了しました。</content>
+    <content contentuid="h296c87dcg7c39g4d28g91a5gfb4ef387d96c" version="1">シナリオエラー</content>
+    <content contentuid="hb72bdac5ge27eg48f9g8841g8e9f6a63acbd" version="1">シナリオが開始されていません。</content>
+    <content contentuid="h2bed91d3g7eb8g4c48ga18dgea2e03afc80c" version="1">シナリオ復活しました。</content>
+    <content contentuid="h2a7aafc0g7f2fg4fa9g9194g99cf33b6bbed" version="1">シナリオが停止しました。</content>
+    <content contentuid="h218206b6g74d7g453egb12bg13585309317a" version="1">シナリオ: %s</content>
+    <content contentuid="h2553979eg7006g4c2cgb166g0a4ad3442868" version="1">シナリオ</content>
+    <content contentuid="h243816eeg716dg443bgb170gb25dd352907f" version="1">検索</content>
+    <content contentuid="h3f4f248eg6a1ag471dgb0c7gc17bd2e5e359" version="1">シード: %s</content>
+    <content contentuid="h057ebf6dg502bg4ea3g8364gd8c5e146fae7" version="1">ローグライク シナリオを選択して開始してください。</content>
+    <content contentuid="he89ab093gbdcfg4e5cgadbag983a0f98ba18" version="1">多世界から %s を送信します。</content>
+    <content contentuid="hc9778f97g9c22g4dacgafa4g4bca4d8669e8" version="1">Archipelago 小切手を送信します。 報酬は多世界から届けられます。</content>
+    <content contentuid="h334e0016g661bg4554gb007gd3325225f110" version="1">ショップチェック</content>
+    <content contentuid="ha821951agfd74g4c04gb9b1g2a629b930840" version="1">ショップフラグメント %d/%d</content>
+    <content contentuid="h2334e427g7661g4b17ga100g7d7143225f53" version="1">ショップフラグメント: %d/%d を収集しました</content>
+    <content contentuid="h908239a1gc5d7g46cfg8a3bg10a92819328b" version="1">ローグライク モードに関係のない対話、戦闘、インタラクションはスキップしてください。</content>
+    <content contentuid="h2bb88d7eg7eedg4d82gb188gbbe4d3aa99c6" version="1">キャンプにスキップしますか？</content>
+    <content contentuid="h891683e6gdc43g4d6bgbba2g5b0d5980792f" version="1">スロット名は必須です。</content>
+    <content contentuid="h237e812eg762bg4d47gb104gdb21d326f903" version="1">スロット名</content>
+    <content contentuid="h390f045eg6c5ag4510gb0a3gc376d281e154" version="1">スロット: %s</content>
+    <content contentuid="h868cae89gd3d9g4fbdg8b5bgf9dba979dbf9" version="1">プレイヤーにアイテムをスポーンする</content>
+    <content contentuid="hc6c558ccg9390g40d9g9f5fg66bffd7d449d" version="1">マインドフレイヤー・コンパニオンをスポーンする</content>
+    <content contentuid="h31359ceeg6460g4c9bgb020g6afdd20248df" version="1">スポーン</content>
+    <content contentuid="h3cd7cd32g6982g4986gb0feg4fe012dc6dc2" version="1">制御可能なパーティーフォロワーとしてデイム・アイリンを生成します。 それぞれの長い休息の後に、彼らを再召喚するための呪文を受け取ります。</content>
+    <content contentuid="hd9746d3ag8c21g4386gbea4g75e09c8657c2" version="1">皇帝を制御可能なパーティーフォロワーとして生成します。 それぞれの長い休息の後に、彼らを再召喚するための呪文を受け取ります。</content>
+    <content contentuid="h9f1540b5gca40g415eg8ac2g673868e0451a" version="1">ケレモルフォシスを開始する</content>
+    <content contentuid="h3166c60eg6433g4935gb025g5f53d2077d71" version="1">スタートメニュー</content>
+    <content contentuid="h323096eeg6765g4c3bgb010g3a5dd232187f" version="1">スタート</content>
+    <content contentuid="hc1216d49g9474g4381g8f21g25e7ad0307c5" version="1">初期アイテムが追加されました。 雇用者のロックが解除されました。</content>
+    <content contentuid="h32391aeeg676cg44fbgb010ga29dd23280bf" version="1">州</content>
+    <content contentuid="h21911aeeg74c4g44fbgb12ag229dd30800bf" version="1">ステータス</content>
+    <content contentuid="h3e9c6432g6bc9g4316gb0dagf57012f8d752" version="1">在庫: %s</content>
+    <content contentuid="h327e121eg672bg4474gb014gd212d236f030" version="1">停止</content>
+    <content contentuid="hcf08bac4g9a5dg4ef9g9fc3gb89f7de19abd" version="1">銀光の剣</content>
+    <content contentuid="h097e26aeg5c2bg473fgb3a4gd159d186f37b" version="1">TP</content>
+    <content contentuid="h25531a42g7006g44f1gb166g0297134420b5" version="1">テレポート</content>
+    <content contentuid="hf6e3e1c8ga3b6g4b49g9c5dg0d2fbe7f2f0d" version="1">%d 秒以内にキャンプにテレポートします。</content>
+    <content contentuid="hc396e53dg96c3g4b06g8f0ag5d60ed287f42" version="1">別の ACT へのテレポート</content>
+    <content contentuid="h22c45432g7791g4016gb11fg7670133d5452" version="1">テンプレートID: %s</content>
+    <content contentuid="h2771ca17g7224g49f4ga144g2f9243660db0" version="1">テンプレートのリセット</content>
+    <content contentuid="h273d0172g7268g4542gb140ge3241362c106" version="1">テンプレート</content>
+    <content contentuid="hf6bb50e7ga3eeg405bgac58g863d4e7aa41f" version="1">Archipelago クライアントが応答を停止しました。 それを閉じ、Archipelago ランチャーから Baldur's Gate 3 - ToT クライアントを再度起動し、再接続します。</content>
+    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">RogueScore が増加するにつれてエンカウンターの予算も増加し、難易度が高くなるほどより速く拡張されます。</content>
+    <content contentuid="h7e986d9bg2bcdg438cga4dagb5ea86f897c8" version="1">再会した魂のサニエルは、すべての能力値に +1 を与え、さらに 2 メートルの移動速度を与えます。</content>
+    <content contentuid="h202a0f80g757fg45adg9131g93cb3313b1e9" version="1">部屋フィールドのデフォルトは `archipelago.gg:` です。 ここに現在のポートとスロット名を入力し、ゲーム内で接続します。</content>
+    <content contentuid="h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d" version="1">このタブはそのクライアントをミラーリングし、開いている間に接続、切断、再同期を送信できます。</content>
+    <content contentuid="h7c764b2dg2923g41e7g84f4g5781e6d675a3" version="1">これにより、テンプレートに加えたすべての変更がリセットされます。</content>
+    <content contentuid="h373f16ceg626ag4439gb040gc25fd262e07d" version="1">階層</content>
+    <content contentuid="he699ae7dgb3ccg4fb2g8d5aga9d4ef788bf6" version="1">n秒後にキャンプへ</content>
+    <content contentuid="h7c017c98g2954g429cg94f3g24fab6d106d8" version="1">ToT クライアントが開いています。 ここまたはクライアント ウィンドウで [接続] を押します。</content>
+    <content contentuid="h33c0b3bcg6695g4e6eg900fg3808f22d1a2a" version="1">合計ラウンド: %s</content>
+    <content contentuid="h9dc524a2gc890g471fgbaefg617918cd435b" version="1">通知をオフにする</content>
+    <content contentuid="h23579496g7602g4c1cgb106g4a7a53246858" version="1">珍しい</content>
+    <content contentuid="hdbe11c7ag8eb4g4492gbe8dg22f49caf00d6" version="1">不明な Archipelago クライアント コマンドです。</content>
+    <content contentuid="hd0c773c3g8592g4269gae3fg440f0c1d662d" version="1">%s で購入した %s のロックを解除します。</content>
+    <content contentuid="h2308c823g765dg49d7ga103gbfb103219d93" version="1">ロックを解除 %s を購入しました。</content>
+    <content contentuid="h2cd8cf00g798dg49a5g91fegbfc333dc9de1" version="1">マルチプライヤーのロックを解除する</content>
+    <content contentuid="h2cc2c959g7997g49c0g81ffg1fa6a3dd3d84" version="1">クイックスタートのロックを解除する</content>
+    <content contentuid="hb00c97b7ge559g4c2ega833gfa484a11d86a" version="1">オタマジャクシパワーのロックを解除する</content>
+    <content contentuid="h2c5a29c3g790fg47c9ga1f6g91af03d4b38d" version="1">ウェイポイントのロックを解除する</content>
+    <content contentuid="hd490c7efg81c5g492bgae7ag3f4dcc581d6f" version="1">ロック解除には文字が必要です。</content>
+    <content contentuid="h2c37ca25g7962g49f7g81f0g4f9163d26db3" version="1">ロック解除が見つかりません。</content>
+    <content contentuid="h8bfedf62gdeabg48a3gbb8cgdec519aefce7" version="1">在庫切れのロックを解除します。</content>
+    <content contentuid="h231a0e4eg764fg45b1gb102g93d7d320b1f5" version="1">ロックを解除します</content>
+    <content contentuid="h8528df02gd07dg48a5gbb61gbec319439ce1" version="1">今後のスポーン: %s</content>
+    <content contentuid="h2f0de7b4g7a58g4b2eg91c3ged4873e1cf6a" version="1">構成を更新しています...</content>
+    <content contentuid="he7764179gb223g4142g8d44g5724af667506" version="1">ボーナスアクションですべてのイリシッドパワーを使用します。</content>
+    <content contentuid="hf762a093ga237g4f5cgac45g193a0e673b18" version="1">夜間に行き詰まったときに使用します。</content>
+    <content contentuid="h27607312g7235g4264gb145g340213671620" version="1">とても珍しい</content>
+    <content contentuid="hb495ade9ge1c0g4f8bg887ag69edaa584bcf" version="1">さらに多くのボスが必要ですか? 新しい複雑な伝説のメカニック? スペル・オブ・エクスサンドリアをインストールして、重要な役割のモンスターをプールに追加しましょう！</content>
+    <content contentuid="h273eb1cag726bg4e49gb140gd82f9362fa0d" version="1">ウェイポイント</content>
+    <content contentuid="hfd862893ga8d3g47dcgacebg51ba0ec97398" version="1">%sへようこそ! プレイを始めますか？</content>
+    <content contentuid="hf7517eadga204g42bfg8c46g24d9ee6406fb" version="1">1ラウンド転送します。 戦いが行き詰まったときや、一度に多くの敵と戦いたいときに使用してください。</content>
+    <content contentuid="hffb9fd3egaaecg4a86gbcc8gace0deea8ec2" version="1">マップからすべてのエンティティを自動的に削除し、予期しないストーリー トリガーに関するほとんどの問題を修正します。 (おそらく必須)</content>
+    <content contentuid="h2d89694ag78dcg43c1gb1ebga5a793c98785" version="1">ウィンドウの設定</content>
+    <content contentuid="h28a9d2d8g7dfcg4878g91b9gae1eb39b8c3c" version="1">ウィンドウ切り替えキー</content>
+    <content contentuid="h0a776a90g5f22g43fcg9394g459a31b667b8" version="1">Volo の卓越した業績からの知識を着実に適用することで、影響を受けるエンティティは攻撃ロール、セーヴィング スロー、能力チェックに +2 を獲得します。</content>
+    <content contentuid="h806c6e82gd539g43bdgbb35gf5db1917d7f9" version="1">不屈の野心を持って、カルサスの王冠を掴み、その力をあなたのものにしましょう。</content>
+    <content contentuid="hcb742a6eg9e21g47f3gbf84g7195dda653b7" version="1">牛の秘密レベルを見つけました!</content>
+    <content contentuid="h1b8b3985g4edeg46cdg828bg80ab60a9a289" version="1">あなたは自然の復讐の怒りを被りました!</content>
+    <content contentuid="h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2" version="1">通貨が変更されました: %d -&gt; %d!</content>
+    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">あなたの RogueScore が変更されました: %d -&gt; %d!</content>
+    <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">あなたのフクロウベアの子はすっかり成長し、暴れる準備ができています。 Armored Owlbear を制御可能なパーティーフォロワーとして生成します。 それぞれの長い休息の後に、彼らを再召喚するための呪文を受け取ります。</content>
+    <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">買った</content>
+</contentList>

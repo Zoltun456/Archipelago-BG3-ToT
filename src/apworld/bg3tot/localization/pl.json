@@ -1,0 +1,311 @@
+{
+    "canonical": {
+        "world": {
+            "game_name": "Baldur's Gate 3 - ToT",
+            "region_name": "Trials of Tav",
+            "victory_name": "Victory"
+        },
+        "tutorial": {
+            "setup": {
+                "title": "Baldur's Gate 3 - ToT Setup Guide",
+                "description": "Install the Trials-first BG3 Archipelago build, enable the merged BG3 mod, and start a seed.",
+                "language": "Polski"
+            }
+        },
+        "shop": {
+            "fragment_item_name": "Shop Fragment",
+            "section_name": "Shop Fragment {section_index}/{section_count}"
+        },
+        "locations": {
+            "clear_check": "Clear Check",
+            "kill_check": "Kill Check",
+            "perfect_check": "Perfect Check",
+            "roguescore_check": "RogueScore Check",
+            "shop_check": "Shop Check"
+        },
+        "location_groups": {
+            "clears": "Clears",
+            "kills": "Kills",
+            "perfect_clears": "Perfect Clears",
+            "roguescore": "RogueScore",
+            "shop": "Shop"
+        },
+        "items": {
+            "custom_fillers": {
+                "currency_25": "Currency +25",
+                "currency_50": "Currency +50",
+                "currency_100": "Currency +100",
+                "xp_1000": "XP +1000"
+            },
+            "traps": {
+                "monster": "Monster Spawn Trap",
+                "bleeding": "Bleeding Trap",
+                "stunned": "Stunned Trap",
+                "confusion": "Confusion Trap",
+                "sussur": "Sussur Trap",
+                "clown": "Clown Trap",
+                "overburdened": "Overburdened Trap",
+                "bane": "Bane Trap",
+                "blindness": "Blindness Trap",
+                "slow": "Slow Trap",
+                "poisoned": "Poisoned Trap",
+                "faerie_fire": "Faerie Fire Trap",
+                "ensnared": "Ensnared Trap",
+                "frightened": "Frightened Trap",
+                "burning": "Burning Trap",
+                "hold_person": "Hold Person Trap",
+                "cheesed": "Cheesed Trap",
+                "silence": "Silence Trap",
+                "grease": "Grease Trap"
+            }
+        },
+        "item_groups": {
+            "unlocks": "Unlocks",
+            "progression_unlocks": "Progression Unlocks",
+            "shop_progression": "Shop Progression",
+            "useful_unlocks": "Useful Unlocks",
+            "filler_unlocks": "Filler Unlocks",
+            "fillers": "Fillers",
+            "traps": "Traps"
+        },
+        "errors": {
+            "local_progression_overflow": "This slot generates more local progression items than it has locations available. Reduce the Progressive Shop fragment count or add more non-shop checks.",
+            "progressive_shop_overflow": "Progressive Shop adds {fragment_count} {shop_fragment_item_name} items, but this slot only has {non_shop_location_count} non-shop check locations available to hold them. Increase the clear/kill/perfect/RogueScore check counts, choose a larger Progressive Shop unlock rate, or disable Progressive Shop."
+        },
+        "options": {
+            "death_link": {
+                "display_name": "DeathLink"
+            },
+            "unlock_copies": {
+                "doc_template": "How many copies of {unlock_name} are included in the randomized AP unlock pool.\n\nSet this to 0 to remove that unlock from the multiworld."
+            },
+            "include_equipment_fillers": {
+                "display_name": "Include Equipment Fillers",
+                "doc": "Whether one-off equipment filler items from the upstream BG3 equipment pool stay in the AP filler pool.\n\nDisable this to remove those equipment filler items from the multiworld entirely."
+            },
+            "goal": {
+                "display_name": "Goal",
+                "doc": "Determines how this BG3 Trials slot wins.\n\nBuy NG+: Purchase the local Quick Start / NG+ unlock from the tav shop.\nClear Stages: Complete the configured number of Trials clears.\nReach RogueScore: Reach the configured RogueScore total.",
+                "choice_names": {
+                    "buy_ng_plus": "Buy NG+",
+                    "clear_stages": "Clear Stages",
+                    "reach_rogue_score": "Reach RogueScore"
+                }
+            },
+            "goal_clear_target": {
+                "display_name": "Goal Clear Target",
+                "doc": "How many successful Trials clears are required when the goal is Clear Stages."
+            },
+            "goal_rogue_score_target": {
+                "display_name": "Goal RogueScore Target",
+                "doc": "How much RogueScore is required when the goal is Reach RogueScore."
+            },
+            "goal_ng_plus_fragment_gate_percent": {
+                "display_name": "NG+ Fragment Gate",
+                "doc": "How much of the Progressive Shop must be unlocked before `NG+` appears in the shop.\n\nIf Progressive Shop is disabled, this gate is ignored and `NG+` appears normally."
+            },
+            "goal_ng_plus_price": {
+                "display_name": "NG+ Price",
+                "doc": "Local shop price for `NG+`."
+            },
+            "clear_check_count": {
+                "display_name": "Clear Check Count",
+                "doc": "How many Archipelago checks can be earned from successful scenario clears."
+            },
+            "clear_check_interval": {
+                "display_name": "Clear Check Interval",
+                "doc": "Awards one clear-based check every N successful scenario clears until the count limit is reached."
+            },
+            "kill_check_count": {
+                "display_name": "Kill Check Count",
+                "doc": "How many Archipelago checks can be earned from total enemy kills in Trials."
+            },
+            "kill_check_interval": {
+                "display_name": "Kill Check Interval",
+                "doc": "Awards one kill-based check every N total kills until the count limit is reached."
+            },
+            "perfect_check_count": {
+                "display_name": "Perfect Check Count",
+                "doc": "How many Archipelago checks can be earned from perfect clears."
+            },
+            "perfect_check_interval": {
+                "display_name": "Perfect Check Interval",
+                "doc": "Awards one perfect-clear check every N perfect clears until the count limit is reached."
+            },
+            "roguescore_check_count": {
+                "display_name": "RogueScore Check Count",
+                "doc": "How many Archipelago checks can be earned from RogueScore milestones."
+            },
+            "roguescore_check_interval": {
+                "display_name": "RogueScore Check Interval",
+                "doc": "Awards one RogueScore-based check every N RogueScore until the count limit is reached."
+            },
+            "shop_check_count": {
+                "display_name": "Shop Check Count",
+                "doc": "Targets at least N randomized AP shop checks from ``trials_unlock_catalog.json``.\n\nBuying one of these entries sends a location check instead of granting the reward immediately.\nThe original reward becomes an AP item that must be received from the multiworld.\n\nThe world will automatically expand above this value when needed so every configured\nnon-filler unlock copy still appears somewhere in the randomized item pool."
+            },
+            "progressive_shop": {
+                "display_name": "Progressive Shop",
+                "doc": "Locks randomized AP shop checks behind progressive ``Shop Fragment`` items.\n\nEach received Shop Fragment unlocks the next visible section of the tav shop until the\nwhole randomized shop is available."
+            },
+            "progressive_shop_unlock_rate": {
+                "display_name": "Progressive Shop Unlock Rate",
+                "doc": "How much of the randomized AP shop each received Shop Fragment unlocks.\n\nLower values create more Shop Fragments and finer-grained shop progression.\nThis option only affects generation when Progressive Shop is enabled."
+            },
+            "shop_price_minimum": {
+                "display_name": "Shop Price Minimum",
+                "doc": "Minimum seeded random price for AP shop entries.\n\nPrices are rounded to multiples of 10, and NG+ keeps its vanilla local cost."
+            },
+            "shop_price_maximum": {
+                "display_name": "Shop Price Maximum",
+                "doc": "Maximum seeded random price for AP shop entries.\n\nPrices are rounded to multiples of 10, and NG+ keeps its vanilla local cost."
+            },
+            "permanent_buff_target": {
+                "display_name": "Permanent Buff Target",
+                "doc": "Chooses who receives character-bound useful AP unlock rewards.\n\nUser Character: Gives the reward to the receiving player's chosen character.\nRandom Party Member: Gives the reward to one random active party member.\nAll Party Members: Gives the reward to every active party member.\n\nProgression rewards ignore this setting and still keep their whole-party or global behavior.",
+                "choice_names": {
+                    "user_character": "User Character",
+                    "random_party_member": "Random Party Member",
+                    "all_party_members": "All Party Members"
+                }
+            },
+            "vanilla_pixie_blessing_in_shop": {
+                "display_name": "Vanilla Pixie Blessing In Shop",
+                "doc": "Restores Pixie Blessing as a normal local shop unlock instead of randomizing it into the AP pool.\n\nWhen enabled, Moonshield is removed from the randomized shop check pool and the vanilla 30-cost shop entry stays local."
+            },
+            "death_link_trigger": {
+                "display_name": "DeathLink Trigger",
+                "doc": "Chooses what local Trials death condition sends a DeathLink.\n\nFull Party Wipe: Sends when every active party member is dead or downed.\nAny Party Kill: Sends when any active party member fully dies.\nAny Party Downed: Sends when any active party member is downed.",
+                "choice_names": {
+                    "full_party_wipe": "Full Party Wipe",
+                    "any_party_kill": "Any Party Kill",
+                    "any_party_downed": "Any Party Downed"
+                }
+            },
+            "death_link_punishment": {
+                "display_name": "DeathLink Punishment",
+                "doc": "Chooses what happens locally when this slot receives a DeathLink.\n\nKill All Party Members: Wipes the active party, companions, and summons to force a reload.\nDown Random Party Member: Downs one random active party member or companion.\nKill Random Party Member: Fully kills one random active party member or companion.\nRemove All Resources - All: Drains every tracked resource from the whole active party and companions,\nincluding spell slots, actions, bonus actions, movement, rage charges, Channel Divinity, sorcery points,\nand similar class resources.\nRemove All Resources - Random: Drains every tracked resource from one random active party member or companion,\nincluding spell slots, actions, bonus actions, movement, rage charges, Channel Divinity, sorcery points,\nand similar class resources.\nRemove All Actions - All: Removes only actions, bonus actions, and movement from the whole active party and companions.\nRemove All Actions - Random: Removes only actions, bonus actions, and movement from one random active\nparty member or companion.\nNothing: Receives the DeathLink notification but applies no local punishment.",
+                "choice_names": {
+                    "kill_all_party_members": "Kill All Party Members",
+                    "down_random_party_member": "Down Random Party Member",
+                    "kill_random_party_member": "Kill Random Party Member",
+                    "remove_all_resources_all": "Remove All Resources - All",
+                    "remove_all_resources_random": "Remove All Resources - Random",
+                    "remove_all_actions_all": "Remove All Actions - All",
+                    "remove_all_actions_random": "Remove All Actions - Random",
+                    "nothing": "Nothing"
+                }
+            },
+            "traps_percentage": {
+                "display_name": "Trap Chance",
+                "doc": "Percent chance that filler slots become traps instead of helpful filler rewards."
+            },
+            "enabled_traps": {
+                "display_name": "Enabled Trap List",
+                "doc": "Which trap types are allowed in the filler pool.\n\nMonster traps are still the least proven option and may need extra testing in Trials.",
+                "choice_names": {
+                    "monster": "Monster",
+                    "bleeding": "Bleeding",
+                    "stun": "Stun",
+                    "confusion": "Confusion",
+                    "bane": "Bane",
+                    "blindness": "Blindness",
+                    "slow": "Slow",
+                    "poisoned": "Poisoned",
+                    "faerie_fire": "Faerie Fire",
+                    "ensnared": "Ensnared",
+                    "frightened": "Frightened",
+                    "burning": "Burning",
+                    "hold_person": "Hold Person",
+                    "cheesed": "Cheesed",
+                    "silence": "Silence",
+                    "grease": "Grease"
+                }
+            }
+        },
+        "option_groups": {
+            "game_options": "Game Options",
+            "goals": "Goals",
+            "check_thresholds": "Check Thresholds",
+            "shop": "Shop",
+            "unlock_pool": "Unlock Pool",
+            "client_and_traps": "Client & Traps"
+        },
+        "presets": {
+            "release_defaults": "Release Defaults",
+            "quick_trial": "Quick Trial"
+        }
+    },
+    "ui": {
+        "launcher": {
+            "client_name": "[[TOTPH_0000]]] Klient",
+            "client_description": "Uruchom klienta BG3 [[TOTPH_0001]]].",
+            "client_base_title": "[[TOTPH_0001]]] Baldur's Gate 3 - ToT Klient"
+        },
+        "parser": {
+            "description": "BG3 Klient próbny do komunikacji tekstowej.",
+            "bridge_mode_help": "Uruchom bez samodzielnego interfejsu użytkownika i akceptuj polecenia z karty Archipelago w grze."
+        },
+        "client": {
+            "resync": "Synchronizacja elementy."
+        },
+        "error": {
+            "title": "Błąd",
+            "log_prefix": "Błąd: {message}"
+        },
+        "startup": {
+            "missing_bg3_folder": "BG3Client nie mógł wykryć ścieżki do folderu Baldur's Gate 3.\nSpróbuj ustawić wartość „root_directory” w pliku opcji lokalnych na folder [[TOTPH_0001]]] jest zainstalowany.",
+            "missing_script_extender": "BG3Client nie mógł znaleźć folderu Script Extender w twojej instalacji BG3.\nUpewnij się, że [[TOTPH_0001]]] został zainstalowany i Od tego czasu BG3 został uruchomiony przynajmniej raz."
+        },
+        "bridge": {
+            "placeholders": {
+                "room": "[[TOTPH_0000]]] pokój",
+                "unknown_slot": "nieznane miejsce",
+                "archipelago": "Archipelago"
+            },
+            "status": {
+                "runtime_running": "Środowisko wykonawcze klienta działa. Użyj karty Archipelago w grze, aby się połączyć.",
+                "tot_client_ready": "ToT Klient otwarty. Naciśnij Połącz tutaj lub w oknie klienta.",
+                "password_required": "[[TOTPH_0000]]] wymagane hasło do pokoju.",
+                "slot_required": "[[TOTPH_0000]]] wymagana nazwa slotu.",
+                "connection_closed": "Połączenie zamknięte. Klient ToT jest nadal otwarty; naciśnij Połącz, aby spróbować ponownie.",
+                "connected_to": "Połączono z {server_address}.",
+                "connecting_to": "Łączymy z {server_address}.",
+                "room_address_required": "Wymagany adres pokoju Archipelago.",
+                "connecting_as": "Łączenie z {server_address} jako {slot_name}.",
+                "connection_failed": "[[TOTPH_0000]]] połączenie nie powiodło się.",
+                "command_error": "[[TOTPH_0000]]] błąd polecenia klienta."
+            },
+            "errors": {
+                "password_required": "Pokój wymaga hasło.",
+                "slot_required": "Przed połączeniem wymagana jest nazwa gniazda.",
+                "reconnect_disabled": "Automatyczne ponowne łączenie jest wyłączone. Naciśnij Połącz, aby spróbować ponownie.",
+                "room_address_required": "Nie można połączyć się bez adresu pokoju.",
+                "slot_name_required": "Nie można połączyć się bez nazwy gniazda."
+            },
+            "logs": {
+                "keep_window_open": "Nie otwieraj tego okna wykonawczego podczas gry [[TOTPH_0000]]].",
+                "connect_from_client_or_tab": "Klient ToT jest otwarty. Połącz się tutaj lub z karty Archipelago w grze.",
+                "window_close_stops_client": "Zamknięcie tego okna klienta zatrzymuje klienta Archipelago.",
+                "connection_closed": "Połączenie zamknięte. Automatyczne ponowne łączenie jest wyłączone; naciśnij Połącz, aby spróbować ponownie.",
+                "connected_as": "Połączono z {server_address} jako {slot_name}.",
+                "deathlink_received": "Otrzymano DeathLink od [[TOTPH_0001]]]: {cause}",
+                "connecting_as": "Łączenie z {server_address} jako {slot_name}.",
+                "connection_failed": "Połączenie nie powiodło się: {error}",
+                "disconnect_requested": "Zażądano rozłączenia z karty Archipelago w grze.",
+                "resync_requested_while_disconnected": "Zażądano ponownej synchronizacji po rozłączeniu.",
+                "resync_requested": "Ręcznie Zażądano ponownej synchronizacji z karty Archipelago w grze.",
+                "unknown_command": "Zignorowano nieznane polecenie mostu: {command_type}",
+                "watcher_error": "Błąd obserwatora klienta: {error}",
+                "communication_error": "Błąd wątku komunikacyjnego: {error}"
+            }
+        },
+        "shop": {
+            "player_fallback": "Gracz {player}",
+            "display_name": "[[TOTPH_0000]]] -> [[TOTPH_0001]]]"
+        },
+        "deathlink": {
+            "default_cause": "Porażka w próbach."
+        }
+    }
+}
