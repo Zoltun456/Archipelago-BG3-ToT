@@ -1817,6 +1817,89 @@ local function build_granted_unlock(unlock_id)
 end
 
 
+local function localized_handle_text(handle)
+    handle = tostring(handle or "")
+    if handle == "" then
+        return ""
+    end
+
+    local ok, translated = pcall(Localization.Get, handle)
+    if ok and type(translated) == "string" then
+        return translated
+    end
+
+    return ""
+end
+
+
+local function localized_template_display_name(template_id)
+    template_id = tostring(template_id or "")
+    if template_id == "" then
+        return ""
+    end
+
+    local template = Ext.Template.GetTemplate(template_id)
+    if not template then
+        template = Ext.Template.GetRootTemplate(template_id)
+    end
+    if not template or not template.DisplayName or not template.DisplayName.Handle then
+        return ""
+    end
+
+    return localized_handle_text(template.DisplayName.Handle.Handle)
+end
+
+
+local function localized_shop_preview_item_name(shop_preview)
+    local bg3_item_id = tostring(table_get(shop_preview, "bg3_item_id", "") or "")
+    if string.sub(bg3_item_id, 1, 10) == "ToTUnlock:" then
+        local unlock_id = string.match(bg3_item_id, "^ToTUnlock:([^:]+)")
+        if unlock_id == "ShopFragment" then
+            return TL("h30dbf342g658eg4a61gb03eg8c07121cae25")
+        end
+        if unlock_id and unlock_id ~= "" then
+            capture_original_unlock_templates()
+            local template = runtime.original_templates_by_id[unlock_id]
+            local translated_name = tostring(table_get(template, "Name", "") or "")
+            if translated_name ~= "" then
+                return translated_name
+            end
+        end
+    end
+
+    local translated_template_name = localized_template_display_name(bg3_item_id)
+    if translated_template_name ~= "" then
+        return translated_template_name
+    end
+
+    return tostring(table_get(shop_preview, "item_name", "") or "")
+end
+
+
+local function localized_shop_preview_display_name(shop_preview)
+    local item_name = localized_shop_preview_item_name(shop_preview)
+    local player_name = tostring(table_get(shop_preview, "player_name", "") or "")
+    local fallback_name = tostring(table_get(shop_preview, "display_name", "") or "")
+    if item_name == "" then
+        return fallback_name
+    end
+    if player_name ~= "" then
+        return string.format("%s -> %s", item_name, player_name)
+    end
+    return item_name
+end
+
+
+local function localized_shop_preview_section_name(shop_preview, options)
+    local section_index = tonumber(table_get(shop_preview, "section_index", 0)) or 0
+    local section_count = tonumber(options.shop_fragment_count or 0) or 0
+    if section_index > 0 and section_count > 0 then
+        return shop_section_name(section_index, section_count)
+    end
+    return tostring(table_get(shop_preview, "section_name", "") or "")
+end
+
+
 local function ensure_granted_unlock_initialized(unlock_id, unlock)
     if runtime.granted_unlock_session_init[unlock_id] then
         return
@@ -2240,10 +2323,14 @@ local function make_shop_check_unlock(template, index, options)
     local shop_preview = table_get(options.shop_display, index, {})
     local token_index = tonumber(table_get(shop_preview, "token_index", index)) or index
     local section_index = tonumber(table_get(shop_preview, "section_index", 0)) or 0
-    local section_name = tostring(table_get(shop_preview, "section_name", ""))
+    local section_name = localized_shop_preview_section_name(shop_preview, options)
+    local item_name = localized_shop_preview_item_name(shop_preview)
+    local display_name = localized_shop_preview_display_name(shop_preview)
     local unlock = shallow_copy(template)
     unlock.Id = shop_check_id(template.Id, token_index)
-    unlock.Name = table_get(shop_preview, "display_name", TL("h1c307686g4965g423dgb2f0g345b50d21679", tostring(template.Name or template.Id)))
+    unlock.Name = display_name ~= ""
+        and display_name
+        or TL("h1c307686g4965g423dgb2f0g345b50d21679", tostring(template.Name or template.Id))
     unlock.FallbackIcon = template.Icon
     local randomized_cost = tonumber(table_get(options.shop_check_costs, index, unlock.Cost))
     if randomized_cost ~= nil then
@@ -2259,8 +2346,8 @@ local function make_shop_check_unlock(template, index, options)
         unlock.Icon = explicit_icon_key
     end
     unlock.Description = TL("hc9778f97g9c22g4dacgafa4g4bca4d8669e8")
-    if table_get(shop_preview, "item_name", "") ~= "" then
-        unlock.Description = TL("he89ab093gbdcfg4e5cgadbag983a0f98ba18", tostring(shop_preview.item_name))
+    if item_name ~= "" then
+        unlock.Description = TL("he89ab093gbdcfg4e5cgadbag983a0f98ba18", item_name)
     end
     if table_get(shop_preview, "player_name", "") ~= "" then
         unlock.Description = TL("h28e4e464g7db1g4b13g91bdg7d75739f5f57", unlock.Description, tostring(shop_preview.player_name))
@@ -2281,7 +2368,7 @@ local function make_shop_check_unlock(template, index, options)
     unlock.SortSectionOrder = 0
     unlock.SortPlayerName = tostring(table_get(shop_preview, "player_name", ""))
     unlock.SortPrice = tonumber(unlock.Cost or 0) or 0
-    unlock.SortItemName = tostring(table_get(shop_preview, "item_name", unlock.Name or ""))
+    unlock.SortItemName = item_name ~= "" and item_name or tostring(unlock.Name or "")
     unlock.SortTokenIndex = token_index
     unlock.OnInit = function() end
     unlock.OnReapply = function() end

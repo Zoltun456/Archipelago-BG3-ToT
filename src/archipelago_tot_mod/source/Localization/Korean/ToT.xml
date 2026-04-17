@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentList>
-    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d RogueScore 필수</content>
+    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d ???? 필수</content>
     <content contentuid="h29013f4fg7c54g46a1ga1a3g20c7c38102e5" version="1">%d명의 적들이 남았습니다.</content>
-    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - RogueScore: %d</content>
+    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - ????: %d</content>
     <content contentuid="h28e4e464g7db1g4b13g91bdg7d75739f5f57" version="1">%s 수신자: %s.</content>
     <content contentuid="h3b8161bbg6ed4g434ega08bg252882a9070a" version="1">%s가 이제 활성화되었습니다.</content>
     <content contentuid="h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c" version="1">%s가 이제 게임 마스터입니다.</content>
@@ -82,11 +82,11 @@
     <content contentuid="h38df043eg6d8ag4516gb0begc370d29ce152" version="1">비용: %s</content>
     <content contentuid="h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e" version="1">그림자 저주에 맞서세요.</content>
     <content contentuid="h20c028a6g7595g47dfgb13fg31b9531d139b" version="1">창조</content>
-    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">보유 통화: %d RogueScore: %d</content>
+    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">보유 통화: %d ????: %d</content>
     <content contentuid="h2169b15eg743cg4e40gb125ga826d3078a04" version="1">통화</content>
-    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">DeathLink가 %s에서 수신되었습니다. %s</content>
-    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">DeathLink을 받았습니다. %s</content>
-    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">DeathLink: %s</content>
+    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">????가 %s에서 수신되었습니다. %s</content>
+    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">????을 받았습니다. %s</content>
+    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">????: %s</content>
     <content contentuid="h366718e6g6332g44dbgb055g42bd5277609f" version="1">디버그</content>
     <content contentuid="h29b77480g7ce2g421dg91a8g447b338a6659" version="1">기본 구성</content>
     <content contentuid="h29895c61g7cdcg4093g81abga6f5238984d7" version="1">기본 구성...</content>
@@ -211,8 +211,8 @@
     <content contentuid="hd27c8442g8729g4d11gbe14gfb771c36d955" version="1">지속적으로 더 어려운 무작위 전투를 플레이하세요</content>
     <content contentuid="h307360eeg6526g435bgb034g053dd216271f" version="1">플레이</content>
     <content contentuid="h31b2227eg64e7g4772gb028g1114d20a3336" version="1">포스</content>
-    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">빠른 시작: - %s RogueScore</content>
-    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">빠른 시작: - RogueScore가 2배 증가하고 속도 난이도가 두 배로 증가합니다.</content>
+    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">빠른 시작: - %s ????</content>
+    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">빠른 시작: - ????가 2배 증가하고 속도 난이도가 두 배로 증가합니다.</content>
     <content contentuid="hee9d3983gbbc8g46cdgaddage0ab0ff8c289" version="1">빠른 시작: - 전리품 롤 %dx</content>
     <content contentuid="he27b6a7bgb72eg43f2gad14g85948f36a7b6" version="1">빠른 시작: - 무료로 승수 잠금 해제</content>
     <content contentuid="h279d3a06g72c8g46f5gb14age0935368c2b1" version="1">무작위</content>
@@ -242,7 +242,7 @@
     <content contentuid="h7b7406d7g2e21g4538ga484g735e46a6517c" version="1">멀티플레이어에서 다른 플레이어가 잠금 해제를 구매하지 못하도록 제한합니다.</content>
     <content contentuid="h27dae07eg728fg4b52gb14eg9d34d36cbf16" version="1">재동기화</content>
     <content contentuid="h2bc3faaag7e96g4affgb18fg0c9993ad2ebb" version="1">캠프로 돌아왔습니다.</content>
-    <content contentuid="h374141e6g6214g414bgb047g272d5265050f" version="1">RogueScore</content>
+    <content contentuid="h374141e6g6214g414bgb047g272d5265050f" version="1">????</content>
     <content contentuid="h3f24d43fg6a71g4816ga0c1g7e70c2e35c52" version="1">롤 에픽 전리품 %dx</content>
     <content contentuid="hc2dd2983g9788g47cdgaf1ege1ab0d3cc389" version="1">전설 전리품 굴리기 %dx</content>
     <content contentuid="h3b8839f6g6eddg46cagb08bgb0ac52a9928e" version="1">전리품 굴리기 %dx</content>
@@ -298,7 +298,7 @@
     <content contentuid="h2771ca17g7224g49f4ga144g2f9243660db0" version="1">템플릿 재설정</content>
     <content contentuid="h273d0172g7268g4542gb140ge3241362c106" version="1">템플릿</content>
     <content contentuid="hf6bb50e7ga3eeg405bgac58g863d4e7aa41f" version="1">Archipelago 클라이언트가 응답을 중지했습니다. 닫고 Archipelago 실행기에서 Baldur's Gate 3 - ToT 클라이언트를 다시 시작한 다음 다시 연결하세요.</content>
-    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">RogueScore이 증가함에 따라 만남 예산도 증가하고 난이도가 높아질수록 더 빠르게 확장됩니다.</content>
+    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">????이 증가함에 따라 만남 예산도 증가하고 난이도가 높아질수록 더 빠르게 확장됩니다.</content>
     <content contentuid="h7e986d9bg2bcdg438cga4dagb5ea86f897c8" version="1">재회한 영혼 타니엘은 모든 능력 점수에 +1을 제공하고 추가로 2m의 이동 속도를 제공합니다.</content>
     <content contentuid="h202a0f80g757fg45adg9131g93cb3313b1e9" version="1">방 필드의 기본값은 `archipelago.gg:`입니다. 여기에 현재 포트와 슬롯 이름을 입력한 후 게임에 연결하세요.</content>
     <content contentuid="h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d" version="1">이 탭은 해당 클라이언트를 미러링하며 열려 있는 동안 연결, 연결 끊기 및 재동기화를 보낼 수 있습니다.</content>
@@ -337,7 +337,12 @@
     <content contentuid="hcb742a6eg9e21g47f3gbf84g7195dda653b7" version="1">당신은 비밀의 소 레벨을 발견했습니다!</content>
     <content contentuid="h1b8b3985g4edeg46cdg828bg80ab60a9a289" version="1">당신은 자연의 복수의 분노를 불러일으켰습니다!</content>
     <content contentuid="h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2" version="1">귀하의 통화가 변경되었습니다: %d -&gt; %d!</content>
-    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">귀하의 RogueScore이 변경되었습니다: %d -&gt; %d!</content>
+    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">귀하의 ????이 변경되었습니다: %d -&gt; %d!</content>
     <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">당신의 올빼미곰 새끼는 이제 다 자라서 분노할 준비가 되었습니다. 조종 가능한 파티 추종자로 무장한 올빼미곰을 생성합니다. 각각의 긴 휴식 후에는 다시 소환할 수 있는 주문을 받게 됩니다.</content>
     <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">샀다</content>
+    <content contentuid="h388102beg6dd4g457egb0bbg2318d299013a" version="1">데스링크</content>
+    <content contentuid="hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" version="1">로그라이크(균형 편향)</content>
+    <content contentuid="hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" version="1">로그라이크(상위 티어 편향)</content>
+    <content contentuid="hd266b876g8733g4ed2gbe15g58b45c377a96" version="1">로그라이크(하위 티어 편향)</content>
+    <content contentuid="h30dbf342g658eg4a61gb03eg8c07121cae25" version="1">상점 조각</content>
 </contentList>

@@ -708,7 +708,7 @@ Schedule(function()
             GameMode.StartRoguelike(template)
         end,
 
-        Name = C.RoguelikeScenario .. " (Bias Lower Tier)",
+        Name = TL("hd266b876g8733g4ed2gbe15g58b45c377a96"),
         Map = getMap,
 
         -- Spawns per Round
@@ -732,7 +732,7 @@ Schedule(function()
             GameMode.StartRoguelike(template)
         end,
 
-        Name = C.RoguelikeScenario .. " (Bias Balanced)",
+        Name = TL("hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b"),
         Map = getMap,
 
         -- Spawns per Round
@@ -756,7 +756,7 @@ Schedule(function()
             GameMode.StartRoguelike(template)
         end,
 
-        Name = C.RoguelikeScenario .. " (Bias Higher Tier)",
+        Name = TL("hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d"),
         Map = getMap,
 
         -- Spawns per Round

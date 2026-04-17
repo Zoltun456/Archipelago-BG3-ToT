@@ -23,6 +23,12 @@
         "Text": "%s Recipient: %s.",
         "Version": 1
     },
+    "%s -> %s;1": {
+        "Handle": "h3bfe90d6g6eabg4c58gb08cgda3e52aef81c",
+        "Stack": [],
+        "Text": "%s -> %s",
+        "Version": 1
+    },
     "%s is now active.;1": {
         "Handle": "h3b8161bbg6ed4g434ega08bg252882a9070a",
         "Stack": [],
@@ -461,10 +467,22 @@
         "Text": "Connected.",
         "Version": 1
     },
+    "Connected to %s.;1": {
+        "Handle": "h263fab9ag736ag4fecgb150gc98a9372eba8",
+        "Stack": [],
+        "Text": "Connected to %s.",
+        "Version": 1
+    },
     "Connecting to Archipelago.;1": {
         "Handle": "hc6ecfd20g93b9g4a87g9f5dgfce13d7fdec3",
         "Stack": [],
         "Text": "Connecting to Archipelago.",
+        "Version": 1
+    },
+    "Connecting to %s.;1": {
+        "Handle": "h2bbd127cg7ee8g4472g9188ge214f3aac036",
+        "Stack": [],
+        "Text": "Connecting to %s.",
         "Version": 1
     },
     "Connection;1": {
@@ -507,6 +525,12 @@
         "Handle": "h2357ca60g7602g49f3g9106g4f9533246db7",
         "Stack": [],
         "Text": "DeathLink received from %s. %s",
+        "Version": 1
+    },
+    "DeathLink;1": {
+        "Handle": "h388102beg6dd4g457egb0bbg2318d299013a",
+        "Stack": [],
+        "Text": "DeathLink",
         "Version": 1
     },
     "DeathLink received. %s;1": {
@@ -1427,6 +1451,24 @@
         "Text": "RogueScore",
         "Version": 1
     },
+    "Roguelike (Bias Balanced);1": {
+        "Handle": "hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b",
+        "Stack": [],
+        "Text": "Roguelike (Bias Balanced)",
+        "Version": 1
+    },
+    "Roguelike (Bias Higher Tier);1": {
+        "Handle": "hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d",
+        "Stack": [],
+        "Text": "Roguelike (Bias Higher Tier)",
+        "Version": 1
+    },
+    "Roguelike (Bias Lower Tier);1": {
+        "Handle": "hd266b876g8733g4ed2gbe15g58b45c377a96",
+        "Stack": [],
+        "Text": "Roguelike (Bias Lower Tier)",
+        "Version": 1
+    },
     "Roll Epic Loot %dx;1": {
         "Handle": "h3f24d43fg6a71g4816ga0c1g7e70c2e35c52",
         "Stack": [],
@@ -1581,6 +1623,12 @@
         "Handle": "h334e0016g661bg4554gb007gd3325225f110",
         "Stack": [],
         "Text": "Shop Checks",
+        "Version": 1
+    },
+    "Shop Fragment;1": {
+        "Handle": "h30dbf342g658eg4a61gb03eg8c07121cae25",
+        "Stack": [],
+        "Text": "Shop Fragment",
         "Version": 1
     },
     "Shop Fragment %d/%d;1": {

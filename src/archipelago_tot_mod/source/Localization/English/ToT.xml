@@ -340,4 +340,12 @@ Old data may need to be cleared, and new data may need to be pulled in</content>
     <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Your RogueScore changed: %d -&gt; %d!</content>
     <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.</content>
     <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">bought</content>
+    <content contentuid="h3bfe90d6g6eabg4c58gb08cgda3e52aef81c" version="1">%s -&gt; %s</content>
+    <content contentuid="h263fab9ag736ag4fecgb150gc98a9372eba8" version="1">Connected to %s.</content>
+    <content contentuid="h2bbd127cg7ee8g4472g9188ge214f3aac036" version="1">Connecting to %s.</content>
+    <content contentuid="h388102beg6dd4g457egb0bbg2318d299013a" version="1">DeathLink</content>
+    <content contentuid="hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" version="1">Roguelike (Bias Balanced)</content>
+    <content contentuid="hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" version="1">Roguelike (Bias Higher Tier)</content>
+    <content contentuid="hd266b876g8733g4ed2gbe15g58b45c377a96" version="1">Roguelike (Bias Lower Tier)</content>
+    <content contentuid="h30dbf342g658eg4a61gb03eg8c07121cae25" version="1">Shop Fragment</content>
 </contentList>

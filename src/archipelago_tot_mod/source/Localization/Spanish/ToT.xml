@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentList>
-    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d RogueScore requerido</content>
+    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d Puntuaci?nRogue requerido</content>
     <content contentuid="h29013f4fg7c54g46a1ga1a3g20c7c38102e5" version="1">%d quedan enemigos.</content>
-    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - RogueScore: %d</content>
+    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - Puntuaci?nRogue: %d</content>
     <content contentuid="h28e4e464g7db1g4b13g91bdg7d75739f5f57" version="1">%s Destinatario: %s.</content>
     <content contentuid="h3b8161bbg6ed4g434ega08bg252882a9070a" version="1">%s ahora está activo.</content>
     <content contentuid="h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c" version="1">%s ahora está el maestro del juego.</content>
@@ -82,11 +82,11 @@
     <content contentuid="h38df043eg6d8ag4516gb0begc370d29ce152" version="1">Costo: %s</content>
     <content contentuid="h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e" version="1">Contrarrestar la sombra Maldición.</content>
     <content contentuid="h20c028a6g7595g47dfgb13fg31b9531d139b" version="1">Creación</content>
-    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Moneda propiedad: %d RogueScore: %d</content>
+    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Moneda propiedad: %d Puntuaci?nRogue: %d</content>
     <content contentuid="h2169b15eg743cg4e40gb125ga826d3078a04" version="1">Moneda</content>
-    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">DeathLink recibida de %s. %s</content>
-    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">DeathLink recibido. %s</content>
-    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">DeathLink: %s</content>
+    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">VinculoMortal recibida de %s. %s</content>
+    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">VinculoMortal recibido. %s</content>
+    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">VinculoMortal: %s</content>
     <content contentuid="h366718e6g6332g44dbgb055g42bd5277609f" version="1">Depuración</content>
     <content contentuid="h29b77480g7ce2g421dg91a8g447b338a6659" version="1">Configuración predeterminada</content>
     <content contentuid="h29895c61g7cdcg4093g81abga6f5238984d7" version="1">Predeterminada config...</content>
@@ -211,8 +211,8 @@ La dificultad aumenta con la puntuación.</content>
     <content contentuid="hd27c8442g8729g4d11gbe14gfb771c36d955" version="1">Juega continuamente batallas aleatorias más difíciles</content>
     <content contentuid="h307360eeg6526g435bgb034g053dd216271f" version="1">Jugar</content>
     <content contentuid="h31b2227eg64e7g4772gb028g1114d20a3336" version="1">Pos</content>
-    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Inicio rápido: - %s RogueScore</content>
-    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Inicio rápido: - Gana 2x RogueScore, duplicando la dificultad aumenta</content>
+    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Inicio rápido: - %s Puntuaci?nRogue</content>
+    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Inicio rápido: - Gana 2x Puntuaci?nRogue, duplicando la dificultad aumenta</content>
     <content contentuid="hee9d3983gbbc8g46cdgaddage0ab0ff8c289" version="1">Inicio rápido: - Tira el botín %dx</content>
     <content contentuid="he27b6a7bgb72eg43f2gad14g85948f36a7b6" version="1">Inicio rápido: - Desbloquea multiplicadores para Gratis</content>
     <content contentuid="h279d3a06g72c8g46f5gb14age0935368c2b1" version="1">Aleatorio</content>
@@ -242,7 +242,7 @@ Es posible que sea necesario borrar datos antiguos y es posible que sea necesari
     <content contentuid="h7b7406d7g2e21g4538ga484g735e46a6517c" version="1">Restringe la compra de otros jugadores en el modo multijugador se desbloquea.</content>
     <content contentuid="h27dae07eg728fg4b52gb14eg9d34d36cbf16" version="1">Resincronización</content>
     <content contentuid="h2bc3faaag7e96g4affgb18fg0c9993ad2ebb" version="1">Regresó al campamento.</content>
-    <content contentuid="h374141e6g6214g414bgb047g272d5265050f" version="1">RogueScore</content>
+    <content contentuid="h374141e6g6214g414bgb047g272d5265050f" version="1">Puntuaci?nRogue</content>
     <content contentuid="h3f24d43fg6a71g4816ga0c1g7e70c2e35c52" version="1">Tira botín épico %dx</content>
     <content contentuid="hc2dd2983g9788g47cdgaf1ege1ab0d3cc389" version="1">Tira botín legendario %dx</content>
     <content contentuid="h3b8839f6g6eddg46cagb08bgb0ac52a9928e" version="1">Tira de botín %dx</content>
@@ -298,7 +298,7 @@ Es posible que sea necesario borrar datos antiguos y es posible que sea necesari
     <content contentuid="h2771ca17g7224g49f4ga144g2f9243660db0" version="1">Restablecimiento de plantillas</content>
     <content contentuid="h273d0172g7268g4542gb140ge3241362c106" version="1">Plantillas</content>
     <content contentuid="hf6bb50e7ga3eeg405bgac58g863d4e7aa41f" version="1">El cliente Archipelago dejó de responder. Ciérralo, inicia el Baldur's Gate 3 - ToT Cliente nuevamente desde el Archipelago Lanzador, luego vuelve a conectarte.</content>
-    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">El presupuesto del encuentro aumenta a medida que tu RogueScore aumenta y escala más rápido con mayores dificultades.</content>
+    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">El presupuesto del encuentro aumenta a medida que tu Puntuaci?nRogue aumenta y escala más rápido con mayores dificultades.</content>
     <content contentuid="h7e986d9bg2bcdg438cga4dagb5ea86f897c8" version="1">El alma reunida Thaniel proporciona un +1 a todas las puntuaciones de habilidad y un adicional Velocidad de movimiento de 2 m.</content>
     <content contentuid="h202a0f80g757fg45adg9131g93cb3313b1e9" version="1">El campo de habitación predeterminado es `archipelago.gg:`. Ingresa aquí el puerto actual y el nombre de la ranura, luego conéctate en el juego.</content>
     <content contentuid="h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d" version="1">Esta pestaña refleja ese cliente y puede enviar Conectar, Desconectar y Resincronizar mientras está abierta.</content>
@@ -337,7 +337,12 @@ Es posible que sea necesario borrar datos antiguos y es posible que sea necesari
     <content contentuid="hcb742a6eg9e21g47f3gbf84g7195dda653b7" version="1">¡Has encontrado el nivel secreto de la vaca!</content>
     <content contentuid="h1b8b3985g4edeg46cdg828bg80ab60a9a289" version="1">¡Has incurrido en la ira de la venganza de la naturaleza!</content>
     <content contentuid="h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2" version="1">¡Tu moneda cambió: %d -&gt; %d!</content>
-    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Tu RogueScore cambiado: %d -&gt; %d!</content>
+    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Tu Puntuaci?nRogue cambiado: %d -&gt; %d!</content>
     <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">Tu cachorro oso búho ya ha crecido y está listo para enfurecerse. Genera el oso búho blindado como seguidor del grupo controlable. Después de cada Descanso Largo, recibirás un hechizo para reinvocarlos.</content>
     <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">comprado</content>
+    <content contentuid="h388102beg6dd4g457egb0bbg2318d299013a" version="1">VinculoMortal</content>
+    <content contentuid="hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" version="1">Roguelike (Sesgo equilibrado)</content>
+    <content contentuid="hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" version="1">Roguelike (Sesgo de nivel superior)</content>
+    <content contentuid="hd266b876g8733g4ed2gbe15g58b45c377a96" version="1">Roguelike (Sesgo de nivel inferior)</content>
+    <content contentuid="h30dbf342g658eg4a61gb03eg8c07121cae25" version="1">Fragmento de tienda</content>
 </contentList>

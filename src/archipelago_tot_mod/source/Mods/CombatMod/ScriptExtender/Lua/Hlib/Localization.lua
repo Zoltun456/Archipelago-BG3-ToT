@@ -28,6 +28,29 @@ local M = {}
 M.Translations = {}
 M.UseLoca = true
 M.FilePath = "Localization/" .. Mod.TableKey
+local SPECIAL_TERM_REPLACEMENTS = {
+    { Source = "Roguelike (Bias Balanced)", Handle = "hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" },
+    { Source = "Roguelike (Bias Higher Tier)", Handle = "hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" },
+    { Source = "Roguelike (Bias Lower Tier)", Handle = "hd266b876g8733g4ed2gbe15g58b45c377a96" },
+    { Source = "Shop Fragment", Handle = "h30dbf342g658eg4a61gb03eg8c07121cae25" },
+    { Source = "DeathLink", Handle = "h388102beg6dd4g457egb0bbg2318d299013a" },
+    { Source = "RogueScore", Handle = "h374141e6g6214g414bgb047g272d5265050f" },
+}
+
+local function localizedHandleText(handle)
+    return Ext.Loca.GetTranslatedString(handle):gsub("<LSTag .->(.-)</LSTag>", "%1"):gsub("<br>", "\n")
+end
+
+local function applySpecialTermTranslations(text)
+    local translated = text
+    for _, entry in ipairs(SPECIAL_TERM_REPLACEMENTS) do
+        local localized = localizedHandleText(entry.Handle)
+        if localized ~= "" then
+            translated = translated:gsub(entry.Source, localized)
+        end
+    end
+    return translated
+end
 
 local function build(text, version, handle)
     local tbl = {
@@ -140,7 +163,7 @@ end
 ---@vararg any
 ---@return string
 function M.Get(handle, ...)
-    local str = Ext.Loca.GetTranslatedString(handle):gsub("<LSTag .->(.-)</LSTag>", "%1"):gsub("<br>", "\n")
+    local str = applySpecialTermTranslations(localizedHandleText(handle))
     for i, v in pairs({ ... }) do
         str = str:gsub("%[" .. i .. "%]", v)
     end

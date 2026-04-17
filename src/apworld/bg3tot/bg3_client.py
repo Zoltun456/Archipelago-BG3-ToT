@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import sys
 import time
 import typing
@@ -57,6 +58,56 @@ BRIDGE_STATUS_FILE = "ap_client_status.json"
 BRIDGE_LOG_FILE = "ap_client_log.json"
 BRIDGE_LOG_LIMIT = 200
 BRIDGE_POLL_INTERVAL_SECONDS = 1.0
+BG3_LANGUAGE_FILE = os.path.join("Data", "Localization", "language.lsx")
+
+
+def _detect_bg3_language_code(root_directory: str) -> str | None:
+    language_path = os.path.join(root_directory, BG3_LANGUAGE_FILE)
+    if not os.path.isfile(language_path):
+        return None
+
+    try:
+        with open(language_path, "r", encoding="utf-8") as file_handle:
+            contents = file_handle.read()
+    except OSError:
+        return None
+
+    match = re.search(r'<attribute\s+id="Value"[^>]*\bvalue="([^"]+)"', contents)
+    if not match:
+        return None
+
+    raw_language = match.group(1).strip()
+    if not raw_language:
+        return None
+
+    normalized = raw_language.replace("_", "-").replace(" ", "-").lower()
+    language_map = {
+        "english": "en",
+        "french": "fr",
+        "german": "de",
+        "spanish": "es",
+        "latinspanish": "es-419",
+        "polish": "pl",
+        "russian": "ru",
+        "italian": "it",
+        "turkish": "tr",
+        "brazilianportuguese": "pt-br",
+        "japanese": "ja",
+        "korean": "ko",
+        "ukrainian": "uk",
+        "chinese": "zh-cn",
+        "chinesetraditional": "zh-tw",
+    }
+    return language_map.get(normalized, normalized)
+
+
+def _bootstrap_bg3_ui_language(root_directory: str) -> None:
+    if os.environ.get("BG3TOT_LANGUAGE") or os.environ.get("AP_LANGUAGE"):
+        return
+
+    detected_language = _detect_bg3_language_code(root_directory)
+    if detected_language:
+        os.environ["BG3TOT_LANGUAGE"] = detected_language
 
 
 class BG3ClientCommandProcessor(ClientCommandProcessor):
@@ -90,21 +141,26 @@ class BG3Context(CommonContext):
         self.bridge_heartbeat = 0
         self.bridge_connection_state = "disconnected"
         self._preserve_connection_target_once = False
+        game_options = BG3World.settings
+        root_directory = ""
+        try:
+            root_directory = str(game_options.root_directory)
+        except FileNotFoundError:
+            root_directory = ""
+        if root_directory:
+            _bootstrap_bg3_ui_language(root_directory)
         self.bridge_status_text = (
             ui_text("bridge.status.runtime_running")
             if bridge_mode
             else ui_text("bridge.status.tot_client_ready")
         )
         self.bridge_last_error = ""
-
-        game_options = BG3World.settings
         if "localappdata" in os.environ:
             appdata_bg3 = os.path.join(os.environ["localappdata"], "Larian Studios", "Baldur's Gate 3")
         else:
-            try:
-                appdata_bg3 = game_options.root_directory
-            except FileNotFoundError:
+            if not root_directory:
                 print_error_and_close(ui_text("startup.missing_bg3_folder"))
+            appdata_bg3 = root_directory
 
         self.se_bg3 = os.path.expandvars(os.path.join(appdata_bg3, "Script Extender"))
         if not os.path.isdir(self.se_bg3):

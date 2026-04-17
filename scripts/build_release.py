@@ -512,6 +512,36 @@ def convert_resource(divine_path: str, source_path: Path, destination_path: Path
     )
 
 
+def convert_loca(divine_path: str, source_path: Path, destination_path: Path) -> None:
+    destination_path.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            divine_path,
+            "-g",
+            "bg3",
+            "-a",
+            "convert-loca",
+            "-s",
+            str(source_path),
+            "-d",
+            str(destination_path),
+        ],
+        check=True,
+        cwd=ROOT,
+    )
+
+
+def compile_localization_resources(divine_path: str, localization_root: Path) -> None:
+    if not localization_root.exists():
+        return
+
+    for helper_loca in localization_root.rglob("__MT_GEN_LOCA_*.loca"):
+        helper_loca.unlink()
+
+    for xml_path in sorted(localization_root.rglob("*.xml")):
+        convert_loca(divine_path, xml_path, xml_path.with_suffix(".loca"))
+
+
 def remove_path_if_exists(path: Path) -> None:
     if not path.exists():
         return
@@ -1025,6 +1055,7 @@ def stage_final_mod(
     remove_path_if_exists(public_root / "Assets" / "Textures" / "Icons" / "Icons_ArchipelagoTrials.png")
     remove_path_if_exists(public_root / "Assets" / "Textures" / "Icons" / ARCHIPELAGO_ATLAS_DDS_NAME)
 
+    compile_localization_resources(divine_path, staged_mod_dir / "Localization")
     patch_dependency_version_checks(mods_root / "ScriptExtender" / "Lua")
     patch_mod_meta(
         mods_root / "meta.lsx",

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentList>
-    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">[[TOTPH_0001]]] RogueScore wymagane</content>
+    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">[[TOTPH_0001]]] WynikRogue wymagane</content>
     <content contentuid="h29013f4fg7c54g46a1ga1a3g20c7c38102e5" version="1">[[TOTPH_0000]]] wrogów pozostało.</content>
-    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s – RogueScore: %d</content>
+    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s – WynikRogue: %d</content>
     <content contentuid="h28e4e464g7db1g4b13g91bdg7d75739f5f57" version="1">%s Odbiorca: %s.</content>
     <content contentuid="h3b8161bbg6ed4g434ega08bg252882a9070a" version="1">[[TOTPH_0000]]] jest teraz aktywny.</content>
     <content contentuid="h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c" version="1">[[TOTPH_0000]]] jest teraz mistrz gry.</content>
@@ -82,11 +82,11 @@
     <content contentuid="h38df043eg6d8ag4516gb0begc370d29ce152" version="1">Koszt: %s</content>
     <content contentuid="h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e" version="1">Przeciwdziałanie cieniowi Klątwa.</content>
     <content contentuid="h20c028a6g7595g47dfgb13fg31b9531d139b" version="1">Tworzenie</content>
-    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Posiadana waluta: %d RogueScore: %d</content>
+    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Posiadana waluta: %d WynikRogue: %d</content>
     <content contentuid="h2169b15eg743cg4e40gb125ga826d3078a04" version="1">Waluta</content>
     <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">[[TOTPH_0000]]] otrzymana od %s. %s</content>
     <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">[[TOTPH_0000]]] otrzymano. %s</content>
-    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">DeathLink: [[TOTPH_0001]]]</content>
+    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">??cze?mierci: [[TOTPH_0001]]]</content>
     <content contentuid="h366718e6g6332g44dbgb055g42bd5277609f" version="1">Debugowanie</content>
     <content contentuid="h29b77480g7ce2g421dg91a8g447b338a6659" version="1">Konfiguracja domyślna</content>
     <content contentuid="h29895c61g7cdcg4093g81abga6f5238984d7" version="1">Konfiguracja domyślna config...</content>
@@ -211,8 +211,8 @@ Trudność wzrasta wraz z wynikiem.</content>
     <content contentuid="hd27c8442g8729g4d11gbe14gfb771c36d955" version="1">Graj w coraz trudniejsze bitwy losowe</content>
     <content contentuid="h307360eeg6526g435bgb034g053dd216271f" version="1">Graj</content>
     <content contentuid="h31b2227eg64e7g4772gb028g1114d20a3336" version="1">Pos</content>
-    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Szybki start: - %s RogueScore</content>
-    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Szybki start: - Zyskaj 2x RogueScore, podwajając tempo wzrostu trudności</content>
+    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Szybki start: - %s WynikRogue</content>
+    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Szybki start: - Zyskaj 2x WynikRogue, podwajając tempo wzrostu trudności</content>
     <content contentuid="hee9d3983gbbc8g46cdgaddage0ab0ff8c289" version="1">Szybki start: - Rzuć łupy %dx</content>
     <content contentuid="he27b6a7bgb72eg43f2gad14g85948f36a7b6" version="1">Szybki start: - Odblokuj mnożniki za darmo</content>
     <content contentuid="h279d3a06g72c8g46f5gb14age0935368c2b1" version="1">Losowe</content>
@@ -337,7 +337,12 @@ Może wymagać wyczyszczenia starych danych i wciągnięcia nowych</content>
     <content contentuid="hcb742a6eg9e21g47f3gbf84g7195dda653b7" version="1">Odnalazłeś poziom tajemniczej krowy!</content>
     <content contentuid="h1b8b3985g4edeg46cdg828bg80ab60a9a289" version="1">Ściągnąłeś na siebie gniew Zemsty Natury!</content>
     <content contentuid="h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2" version="1">Twoja waluta została zmieniona: %d -&gt; [[TOTPH_0001]]]!</content>
-    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Twoja waluta RogueScore zmieniono: %d -&gt; %d!</content>
+    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Twoja waluta WynikRogue zmieniono: %d -&gt; %d!</content>
     <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">Twoje młode niedźwiedzie sowy są już dorosłe i gotowe do wściekłości. Tworzy Opancerzonego Sowiedźwiedzia jako towarzysza drużyny, nad którym można sterować. Po każdym Długim Odpoczynku otrzymasz zaklęcie umożliwiające ich ponowne przywołanie.</content>
     <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">kupiony</content>
+    <content contentuid="h388102beg6dd4g457egb0bbg2318d299013a" version="1">LaczeSmierci</content>
+    <content contentuid="hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" version="1">Roguelike (Zrownowazony)</content>
+    <content contentuid="hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" version="1">Roguelike (Wyzszy poziom)</content>
+    <content contentuid="hd266b876g8733g4ed2gbe15g58b45c377a96" version="1">Roguelike (Nizszy poziom)</content>
+    <content contentuid="h30dbf342g658eg4a61gb03eg8c07121cae25" version="1">Fragmenty w sklepie</content>
 </contentList>

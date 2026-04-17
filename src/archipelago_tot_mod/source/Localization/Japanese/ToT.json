@@ -2,7 +2,7 @@
     "%d RogueScore required;1": {
         "Handle": "h8c0d708fgd958g425dgabf3ge43bc9d1c619",
         "Stack": [],
-        "Text": "%d RogueScore 必須",
+        "Text": "%d ローグスコア 必須",
         "Version": 1
     },
     "%d enemies left.;1": {
@@ -14,7 +14,7 @@
     "%s - RogueScore: %d;1": {
         "Handle": "hab6c1c62gfe39g4493gb985gf2f51ba7d0d7",
         "Stack": [],
-        "Text": "%s - RogueScore: %d",
+        "Text": "%s - ローグスコア: %d",
         "Version": 1
     },
     "%s Recipient: %s.;1": {
@@ -494,7 +494,7 @@
     "Currency owned: %d   RogueScore: %d;1": {
         "Handle": "h16af0aafg43fag45ffga259gc399c07be1bb",
         "Stack": [],
-        "Text": "所有通貨: %d RogueScore: %d",
+        "Text": "所有通貨: %d ローグスコア: %d",
         "Version": 1
     },
     "Currency;1": {
@@ -506,19 +506,19 @@
     "DeathLink received from %s. %s;1": {
         "Handle": "h2357ca60g7602g49f3g9106g4f9533246db7",
         "Stack": [],
-        "Text": "DeathLinkは%sから受け取りました。 %s",
+        "Text": "デスリンクは%sから受け取りました。 %s",
         "Version": 1
     },
     "DeathLink received. %s;1": {
         "Handle": "h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97",
         "Stack": [],
-        "Text": "DeathLinkを受け取りました。 %s",
+        "Text": "デスリンクを受け取りました。 %s",
         "Version": 1
     },
     "DeathLink: %s;1": {
         "Handle": "h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b",
         "Stack": [],
-        "Text": "DeathLink: %s",
+        "Text": "デスリンク: %s",
         "Version": 1
     },
     "Debug;1": {
@@ -1250,13 +1250,13 @@
     "Quick Start: - %s RogueScore;1": {
         "Handle": "hc60d0ebbg9358g45begaf53ge3d88d71c1fa",
         "Stack": [],
-        "Text": "クイックスタート: - %s RogueScore",
+        "Text": "クイックスタート: - %s ローグスコア",
         "Version": 1
     },
     "Quick Start: - Gain 2x RogueScore, doubling the rate difficulty increases;1": {
         "Handle": "h4b49f453g1e1cg4a10ga787gac7605a58e54",
         "Stack": [],
-        "Text": "クイックスタート: - 2x RogueScoreを獲得し、レートの難易度が2倍になります。",
+        "Text": "クイックスタート: - 2x ローグスコアを獲得し、レートの難易度が2倍になります。",
         "Version": 1
     },
     "Quick Start: - Roll Loot %dx;1": {
@@ -1424,7 +1424,7 @@
     "RogueScore;1": {
         "Handle": "h374141e6g6214g414bgb047g272d5265050f",
         "Stack": [],
-        "Text": "RogueScore",
+        "Text": "ローグスコア",
         "Version": 1
     },
     "Roll Epic Loot %dx;1": {
@@ -1760,7 +1760,7 @@
     "The encounter budget increases as your RogueScore increases and scales faster with higher difficulties.;1": {
         "Handle": "h1a239f49g4f76g4ca1g8291g0ac7a0b328e5",
         "Stack": [],
-        "Text": "RogueScore が増加するにつれてエンカウンターの予算も増加し、難易度が高くなるほどより速く拡張されます。",
+        "Text": "ローグスコア が増加するにつれてエンカウンターの予算も増加し、難易度が高くなるほどより速く拡張されます。",
         "Version": 1
     },
     "The reunited soul Thaniel provides a +1 to all Ability Scores and an additional 2m movement speed.;1": {
@@ -1994,7 +1994,7 @@
     "Your RogueScore changed: %d -> %d!;1": {
         "Handle": "hc2618a3eg9734g4df6gbf15g2b90dd3709b2",
         "Stack": [],
-        "Text": "あなたの RogueScore が変更されました: %d -> %d!",
+        "Text": "あなたの ローグスコア が変更されました: %d -> %d!",
         "Version": 1
     },
     "Your owlbear cub is all grown up and ready to rage. Spawns the Armoured Owlbear as controllable party follower. After each Long Rest, you'll receive a spell to resummon them.;1": {
@@ -2007,6 +2007,36 @@
         "Handle": "h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5",
         "Stack": [],
         "Text": "買った",
+        "Version": 1
+    },
+    "DeathLink;1": {
+        "Handle": "h388102beg6dd4g457egb0bbg2318d299013a",
+        "Stack": [],
+        "Text": "デスリンク",
+        "Version": 1
+    },
+    "Roguelike (Bias Balanced);1": {
+        "Handle": "hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b",
+        "Stack": [],
+        "Text": "ローグライク（バランス型）",
+        "Version": 1
+    },
+    "Roguelike (Bias Higher Tier);1": {
+        "Handle": "hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d",
+        "Stack": [],
+        "Text": "ローグライク（高階層寄り）",
+        "Version": 1
+    },
+    "Roguelike (Bias Lower Tier);1": {
+        "Handle": "hd266b876g8733g4ed2gbe15g58b45c377a96",
+        "Stack": [],
+        "Text": "ローグライク（低階層寄り）",
+        "Version": 1
+    },
+    "Shop Fragment;1": {
+        "Handle": "h30dbf342g658eg4a61gb03eg8c07121cae25",
+        "Stack": [],
+        "Text": "ショップフラグメント",
         "Version": 1
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <contentList>
-    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d RogueScore gerekli</content>
+    <content contentuid="h8c0d708fgd958g425dgabf3ge43bc9d1c619" version="1">%d RogueSkoru gerekli</content>
     <content contentuid="h29013f4fg7c54g46a1ga1a3g20c7c38102e5" version="1">%d düşman kaldı.</content>
-    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - RogueScore: %d</content>
+    <content contentuid="hab6c1c62gfe39g4493gb985gf2f51ba7d0d7" version="1">%s - RogueSkoru: %d</content>
     <content contentuid="h28e4e464g7db1g4b13g91bdg7d75739f5f57" version="1">%s Alıcı: %s.</content>
     <content contentuid="h3b8161bbg6ed4g434ega08bg252882a9070a" version="1">%s artık aktif.</content>
     <content contentuid="h3e1f65deg6b4ag4308gb0d2gc56ed2f0e74c" version="1">%s aktif artık oyunun ustasısınız.</content>
@@ -82,11 +82,11 @@
     <content contentuid="h38df043eg6d8ag4516gb0begc370d29ce152" version="1">Maliyet: %s</content>
     <content contentuid="h2e6a96f6g7b3fg4c3agb1d5g9a5c53f7b87e" version="1">Gölge Lanetine Karşı Durun.</content>
     <content contentuid="h20c028a6g7595g47dfgb13fg31b9531d139b" version="1">Yaratılış</content>
-    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Sahip olunan para birimi: %d RogueScore: %d</content>
+    <content contentuid="h16af0aafg43fag45ffga259gc399c07be1bb" version="1">Sahip olunan para birimi: %d RogueSkoru: %d</content>
     <content contentuid="h2169b15eg743cg4e40gb125ga826d3078a04" version="1">Para birimi</content>
-    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">DeathLink, %s'den alınmıştır. %s</content>
-    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">DeathLink alındı. %s</content>
-    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">DeathLink: %s</content>
+    <content contentuid="h2357ca60g7602g49f3g9106g4f9533246db7" version="1">?l?mBa??, %s'den alınmıştır. %s</content>
+    <content contentuid="h5ef2b860g0ba7g4ed3g96dcg18b534fe3a97" version="1">?l?mBa?? alındı. %s</content>
+    <content contentuid="h3e15a8a0g6b40g4fdfg90d2g69b932f04b9b" version="1">?l?mBa??: %s</content>
     <content contentuid="h366718e6g6332g44dbgb055g42bd5277609f" version="1">Hata Ayıklama</content>
     <content contentuid="h29b77480g7ce2g421dg91a8g447b338a6659" version="1">Varsayılan Yapılandırma</content>
     <content contentuid="h29895c61g7cdcg4093g81abga6f5238984d7" version="1">Varsayılan config...</content>
@@ -211,8 +211,8 @@ Puan arttıkça zorluk da artar.</content>
     <content contentuid="hd27c8442g8729g4d11gbe14gfb771c36d955" version="1">Sürekli olarak daha zor rastgele savaşlar oynayın</content>
     <content contentuid="h307360eeg6526g435bgb034g053dd216271f" version="1">Oyna</content>
     <content contentuid="h31b2227eg64e7g4772gb028g1114d20a3336" version="1">Pos</content>
-    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Hızlı Başlangıç: - %s RogueScore</content>
-    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Hızlı Başlangıç: - 2 kat RogueScore kazanın, zorluk artış hızını iki katına çıkarın</content>
+    <content contentuid="hc60d0ebbg9358g45begaf53ge3d88d71c1fa" version="1">Hızlı Başlangıç: - %s RogueSkoru</content>
+    <content contentuid="h4b49f453g1e1cg4a10ga787gac7605a58e54" version="1">Hızlı Başlangıç: - 2 kat RogueSkoru kazanın, zorluk artış hızını iki katına çıkarın</content>
     <content contentuid="hee9d3983gbbc8g46cdgaddage0ab0ff8c289" version="1">Hızlı Başlangıç: - Yağmalama %dx</content>
     <content contentuid="he27b6a7bgb72eg43f2gad14g85948f36a7b6" version="1">Hızlı Başlangıç: - Çarpanların Kilidini Ücretsiz Olarak Aç</content>
     <content contentuid="h279d3a06g72c8g46f5gb14age0935368c2b1" version="1">Rastgele</content>
@@ -298,7 +298,7 @@ Eski verilerin temizlenmesi gerekebilir ve yeni verilerin çekilmesi gerekebilir
     <content contentuid="h2771ca17g7224g49f4ga144g2f9243660db0" version="1">Şablonlar sıfırlandı</content>
     <content contentuid="h273d0172g7268g4542gb140ge3241362c106" version="1">Şablonlar</content>
     <content contentuid="hf6bb50e7ga3eeg405bgac58g863d4e7aa41f" version="1">Archipelago istemcisi yanıt vermeyi durdurdu. Kapatın, Archipelago Başlatıcıdan Baldur's Gate 3 - ToT İstemcisini tekrar başlatın, ardından yeniden bağlanın.</content>
-    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">RogueScore'iniz arttıkça karşılaşma bütçesi de artar ve daha yüksek zorluklarla daha hızlı ölçeklenir.</content>
+    <content contentuid="h1a239f49g4f76g4ca1g8291g0ac7a0b328e5" version="1">RogueSkoru'iniz arttıkça karşılaşma bütçesi de artar ve daha yüksek zorluklarla daha hızlı ölçeklenir.</content>
     <content contentuid="h7e986d9bg2bcdg438cga4dagb5ea86f897c8" version="1">Yeniden bir araya gelen ruh Thaniel, tüm Yetenek Puanlarına +1 sağlar ve ek 2 m hareket hızı.</content>
     <content contentuid="h202a0f80g757fg45adg9131g93cb3313b1e9" version="1">Oda alanı varsayılan olarak `archipelago.gg:` şeklindedir. Geçerli bağlantı noktası ve yuva adını buraya girin, ardından oyuna bağlanın.</content>
     <content contentuid="h9a29f3c8gcf7cg4a69g9a91gac0fb8b38e2d" version="1">Bu sekme o istemciyi yansıtır ve açıkken Bağlan, Bağlantıyı Kes ve Yeniden Eşitle seçeneklerini gönderebilir.</content>
@@ -337,7 +337,12 @@ Eski verilerin temizlenmesi gerekebilir ve yeni verilerin çekilmesi gerekebilir
     <content contentuid="hcb742a6eg9e21g47f3gbf84g7195dda653b7" version="1">Gizli inek seviyesini buldun!</content>
     <content contentuid="h1b8b3985g4edeg46cdg828bg80ab60a9a289" version="1">Doğanın İntikamının gazabına uğradın!</content>
     <content contentuid="h89d4bc36gdc81g4e96gbbaeg78f0598c5ad2" version="1">Para birimin değişti: %d -&gt; %d!</content>
-    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Para birimin değişti RogueScore değişti: %d -&gt; %d!</content>
+    <content contentuid="hc2618a3eg9734g4df6gbf15g2b90dd3709b2" version="1">Para birimin değişti RogueSkoru değişti: %d -&gt; %d!</content>
     <content contentuid="hcff9583bg9aacg40d6gafccga6b08dee8492" version="1">Baykuş ayı yavrunuz tamamen büyüdü ve öfkelenmeye hazır. Kontrol edilebilir parti takipçisi olarak Zırhlı Baykuşayı doğurur. Her Uzun Dinlenmeden sonra, onları yeniden çağırmak için bir büyü alacaksınız.</content>
     <content contentuid="h22c9bc4eg779cg4e91gb11fga8f7d33d8ad5" version="1">satın alındı</content>
+    <content contentuid="h388102beg6dd4g457egb0bbg2318d299013a" version="1">OlumBagi</content>
+    <content contentuid="hd31ca8a6g8649g4fdfgbe02gf9b95c20db9b" version="1">Roguelike (Dengeli egilim)</content>
+    <content contentuid="hbf3fc7cegea6ag4929gb8c0gcf4fdae2ed6d" version="1">Roguelike (Ust kademe egilimli)</content>
+    <content contentuid="hd266b876g8733g4ed2gbe15g58b45c377a96" version="1">Roguelike (Alt kademe egilimli)</content>
+    <content contentuid="h30dbf342g658eg4a61gb03eg8c07121cae25" version="1">Mağaza Parçası</content>
 </contentList>

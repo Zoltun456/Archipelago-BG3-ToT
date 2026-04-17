@@ -32,6 +32,7 @@ REQUEST_RETRY_DELAYS_SECONDS = (5.0, 10.0, 20.0, 40.0)
 MIN_REQUEST_INTERVAL_SECONDS = 0.5
 TRANSLATION_PROVIDER = os.environ.get("BG3TOT_TRANSLATION_PROVIDER", "mymemory").strip().lower()
 TRANSLATION_CACHE_PATH = Path(tempfile.gettempdir()) / "bg3tot_translation_cache.json"
+TRANSLATION_CACHE_VERSION = 2
 
 PRINTF_PATTERN = re.compile(
     r"%(?:\d+\$)?[-+#0 ]*(?:\d+|\*)?(?:\.(?:\d+|\*))?[hlL]?[A-Za-z%]"
@@ -47,8 +48,6 @@ GLOSSARY_PATTERNS = tuple(
         r"Trials of Tav",
         r"Script Extender",
         r"\bArchipelago\b",
-        r"\bDeathLink\b",
-        r"\bRogueScore\b",
         r"\bBG3\b",
         r"\bToT\b",
         r"\bAP\b",
@@ -263,7 +262,7 @@ def request_translation_with_retries(text: str, target_code: str) -> str:
 
 
 def translate_many(texts: list[str], target: LanguageTarget) -> dict[str, str]:
-    cache_key = f"{TRANSLATION_PROVIDER}:{target.google_code}"
+    cache_key = f"v{TRANSLATION_CACHE_VERSION}:{TRANSLATION_PROVIDER}:{target.google_code}"
     cache_bucket = TRANSLATION_CACHE.setdefault(cache_key, {})
     translated_by_source: dict[str, str] = {
         text: cache_bucket[text]
