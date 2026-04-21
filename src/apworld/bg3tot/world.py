@@ -9,8 +9,9 @@ from BaseClasses import ItemClassification
 from Options import OptionError
 from worlds.AutoWorld import World
 
-from . import items, locations, options, regions, rules, settings, web_world
+from . import items, locations, options, regions, rules, web_world
 from .i18n import canonical_text
+from .settings import BG3Settings
 from .trials_data import (
     GAME_NAME,
     REGION_NAME,
@@ -89,7 +90,7 @@ class BG3World(World):
     options_dataclass = options.BG3Options
     options: options.BG3Options
 
-    settings: ClassVar[settings.BG3Settings]
+    settings: ClassVar[BG3Settings]
 
     location_name_to_id = locations.LOCATION_NAME_TO_ID
     location_name_groups = locations.LOCATION_NAME_GROUPS

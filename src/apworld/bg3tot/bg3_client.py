@@ -61,6 +61,26 @@ BRIDGE_POLL_INTERVAL_SECONDS = 1.0
 BG3_LANGUAGE_FILE = os.path.join("Data", "Localization", "language.lsx")
 
 
+def _default_bg3_root_directory() -> str:
+    local_app_data = os.environ.get("LOCALAPPDATA") or os.environ.get("localappdata")
+    if not local_app_data:
+        return ""
+    return os.path.join(local_app_data, "Larian Studios", "Baldur's Gate 3")
+
+
+def _resolve_bg3_root_directory() -> str:
+    game_options = getattr(BG3World, "settings", None)
+    if game_options is not None:
+        try:
+            configured_root = os.path.expandvars(str(game_options.root_directory)).strip()
+        except (AttributeError, FileNotFoundError, OSError, TypeError, ValueError):
+            configured_root = ""
+        if configured_root:
+            return configured_root
+
+    return _default_bg3_root_directory()
+
+
 def _detect_bg3_language_code(root_directory: str) -> str | None:
     language_path = os.path.join(root_directory, BG3_LANGUAGE_FILE)
     if not os.path.isfile(language_path):
@@ -141,13 +161,8 @@ class BG3Context(CommonContext):
         self.bridge_heartbeat = 0
         self.bridge_connection_state = "disconnected"
         self._preserve_connection_target_once = False
-        game_options = BG3World.settings
-        root_directory = ""
-        try:
-            root_directory = str(game_options.root_directory)
-        except FileNotFoundError:
-            root_directory = ""
-        if root_directory:
+        root_directory = _resolve_bg3_root_directory()
+        if root_directory and os.path.isdir(root_directory):
             _bootstrap_bg3_ui_language(root_directory)
         self.bridge_status_text = (
             ui_text("bridge.status.runtime_running")
@@ -155,8 +170,9 @@ class BG3Context(CommonContext):
             else ui_text("bridge.status.tot_client_ready")
         )
         self.bridge_last_error = ""
-        if "localappdata" in os.environ:
-            appdata_bg3 = os.path.join(os.environ["localappdata"], "Larian Studios", "Baldur's Gate 3")
+        localappdata = os.environ.get("LOCALAPPDATA") or os.environ.get("localappdata")
+        if localappdata:
+            appdata_bg3 = os.path.join(localappdata, "Larian Studios", "Baldur's Gate 3")
         else:
             if not root_directory:
                 print_error_and_close(ui_text("startup.missing_bg3_folder"))
