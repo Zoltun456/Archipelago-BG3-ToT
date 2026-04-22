@@ -26,8 +26,10 @@ If you have never modded BG3 please refer to this Git on how [BG3 Mod Manager](h
 Download apworld and mod zip:
 - [Archipelago-BG3-Trials-test-bundle.zip](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
 - [bg3tot.apworld](https://github.com/Zoltun456/Archipelago-BG3-ToT/releases)
+
 Download dependency mod from Nexus:
 - [AdvancedTTSpells](https://www.nexusmods.com/baldursgate3/mods/14429)
+
 Optional Mods:
 - Player Levels 13-20: [Expansion](https://www.nexusmods.com/baldursgate3/mods/279)
   - Dependency: [Mod Configuration Menu](https://www.nexusmods.com/baldursgate3/mods/9162)
