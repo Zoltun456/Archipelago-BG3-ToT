@@ -1,7 +1,11 @@
+import importlib
+
 from .bases import BG3TrialsTestBase
 from BaseClasses import LocationProgressType
 from ..i18n import canonical_text
 from ..options import BG3Options, PermanentBuffTarget
+from ..settings import BG3Settings
+from ..world import BG3World
 from ..trials_data import (
     PIXIE_BLESSING_UNLOCK_ID,
     SHOP_FRAGMENT_ITEM_NAME,
@@ -17,6 +21,17 @@ from ..trials_data import (
 
 
 class TestDefaultGeneration(BG3TrialsTestBase):
+    def test_world_settings_annotation_resolves_from_world_module(self) -> None:
+        annotation = BG3World.__annotations__["settings"]
+        if isinstance(annotation, str):
+            class_name = annotation.split("[", 1)[1].rsplit("]", 1)[0]
+            world_module = importlib.import_module(BG3World.__module__)
+            resolved_settings = getattr(world_module, class_name)
+        else:
+            resolved_settings = BG3Settings
+
+        self.assertIs(resolved_settings, BG3Settings)
+
     def test_slot_data_matches_configured_counts(self) -> None:
         slot_data = self.world.fill_slot_data()
         expected_shop_unlock_ids = selected_shop_unlock_ids(

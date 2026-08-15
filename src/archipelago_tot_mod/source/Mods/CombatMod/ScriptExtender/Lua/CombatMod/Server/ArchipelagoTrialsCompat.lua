@@ -2146,7 +2146,10 @@ local function process_trials_inbox(preferred_character)
                         then
                             granted = true
                         elseif unlock_id == "ShopFragment" then
-                            granted = state.received_items[entry] == true or grant_shop_fragment_reward()
+                            -- Re-enter the capped grant path when this entry is in the external
+                            -- replay journal. The previous state check short-circuited here, so a
+                            -- fragment received after the loaded save was silently lost.
+                            granted = grant_shop_fragment_reward()
                         elseif unlock_id == "Tadpole" and grant_progressive_tadpole_reward(entry, preferred_character) then
                             granted = true
                         elseif grant_unlock_reward(unlock_id, preferred_character) then

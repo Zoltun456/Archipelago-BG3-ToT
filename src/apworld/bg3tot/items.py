@@ -20,10 +20,15 @@ from .trials_data import (
 )
 
 
-DUPLICATE_ITEM_FILLERS = [
-    #["Potion of Healing", "d47006e9-8a51-453d-b200-9e0d42e9bbab"],
-    #["Supply Pack", "a24a2ca2-a213-424c-833d-47c79934c0ce"],
-    #["Lockpick", "e32a200c-5b63-414d-ae57-00e7b38f125b"],
+DUPLICATE_ITEM_FILLERS: list[list[str]] = []
+
+# These fillers were present in releases before progressive shop fragments replaced them.
+# Keep receive-side mappings so a newer client can reconnect to an older room without a
+# KeyError, but do not put the retired items back into newly generated item pools.
+LEGACY_DUPLICATE_ITEM_FILLERS = [
+    ["Potion of Healing", "d47006e9-8a51-453d-b200-9e0d42e9bbab"],
+    ["Supply Pack", "a24a2ca2-a213-424c-833d-47c79934c0ce"],
+    ["Lockpick", "e32a200c-5b63-414d-ae57-00e7b38f125b"],
 ]
 
 CUSTOM_FILLERS = [
@@ -173,8 +178,12 @@ _extend_item_tuples(ITEM_TUPLES, TRAP_OPTIONS, 7000, ItemClassification.trap)
 ITEM_NAME_TO_ID = {str(item[0]): int(item[2]) for item in ITEM_TUPLES}
 ID_TO_ITEM_NAME = {int(item[2]): str(item[0]) for item in ITEM_TUPLES}
 AP_ITEM_TO_BG3_ID = {str(item[0]): str(item[1]) for item in ITEM_TUPLES}
+AP_ITEM_TO_BG3_ID.update({name: bg3_id for name, bg3_id in LEGACY_DUPLICATE_ITEM_FILLERS})
 DEFAULT_ITEM_CLASSIFICATIONS = {str(item[0]): item[3] for item in ITEM_TUPLES}
-IS_DUPEABLE = {item[1]: True for item in DUPLICATE_ITEM_FILLERS + EQUIPMENT_FILLERS}
+IS_DUPEABLE = {
+    item[1]: True
+    for item in DUPLICATE_ITEM_FILLERS + LEGACY_DUPLICATE_ITEM_FILLERS + EQUIPMENT_FILLERS
+}
 UNLOCK_ITEM_NAME_BY_ID = {unlock_id: name for unlock_id, name in UNLOCK_NAME_BY_ID.items()}
 
 
