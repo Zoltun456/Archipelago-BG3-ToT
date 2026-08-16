@@ -8,6 +8,7 @@ import logging
 import os
 import re
 import sys
+import tempfile
 import time
 import typing
 
@@ -58,6 +59,9 @@ BRIDGE_STATUS_FILE = "ap_client_status.json"
 BRIDGE_LOG_FILE = "ap_client_log.json"
 BRIDGE_LOG_LIMIT = 200
 BRIDGE_POLL_INTERVAL_SECONDS = 1.0
+BRIDGE_DIAGNOSTIC_WARNING_INTERVAL_SECONDS = 30.0
+BRIDGE_SLOW_IO_WARNING_SECONDS = 1.0
+GAME_WATCHER_POLL_INTERVAL_SECONDS = 3.0
 BG3_LANGUAGE_FILE = os.path.join("Data", "Localization", "language.lsx")
 
 
@@ -161,6 +165,7 @@ class BG3Context(CommonContext):
         self.bridge_heartbeat = 0
         self.bridge_connection_state = "disconnected"
         self._preserve_connection_target_once = False
+        self._bridge_diagnostic_warning_times: dict[str, float] = {}
         root_directory = _resolve_bg3_root_directory()
         if root_directory and os.path.isdir(root_directory):
             _bootstrap_bg3_ui_language(root_directory)
@@ -219,19 +224,82 @@ class BG3Context(CommonContext):
         return bool(self.slot_data_cache.get("death_link", False))
 
     def _load_json(self, file_name: str, default_value: Any) -> Any:
+        started_at = time.perf_counter()
         path = self._file_path(file_name)
-        if not os.path.isfile(path):
-            return default_value
         try:
+            if not os.path.isfile(path):
+                return default_value
             with open(path, "r", encoding="utf-8") as file_handle:
                 return json.load(file_handle)
-        except (OSError, json.JSONDecodeError):
+        except (OSError, UnicodeError, json.JSONDecodeError) as err:
+            self._warn_bridge_diagnostic(
+                f"read:{file_name}",
+                "Could not read BG3 bridge file %s; keeping the previous/default state and retrying: %s",
+                file_name,
+                err,
+            )
             return default_value
+        finally:
+            self._warn_if_slow_bridge_io("read", file_name, started_at)
 
     def _write_json(self, file_name: str, payload: Any) -> None:
+        started_at = time.perf_counter()
         path = self._file_path(file_name)
-        with open(path, "w", encoding="utf-8") as file_handle:
-            json.dump(payload, file_handle)
+        try:
+            encoded_payload = json.dumps(payload)
+            with open(path, "w", encoding="utf-8") as file_handle:
+                file_handle.write(encoded_payload)
+        finally:
+            self._warn_if_slow_bridge_io("write", file_name, started_at)
+
+    def _write_json_atomic(self, file_name: str, payload: Any) -> None:
+        """Replace a bridge snapshot without exposing an empty or partially written file."""
+        started_at = time.perf_counter()
+        path = self._file_path(file_name)
+        temporary_path = ""
+        try:
+            encoded_payload = json.dumps(payload)
+            file_descriptor, temporary_path = tempfile.mkstemp(
+                dir=os.path.dirname(path),
+                prefix=f".{os.path.basename(file_name)}.",
+                suffix=".tmp",
+                text=True,
+            )
+            with os.fdopen(file_descriptor, "w", encoding="utf-8") as file_handle:
+                file_handle.write(encoded_payload)
+            os.replace(temporary_path, path)
+            temporary_path = ""
+        finally:
+            if temporary_path:
+                try:
+                    os.unlink(temporary_path)
+                except FileNotFoundError:
+                    pass
+            self._warn_if_slow_bridge_io("atomic write", file_name, started_at)
+
+    def _warn_bridge_diagnostic(self, key: str, message: str, *args: Any) -> None:
+        now = time.monotonic()
+        last_warning_at = self._bridge_diagnostic_warning_times.get(key)
+        if (
+            last_warning_at is not None
+            and now - last_warning_at < BRIDGE_DIAGNOSTIC_WARNING_INTERVAL_SECONDS
+        ):
+            return
+        self._bridge_diagnostic_warning_times[key] = now
+        logger.warning(message, *args)
+
+    def _warn_if_slow_bridge_io(self, operation: str, file_name: str, started_at: float) -> None:
+        elapsed_seconds = time.perf_counter() - started_at
+        if elapsed_seconds < BRIDGE_SLOW_IO_WARNING_SECONDS:
+            return
+        self._warn_bridge_diagnostic(
+            f"slow:{operation}:{file_name}",
+            "Slow BG3 bridge file %s for %s took %.2f seconds; filesystem or antivirus contention may delay "
+            "Archipelago keepalive processing.",
+            operation,
+            file_name,
+            elapsed_seconds,
+        )
 
     def _bridge_slot_name(self) -> str:
         return str(getattr(self, "auth", None) or getattr(self, "username", None) or "")
@@ -244,23 +312,35 @@ class BG3Context(CommonContext):
 
     def _write_bridge_status(self, *, bridge_running: bool = True) -> None:
         self.bridge_heartbeat += 1
-        self._write_json(
-            BRIDGE_STATUS_FILE,
-            {
-                "bridge_running": bridge_running,
-                "heartbeat": self.bridge_heartbeat,
-                "connection_state": self.bridge_connection_state,
-                "status_text": self.bridge_status_text,
-                "last_error": self.bridge_last_error,
-                "server_address": getattr(self, "server_address", "") or "",
-                "slot_name": self._bridge_slot_name(),
-                "seed_name": getattr(self, "seed_name", "") or "",
-                "death_link_enabled": self._death_link_enabled(),
-                "items_received": len(getattr(self, "items_received", [])),
-                "locations_checked": len(getattr(self, "checked_locations", [])),
-                "connected": getattr(self, "slot", None) is not None,
-            },
-        )
+        try:
+            self._write_json_atomic(
+                BRIDGE_STATUS_FILE,
+                {
+                    "bridge_running": bridge_running,
+                    "heartbeat": self.bridge_heartbeat,
+                    "client_pid": os.getpid(),
+                    "written_at_unix_ms": time.time_ns() // 1_000_000,
+                    "connection_state": self.bridge_connection_state,
+                    "status_text": self.bridge_status_text,
+                    "last_error": self.bridge_last_error,
+                    "server_address": getattr(self, "server_address", "") or "",
+                    "slot_name": self._bridge_slot_name(),
+                    "seed_name": getattr(self, "seed_name", "") or "",
+                    "death_link_enabled": self._death_link_enabled(),
+                    "items_received": len(getattr(self, "items_received", [])),
+                    "locations_checked": len(getattr(self, "checked_locations", [])),
+                    "connected": getattr(self, "slot", None) is not None,
+                },
+            )
+        except OSError as err:
+            # Status reporting must never be able to tear down the actual Archipelago socket.
+            # The last complete snapshot stays in place and the next heartbeat retries the replace.
+            self._warn_bridge_diagnostic(
+                f"write-error:{BRIDGE_STATUS_FILE}",
+                "Could not update BG3 bridge status file %s; retaining the last complete snapshot and retrying: %s",
+                BRIDGE_STATUS_FILE,
+                err,
+            )
 
     def _append_bridge_log(self, text: str, *, level: str = "info") -> None:
         message = str(text or "").strip()
@@ -1029,11 +1109,10 @@ async def bridge_watcher(ctx: BG3Context):
             await asyncio.sleep(BRIDGE_POLL_INTERVAL_SECONDS)
         except Exception as err:
             logger.error("Exception in BG3 bridge watcher: %s", err)
-            ctx.bridge_connection_state = "error"
-            ctx.bridge_status_text = ui_text("bridge.status.command_error")
-            ctx.bridge_last_error = str(err)
-            ctx._append_bridge_log(ui_text("bridge.logs.watcher_error", error=err), level="error")
-            ctx._write_bridge_status()
+            try:
+                ctx._append_bridge_log(ui_text("bridge.logs.watcher_error", error=err), level="error")
+            except Exception as reporting_err:
+                logger.error("Exception while reporting a BG3 bridge watcher error: %s", reporting_err)
             await asyncio.sleep(BRIDGE_POLL_INTERVAL_SECONDS)
 
 
@@ -1046,15 +1125,9 @@ async def game_watcher(ctx: BG3Context):
 
             sending = []
             victory = False
-            checked_tokens = []
-
-            path = ctx._file_path(ctx.comm_file_locations_checked)
-            if os.path.isfile(path):
-                with open(path, "r", encoding="utf-8") as file_handle:
-                    checked_tokens = json.load(file_handle)
-            else:
-                with open(path, "w", encoding="utf-8") as file_handle:
-                    file_handle.write("[]")
+            checked_tokens = ctx._load_json(ctx.comm_file_locations_checked, [])
+            if not isinstance(checked_tokens, list):
+                checked_tokens = []
 
             for token in checked_tokens:
                 resolved_location = location_id_for_token(
@@ -1101,11 +1174,15 @@ async def game_watcher(ctx: BG3Context):
                 await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
                 ctx.finished_game = True
 
-            await asyncio.sleep(3)
+            await asyncio.sleep(GAME_WATCHER_POLL_INTERVAL_SECONDS)
         except Exception as err:
             logger.error("Exception in communication thread, a check may not have been sent: " + str(err))
-            ctx._append_bridge_log(ui_text("bridge.logs.communication_error", error=err), level="error")
-            ctx._write_bridge_status()
+            try:
+                ctx._append_bridge_log(ui_text("bridge.logs.communication_error", error=err), level="error")
+                ctx._write_bridge_status()
+            except Exception as reporting_err:
+                logger.error("Exception while reporting a BG3 communication error: %s", reporting_err)
+            await asyncio.sleep(GAME_WATCHER_POLL_INTERVAL_SECONDS)
 
 
 def print_error_and_close(msg: str):

@@ -124,6 +124,14 @@ Useful local files while testing:
 - `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_client_status.json`
 - `%LOCALAPPDATA%\Larian Studios\Baldur's Gate 3\Script Extender\ap_client_log.json`
 
+`ap_client_status.json` includes a heartbeat, the ToT client process ID, and the snapshot write time. The ToT client
+logs rate-limited warnings when a bridge file cannot be read or when a file operation takes at least one second.
+The Script Extender console/log reports failed and recovered status reads with an `[ArchipelagoTrialsCompat]` prefix.
+
+If the in-game Archipelago status repeatedly changes while the ToT client stays connected, cap BG3 to 60 or 120 FPS
+and compare the behavior. A message telling you to launch the client indicates that no valid status snapshot has been
+seen; a message saying the client stopped responding means its heartbeat did not advance for at least five seconds.
+
 If things are working, `ap_out.json` should show progress tokens like:
 
 - `TOT-CLEAR-001`

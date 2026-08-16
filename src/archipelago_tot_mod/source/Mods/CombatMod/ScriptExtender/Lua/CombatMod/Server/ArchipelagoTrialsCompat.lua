@@ -15,6 +15,7 @@ local AP_CLIENT_STATUS_FILE = "ap_client_status.json"
 local AP_CLIENT_LOG_FILE = "ap_client_log.json"
 local AP_CLIENT_LOG_MAX_LINES = 120
 local AP_CLIENT_STALE_TIMEOUT_MS = 5000
+local AP_CLIENT_STATUS_WARNING_INTERVAL_MS = 10000
 
 local GOAL_BUY_NG_PLUS = 0
 local GOAL_CLEAR_STAGES = 1
@@ -78,6 +79,10 @@ local runtime = {
     archipelago_client_signature = "",
     archipelago_client_last_heartbeat = nil,
     archipelago_client_last_seen_ms = 0,
+    archipelago_client_last_status = nil,
+    archipelago_client_status_read_failures = 0,
+    archipelago_client_status_last_warning_ms = 0,
+    archipelago_client_status_warning_active = false,
     archipelago_client_command_counter = 0,
     archipelago_backend_prompted = false,
 }
@@ -161,17 +166,32 @@ local function load_json_array(path)
 end
 
 
-local function load_json_object(path)
+local function try_load_json_object(path)
     local raw = Ext.IO.LoadFile(path)
-    if not raw or raw == "" then
-        return {}
+    if not raw then
+        return nil, "file could not be read"
+    end
+    if raw == "" then
+        return nil, "file was empty"
     end
 
     local ok, parsed = pcall(Ext.Json.Parse, raw)
-    if not ok or type(parsed) ~= "table" then
-        return {}
+    if not ok then
+        return nil, "invalid JSON: " .. tostring(parsed)
+    end
+    if type(parsed) ~= "table" then
+        return nil, "JSON root was not an object"
     end
 
+    return parsed, nil
+end
+
+
+local function load_json_object(path)
+    local parsed = try_load_json_object(path)
+    if parsed == nil then
+        return {}
+    end
     return parsed
 end
 
@@ -386,10 +406,39 @@ end
 
 
 local function refresh_archipelago_client_ui(force)
-    local status = load_json_object(AP_CLIENT_STATUS_FILE)
+    local now = Ext.Utils.MonotonicTime()
+    local status, status_read_error = try_load_json_object(AP_CLIENT_STATUS_FILE)
+    if status ~= nil then
+        if runtime.archipelago_client_status_warning_active then
+            print(string.format(
+                "[ArchipelagoTrialsCompat] Client status reads recovered after %d failed attempt(s).",
+                runtime.archipelago_client_status_read_failures
+            ))
+        end
+        runtime.archipelago_client_last_status = status
+        runtime.archipelago_client_status_read_failures = 0
+        runtime.archipelago_client_status_warning_active = false
+    else
+        runtime.archipelago_client_status_read_failures = runtime.archipelago_client_status_read_failures + 1
+        status = runtime.archipelago_client_last_status or {}
+
+        local had_running_client = table_get(runtime.archipelago_client_last_status, "bridge_running", false) == true
+        local warning_due = runtime.archipelago_client_status_last_warning_ms == 0
+            or (now - runtime.archipelago_client_status_last_warning_ms) >= AP_CLIENT_STATUS_WARNING_INTERVAL_MS
+        if had_running_client and warning_due then
+            runtime.archipelago_client_status_last_warning_ms = now
+            runtime.archipelago_client_status_warning_active = true
+            print(string.format(
+                "[ArchipelagoTrialsCompat] Could not read %s (%s); retaining the last valid state "
+                    .. "while the heartbeat timeout runs.",
+                AP_CLIENT_STATUS_FILE,
+                tostring(status_read_error or "unknown read error")
+            ))
+        end
+    end
+
     local heartbeat = tonumber(table_get(status, "heartbeat", nil))
     local bridge_running = table_get(status, "bridge_running", false) == true
-    local now = Ext.Utils.MonotonicTime()
 
     if heartbeat ~= nil and heartbeat ~= runtime.archipelago_client_last_heartbeat then
         runtime.archipelago_client_last_heartbeat = heartbeat
