@@ -80,6 +80,59 @@ class TestBridgeJsonIo(unittest.TestCase):
         self.assertEqual(context.bridge_heartbeat, 1)
         context._warn_bridge_diagnostic.assert_called_once()
 
+    def test_options_file_is_published_as_an_atomic_snapshot(self) -> None:
+        context = self.make_context("")
+        context.slot_data_cache = {"shop_check_unlock_ids": []}
+        context.seed_name = "Test Seed"
+        context._build_shop_display_entries = Mock(return_value=[])
+        context._write_json = Mock()
+        context._write_json_atomic = Mock()
+
+        context._write_options_file(active_connection=True)
+
+        context._write_json_atomic.assert_called_once_with(
+            context.sync_option,
+            {
+                "shop_check_unlock_ids": [],
+                "shop_check_costs": [],
+                "seed_name": "Test Seed",
+                "active_connection": True,
+                "shop_display": [],
+            },
+        )
+        context._write_json.assert_not_called()
+
+    def test_received_item_history_is_published_as_an_atomic_snapshot(self) -> None:
+        context = self.make_context("")
+        context._write_json_atomic = Mock()
+
+        with patch.object(bg3_client, "_encode_received_items", return_value=["ToTUnlock:ShopFragment:0"]):
+            context._write_received_items_file()
+
+        context._write_json_atomic.assert_called_once_with(
+            context.comm_file_sent_items,
+            ["ToTUnlock:ShopFragment:0"],
+        )
+
+    def test_deactivation_marks_options_inactive_before_clearing_item_history(self) -> None:
+        context = self.make_context("")
+        context.bridge_mode = False
+        context._write_json = Mock()
+        atomic_writes: list[tuple[str, object]] = []
+        context._write_json_atomic = Mock(
+            side_effect=lambda file_name, payload: atomic_writes.append((file_name, payload))
+        )
+
+        context._deactivate_bridge_state(clear_files=True)
+
+        self.assertEqual(
+            atomic_writes[:2],
+            [
+                (context.sync_option, {"seed_name": "", "active_connection": False}),
+                (context.comm_file_sent_items, []),
+            ],
+        )
+
 
 class TestGameWatcherRecovery(unittest.TestCase):
     def test_exception_path_yields_before_retrying(self) -> None:

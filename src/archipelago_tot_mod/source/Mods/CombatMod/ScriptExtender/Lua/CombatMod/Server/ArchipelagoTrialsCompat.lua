@@ -839,8 +839,8 @@ end
 
 -- The slot data the AP client writes is our entire source of truth for a run.
 -- When the seed changes we wipe the AP-only runtime state so old check tokens do not bleed into the new seed.
-local function refresh_seed_state()
-    local options = get_options()
+local function refresh_seed_state(options)
+    options = options or get_options()
     if not options.active_connection then
         return false
     end
@@ -949,19 +949,49 @@ local function shop_section_name(section_index, section_count)
 end
 
 
-local function current_shop_fragments_received()
-    refresh_seed_state()
+local function current_shop_fragments_received(max_fragments)
     local state = get_state()
-    local options = get_options()
-    local max_fragments = tonumber(options.shop_fragment_count or 0) or 0
-    local received = tonumber(state.shop_fragments_received or 0) or 0
+    max_fragments = tonumber(max_fragments or 0) or 0
+    local received = math.max(0, tonumber(state.shop_fragments_received or 0) or 0)
     if max_fragments > 0 then
-        received = math.max(0, math.min(received, max_fragments))
-    else
-        received = 0
+        return math.min(received, max_fragments)
     end
-    state.shop_fragments_received = received
     return received
+end
+
+
+local function is_shop_fragment_entry(entry)
+    entry = tostring(entry or "")
+    local prefix = "ToTUnlock:ShopFragment:"
+    return entry == "ToTUnlock:ShopFragment" or string.sub(entry, 1, #prefix) == prefix
+end
+
+
+-- AP_IN is a complete history of received items. Rebuild fragment progress from that
+-- authoritative list so an older save (or a formerly partial bridge read) repairs itself.
+-- Fragment totals only grow within a seed; refresh_seed_state handles legitimate seed resets.
+local function reconcile_shop_fragments(inbox, options)
+    local max_fragments = tonumber(options.shop_fragment_count or 0) or 0
+    if max_fragments <= 0 then
+        return false
+    end
+
+    local expected = 0
+    for _, entry in ipairs(inbox or {}) do
+        if is_shop_fragment_entry(entry) then
+            expected = expected + 1
+        end
+    end
+    expected = math.min(expected, max_fragments)
+
+    local state = get_state()
+    local received = math.max(0, tonumber(state.shop_fragments_received or 0) or 0)
+    if expected <= received then
+        return false
+    end
+
+    state.shop_fragments_received = expected
+    return true
 end
 
 
@@ -2148,27 +2178,6 @@ local function grant_progressive_tadpole_reward(entry, preferred_character)
 end
 
 
-local function grant_shop_fragment_reward()
-    local options = get_options()
-    local max_fragments = tonumber(options.shop_fragment_count or 0) or 0
-    if max_fragments <= 0 then
-        return true
-    end
-
-    refresh_seed_state()
-    local state = get_state()
-    local received = tonumber(state.shop_fragments_received or 0) or 0
-    if received >= max_fragments then
-        return true
-    end
-
-    state.shop_fragments_received = received + 1
-    Unlock.Sync()
-    write_shop_debug_snapshot("grant_shop_fragment_reward", Unlock.Get())
-    return true
-end
-
-
 -- This used to be split across the old Archipelago mod and the separate ToT bridge.
 -- Now it is the single inbox processor for Trials rewards, filler payouts, and the "replay after reload" safety net.
 local function process_trials_inbox(preferred_character)
@@ -2177,9 +2186,10 @@ local function process_trials_inbox(preferred_character)
         return
     end
 
-    refresh_seed_state()
+    refresh_seed_state(options)
     local state = get_state()
     local inbox = load_json_array(AP_IN_FILE)
+    local shop_fragments_changed = reconcile_shop_fragments(inbox, options)
 
     if #inbox > 0 then
         for _, entry in ipairs(inbox) do
@@ -2195,10 +2205,9 @@ local function process_trials_inbox(preferred_character)
                         then
                             granted = true
                         elseif unlock_id == "ShopFragment" then
-                            -- Re-enter the capped grant path when this entry is in the external
-                            -- replay journal. The previous state check short-circuited here, so a
-                            -- fragment received after the loaded save was silently lost.
-                            granted = grant_shop_fragment_reward()
+                            -- The complete inbox was reconciled above, including entries already
+                            -- recorded by the loaded save and entries from the replay journal.
+                            granted = true
                         elseif unlock_id == "Tadpole" and grant_progressive_tadpole_reward(entry, preferred_character) then
                             granted = true
                         elseif grant_unlock_reward(unlock_id, preferred_character) then
@@ -2228,6 +2237,11 @@ local function process_trials_inbox(preferred_character)
                 end
             end
         end
+    end
+
+    if shop_fragments_changed then
+        Unlock.Sync()
+        write_shop_debug_snapshot("reconcile_shop_fragments", Unlock.Get())
     end
 
     process_ap_notifications()
@@ -2349,9 +2363,8 @@ local function sync_connection_state(force)
 end
 
 
-local function make_shop_section_unlock(section_index, options)
+local function make_shop_section_unlock(section_index, options, unlocked_sections)
     local total_sections = tonumber(options.shop_fragment_count or 0) or 0
-    local unlocked_sections = current_shop_fragments_received()
     return {
         Id = shop_section_unlock_id(section_index),
         Name = shop_section_name(section_index, total_sections),
@@ -2492,6 +2505,7 @@ local function register_shop_patch()
     capture_original_unlock_templates()
     Unlock.GetTemplates = function()
         local options = get_options()
+        refresh_seed_state(options)
         local transformed = {}
         local goal_template = runtime.original_templates_by_id[options.goal_unlock_template_id]
         if goal_template then
@@ -2506,8 +2520,9 @@ local function register_shop_patch()
         end
 
         if options.progressive_shop == true and tonumber(options.shop_fragment_count or 0) > 0 then
+            local unlocked_sections = current_shop_fragments_received(options.shop_fragment_count)
             for section_index = 1, tonumber(options.shop_fragment_count or 0) or 0 do
-                table.insert(transformed, make_shop_section_unlock(section_index, options))
+                table.insert(transformed, make_shop_section_unlock(section_index, options, unlocked_sections))
             end
         end
 

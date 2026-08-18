@@ -373,20 +373,24 @@ class BG3Context(CommonContext):
         self.username = None
 
     def _deactivate_bridge_state(self, clear_files: bool = False) -> None:
-        if clear_files:
-            self._write_json(self.comm_file_sent_items, [])
-            self._write_json(self.comm_file_locations_checked, [])
-            self._write_json(self.comm_file_notifications, [])
-            self._write_json(self.comm_file_deathlink_in, [])
-            self._write_json(self.comm_file_deathlink_out, [])
-
-        self._write_json(
+        # Publish the inactive marker before clearing any snapshots. BG3 may poll between
+        # these writes, so it must never interpret an intentionally empty inbox as the
+        # complete item history for an active connection.
+        self._write_json_atomic(
             self.sync_option,
             {
                 "seed_name": "",
                 "active_connection": False,
             },
         )
+
+        if clear_files:
+            self._write_json_atomic(self.comm_file_sent_items, [])
+            self._write_json(self.comm_file_locations_checked, [])
+            self._write_json(self.comm_file_notifications, [])
+            self._write_json(self.comm_file_deathlink_in, [])
+            self._write_json(self.comm_file_deathlink_out, [])
+
         self.bridge_connection_state = "disconnected"
         if self.bridge_mode:
             self.bridge_status_text = ui_text("bridge.status.runtime_running")
@@ -404,7 +408,16 @@ class BG3Context(CommonContext):
         if previous_seed and previous_seed == current_seed:
             return
 
-        self._write_json(self.comm_file_sent_items, [])
+        # Keep the bridge inactive until Connected publishes the complete received-item
+        # snapshot and the matching slot data for the new seed.
+        self._write_json_atomic(
+            self.sync_option,
+            {
+                "seed_name": current_seed,
+                "active_connection": False,
+            },
+        )
+        self._write_json_atomic(self.comm_file_sent_items, [])
         self._write_json(self.comm_file_locations_checked, [])
         self._write_json(self.comm_file_notifications, [])
         self._write_json(self.comm_file_deathlink_in, [])
@@ -587,7 +600,12 @@ class BG3Context(CommonContext):
         payload["seed_name"] = self.seed_name or ""
         payload["active_connection"] = active_connection
         payload["shop_display"] = [entry["display"] for entry in shop_display_entries]
-        self._write_json(self.sync_option, payload)
+        self._write_json_atomic(self.sync_option, payload)
+
+    def _write_received_items_file(self) -> None:
+        # This is a complete AP history snapshot, not a queue. Atomic replacement keeps
+        # the Lua side from observing a partially written list and under-counting items.
+        self._write_json_atomic(self.comm_file_sent_items, _encode_received_items(self))
 
     def _request_shop_scouts(self) -> None:
         location_ids = self._shop_location_ids()
@@ -681,9 +699,9 @@ class BG3Context(CommonContext):
         if cmd == "Connected":
             self._reset_for_new_seed_if_needed()
             self.slot_data_cache = dict(args["slot_data"])
+            self._write_received_items_file()
             self._write_options_file(active_connection=True)
             self._request_shop_scouts()
-            self._write_json(self.comm_file_sent_items, _encode_received_items(self))
             self.bridge_connection_state = "connected"
             self.bridge_status_text = ui_text("bridge.status.connected_to", server_address=self._bridge_room_name())
             self.bridge_last_error = ""
@@ -703,14 +721,14 @@ class BG3Context(CommonContext):
         if cmd == "RoomInfo":
             self.seed_name = args["seed_name"]
             self._reset_for_new_seed_if_needed()
-            self._write_options_file(active_connection=True)
+            self._write_options_file(active_connection=False)
             if self.bridge_connection_state != "connected":
                 self.bridge_connection_state = "connecting"
                 self.bridge_status_text = ui_text("bridge.status.connecting_to", server_address=self._bridge_room_name())
             self._write_bridge_status()
 
         if cmd == "ReceivedItems":
-            self._write_json(self.comm_file_sent_items, _encode_received_items(self))
+            self._write_received_items_file()
             self._write_bridge_status()
 
         if cmd == "LocationInfo":
